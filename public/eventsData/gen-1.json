@@ -1,0 +1,97 @@
+[
+    {
+        "_id": {
+            "$oid": "677835d2901bfce08caec7d4"
+        },
+        "created_at_timestamp": 1735931346375,
+        "device_id": "749ff90d-6178-4aa9-abd1-874f7ec6d75e",
+        "module_id": 1378,
+        "location_id": 18,
+        "generated_at": 1735931346000,
+        "event_type": "device",
+        "module_type": "general_2023-01-11 14:28:03.234",
+        "entity_name": "Gen_1",
+        "_status": "SUCCESS",
+        "4,27": 0,
+        "4,31": 0,
+        "4,35": 0,
+        "4,15": 0,
+        "createdAt": {
+            "$date": {
+                "$numberLong": "1735931346377"
+            }
+        },
+        "updatedAt": {
+            "$date": {
+                "$numberLong": "1735931346377"
+            }
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67789df9901bfce08caf6392"
+        },
+        "created_at_timestamp": 1735958009175,
+        "device_id": "749ff90d-6178-4aa9-abd1-874f7ec6d75e",
+        "module_id": 1379,
+        "location_id": 18,
+        "generated_at": 1735958008000,
+        "event_type": "device",
+        "module_type": "general_2023-01-11 14:28:03.234",
+        "entity_name": "Gen_1",
+        "_status": "VALIDATION_FAILED",
+        "4,11": 0,
+        "4,12": 0,
+        "4,18": 0,
+        "4,21": 0,
+        "4,22": 0,
+        "4,1": 0,
+        "4,23": 0,
+        "4,39": 0,
+        "4,9": 1246,
+        "4,40": 34178,
+        "4,42": 34762.80078125,
+        "4,44": 417.3999938964844,
+        "4,7": 2405,
+        "4,4": 35,
+        "createdAt": {
+            "$date": {
+                "$numberLong": "1735958009178"
+            }
+        },
+        "updatedAt": {
+            "$date": {
+                "$numberLong": "1735958009178"
+            }
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "67789ddf901bfce08caf636e"
+        },
+        "created_at_timestamp": 1735957983595,
+        "device_id": "749ff90d-6178-4aa9-abd1-874f7ec6d75e",
+        "module_id": 1376,
+        "location_id": 18,
+        "generated_at": 1735957983000,
+        "event_type": "device",
+        "module_type": "general_2023-01-11 14:28:03.234",
+        "entity_name": "Gen_1",
+        "_status": "VALIDATION_FAILED",
+        "4,6": 12.90000057220459,
+        "4,3": 21.5,
+        "createdAt": {
+            "$date": {
+                "$numberLong": "1735957983598"
+            }
+        },
+        "updatedAt": {
+            "$date": {
+                "$numberLong": "1735957983598"
+            }
+        },
+        "__v": 0
+    }
+]
