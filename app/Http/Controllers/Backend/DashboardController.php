@@ -79,9 +79,9 @@ class DashboardController extends Controller
             }
         }
 
-        if (empty($events)) {
-            return redirect()->back()->withErrors('No events found.');
-        }
+        // if (empty($events)) {
+        //     return redirect()->back()->withErrors('No events found.');
+        // }
 
         // return $events;
         
