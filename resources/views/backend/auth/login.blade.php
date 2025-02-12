@@ -58,5 +58,5 @@
             </div>
         </div>
     </div>
-    <!-- login area end -->
+    <!--  end -->
 @endsection

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\Login;
 use App\Models\Site;
@@ -78,11 +79,7 @@ class DashboardController extends Controller
                 }
             }
         }
-
-        // if (empty($events)) {
-        //     return redirect()->back()->withErrors('No events found.');
-        // }
-
+        
         // return $events;
         
         return view(
@@ -109,5 +106,37 @@ class DashboardController extends Controller
         });
 
         return $mdFields;
+    }
+
+
+    public function savedashboarddata(Request $request)
+    {
+        $request->validate([
+            'running_hours_admin' => 'nullable|string|max:255',
+            'increase_running_hours' => 'nullable|numeric',
+            'site_id' => 'required|integer',
+        ]);
+    
+        $existingData = DB::table('running_hours')->where('site_id', $request->site_id)->first();
+    
+        $newRunningHours = $request->increase_running_hours;
+        // dd($request->all());
+        if ($existingData) {
+            $newRunningHours += $existingData->increase_running_hours;
+    
+            DB::table('running_hours')->where('site_id', $request->site_id)->update([
+                'increase_running_hours' => $newRunningHours,
+                'updated_at' => now()
+            ]);
+        } else {
+            DB::table('running_hours')->insert([
+                'site_id' => $request->site_id,
+                'increase_running_hours' => $newRunningHours,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+    
+        return response()->json(['success' => true, 'message' => 'Data saved successfully!']);
     }
 }

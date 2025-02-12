@@ -1,12 +1,12 @@
 <?php
 
+
 declare(strict_types=1);
-
 namespace App\Http\Controllers\Backend;
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
+use App\Models\Login;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
@@ -87,10 +87,20 @@ class AdminsController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $this->checkAuthorization(auth()->user(), ['admin.delete']);
-
+    
         $admin = Admin::findOrFail($id);
+        $login = Login::where('user_id', $id)->first();
+    
+        // Delete the login record first, if it exists
+        if ($login) {
+            $login->delete();
+        }
+    
+        // Delete the admin record
         $admin->delete();
-        session()->flash('success', 'Admin has been deleted.');
+    
+        session()->flash('success', 'Admin and associated login record have been deleted.');
         return back();
     }
+    
 }

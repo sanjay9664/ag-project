@@ -246,7 +246,7 @@ input {
                                 </div>
 
                                 <div class="col-md-3">
-                                    <div class="card" style="width: 100%; height: 915px;">
+                                    <div class="card" style="width: 100%; height: 975px;">
                                         <div class="card-header text-center bg-secondary text-white">
                                             ENGINE PARAMETERS
                                         </div>
@@ -391,6 +391,15 @@ input {
                                                     <input type="text" name="running_hours_add" class="form-control"
                                                         value="{{ old('running_hours', $siteData['running_hours']['add'] ?? '') }}"
                                                         style="width: 80px;" placeholder="ADD">
+                                                </div>
+                                                <div class="d-flex">
+                                                    <div class="fw-bold text-secondary text-center">
+                                                        For admin Running status
+                                                        <input type="text" name="admin_run_hours"
+                                                            class="form-control ms-2"
+                                                            value="{{ old('running_hours', $siteData['running_hours']['admin_run_hours'] ?? '') }}"
+                                                            style="width: 90%;margin-bottom:10px;">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

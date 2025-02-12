@@ -67,6 +67,25 @@ input {
             <div class="card">
                 <div class="card-body">
                     <h4 class="header-title">Create New Site</h4>
+                    <!-- <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="createAdminDropdown"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ __('Create New Admin') }}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="createAdminDropdown">
+                            <a class="dropdown-item" href="{{ route('admin.admins.create', ['type' => 'dg']) }}">DG</a>
+                            <a class="dropdown-item"
+                                href="{{ route('admin.admins.create', ['type' => 'energy']) }}">Energy</a>
+                            <a class="dropdown-item"
+                                href="{{ route('admin.admins.create', ['type' => 'meter']) }}">Meter</a>
+                            <a class="dropdown-item"
+                                href="{{ route('admin.admins.create', ['type' => 'tanks']) }}">Tanks</a>
+                            <a class="dropdown-item"
+                                href="{{ route('admin.admins.create', ['type' => 'pump']) }}">Pump</a>
+                            <a class="dropdown-item"
+                                href="{{ route('admin.admins.create', ['type' => 'lighting']) }}">Lighting</a>
+                        </div>
+                    </div> -->
                     @include('backend.layouts.partials.messages')
 
                     <form action="{{ route('admin.sites.store') }}" method="POST">
@@ -212,11 +231,12 @@ input {
                                                 <div class="card-body text-center">
                                                     <div class="text-secondary fw-bold">Total kWh</div>
                                                     <div class="d-flex">
-                                                    <input type="text" name="total_kwh_md" class="form-control ms-2"
-                                                        style="width: 50%;" placeholder="MD">
-                                                    <input type="text" name="total_kwh_add" class="form-control ms-2"
-                                                        style="width: 50%;" placeholder="ADD">
-                                                </div>
+                                                        <input type="text" name="total_kwh_md" class="form-control ms-2"
+                                                            style="width: 50%;" placeholder="MD">
+                                                        <input type="text" name="total_kwh_add"
+                                                            class="form-control ms-2" style="width: 50%;"
+                                                            placeholder="ADD">
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="d-flex">
@@ -230,7 +250,7 @@ input {
                                 </div>
 
                                 <div class="col-md-3">
-                                    <div class="card" style="width: 100%; height: 900px;">
+                                    <div class="card" style="width: 100%; height: 975px;">
                                         <div class="card-header text-center bg-secondary text-white">
                                             ENGINE PARAMETERS
                                         </div>
@@ -346,6 +366,13 @@ input {
                                                         style="width: 80px;" placeholder="MD">
                                                     <input type="text" name="running_hours_add" class="form-control"
                                                         style="width: 80px;" placeholder="ADD">
+                                                </div>
+                                                <div class="d-flex">
+                                                    <div class="fw-bold text-secondary text-center">
+                                                        For admin Running status
+                                                        <input type="text" name="admin_run_hours"
+                                                            class="form-control ms-2" style="width: 90%;">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

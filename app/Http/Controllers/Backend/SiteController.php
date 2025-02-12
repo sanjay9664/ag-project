@@ -15,18 +15,62 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use MongoDB\Client as MongoClient;
 use Illuminate\Support\Str;
+use MongoDB\BSON\UTCDateTime;
+use DateTimeZone;
+use Auth;
 
 class SiteController extends Controller
 {
     public function index(): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['site.view']);
+        
+        $user = Auth::guard('admin')->user();
+        
+        if ($user->hasRole('superadmin')) {
+            return view('backend.pages.sites.index', [
+                'sites' => Site::all(),
+            ]);
+        } else {
+            return view('backend.pages.sites.index', [
+                'sites' => Site::where('email', $user->email)->get(),
+            ]);
+        }
+    }    
 
-        return view('backend.pages.sites.index', [
-            'sites' => Site::all(),
-        ]);
-    }
 
+// ********************************************************
+// public function create(Request $request)
+// {
+//     $type = $request->get('type');
+
+//     switch ($type) {
+//         case 'dg':
+//             // Logic for creating DG admin
+//             break;
+//         case 'energy':
+//             // Logic for creating Energy admin
+//             break;
+//         case 'meter':
+//             // Logic for creating Meter admin
+//             break;
+//         case 'tanks':
+//             // Logic for creating Tanks admin
+//             break;
+//         case 'pump':
+//             // Logic for creating Pump admin
+//             break;
+//         case 'lighting':
+//             // Logic for creating Lighting admin
+//             break;
+//         default:
+//             abort(404, 'Invalid Admin Type');
+//     }
+
+//     return view('backend.admins.create', compact('type'));
+// }
+
+// ********************************************************
     public function create(): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['site.create']);
@@ -121,6 +165,7 @@ class SiteController extends Controller
                 'value' => $request->input('running_hours_value'),
                 'md' => $request->input('running_hours_md'),
                 'add' => $request->input('running_hours_add'),
+                'admin_run_hours' => $request->input('admin_run_hours'),
             ],
             'electric_parameters' => [
                 'voltage_l_l' => [
@@ -329,6 +374,7 @@ class SiteController extends Controller
                 'value' => $request->input('running_hours_value'),
                 'md' => $request->input('running_hours_md'),
                 'add' => $request->input('running_hours_add'),
+                'admin_run_hours' => $request->input('admin_run_hours'),
             ],
             'electric_parameters' => [
                 'voltage_l_l' => [
@@ -462,60 +508,101 @@ class SiteController extends Controller
 
     public function show($slug)
     {
+        // Fetch site data using the provided slug
         $siteData = Site::where('slug', $slug)->first();
         if (!$siteData) {
             return redirect()->back()->withErrors('Site not found or module_id is missing.');
         }
-
+    
+        // Decode the data from JSON to array
         $data = json_decode($siteData->data, true);
         $mdValues = $this->extractMdFields($data);
+    
+        // MongoDB connection setup
         $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
         $client = new MongoClient($mongoUri);
         $database = $client->isa_qa;
         $collection = $database->device_events;
-
+    
+        // Initialize the events array
+        $events = [];
+    
+        // Ensure that mdValues are not empty
         if (!empty($mdValues)) {
+            // Clean up the mdValues array by removing empty values and ensuring integers
             $uniqueMdValues = array_unique((array) $mdValues);
             $uniqueMdValues = array_filter($uniqueMdValues, function ($value) {
                 return !empty($value);
             });
             $uniqueMdValues = array_map('intval', $uniqueMdValues);
             $uniqueMdValues = array_values($uniqueMdValues);
-        
-            if (is_array($uniqueMdValues) && count($uniqueMdValues) > 0) {
-                $events = [];
-                foreach ($uniqueMdValues as $moduleId) {
-                    $event = $collection->findOne(
-                        ['module_id' => $moduleId],
-                        ['sort' => ['createdAt' => -1]]
-                    );
-                    if ($event) {
-                        $events[] = $event;
-                    }
+    
+            // Fetch events for each unique mdValue (module_id)
+            foreach ($uniqueMdValues as $moduleId) {
+                $event = $collection->findOne(
+                    ['module_id' => $moduleId],
+                    ['sort' => ['createdAt' => -1]]
+                );
+                if ($event) {
+                    $events[] = $event;
                 }
-                if (empty($events)) {
-                    return redirect()->back()->withErrors('No data found for the specified module_id values.');
-                }
-            } else {
-                return redirect()->back()->withErrors('Invalid or empty module_id values.');
             }
-        } else {
-            return redirect()->back()->withErrors('No module_id found in the site data.');
         }
-
+    
+        // Check if events are found
+        if (empty($events)) {
+            return redirect()->back()->withErrors('No data found for the specified module_id values.');
+        }
+    
+        // Sort the events array by 'createdAt' in descending order
+        usort($events, function ($a, $b) {
+            $createdAtA = new UTCDateTime($a['created_at_timestamp']);
+            $createdAtB = new UTCDateTime($b['created_at_timestamp']);
+            return $createdAtB <=> $createdAtA; // Sort in descending order
+        });
+        
+        $latestCreatedAt = $events[0]['createdAt'];
+        
+        $latestCreatedAtFormatted = $latestCreatedAt->toDateTime()->setTimezone(new DateTimeZone('Asia/Kolkata'))->format('d-m-Y H:i:s');
+        
+        foreach ($events as &$event) {
+            $event['createdAt'] = $event['createdAt']->toDateTime()->setTimezone(new DateTimeZone('Asia/Kolkata'))->format('d-m-Y H:i:s');
+            
+            $event['latestCreatedAt'] = $latestCreatedAtFormatted;
+        }
+        
+        header('Content-Type: application/json');
+        
         $eventsData = json_encode($events, JSON_PRETTY_PRINT);
-     
+        
         $sitejsonData = json_decode($siteData['data']);
-        // return $events;
-        return view(
-            'backend.pages.sites.site-details',
-            [
-                'siteData' => $siteData,
-                'sitejsonData' => $sitejsonData,
-                'eventData' => $events
-            ]
-        );
+        
+        // return $siteData;
+        $user = Auth::guard('admin')->user();
+       
+        if ($user->hasRole('superadmin')) {
+            return view(
+                'backend.pages.sites.superadmin-site-details',
+                [
+                    'siteData' => $siteData,
+                    'sitejsonData' => $sitejsonData,
+                    'eventData' => $events,
+                    'latestCreatedAt' => $latestCreatedAtFormatted,
+                ]
+            );
+        } else {
+            return view(
+                'backend.pages.sites.site-details',
+                [
+                    'siteData' => $siteData,
+                    'sitejsonData' => $sitejsonData,
+                    'eventData' => $events, 
+                    'latestCreatedAt' => $latestCreatedAtFormatted, 
+                ]
+            );
+        }
     }
+    
 
     public function fetchLatestData($slug)
     {

@@ -35,6 +35,7 @@ Route::get('/home', 'HomeController@index')->name('home');
  */
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/save-dashboard-data', [DashboardController::class, 'savedashboarddata'])->name('savedashboarddata');
     Route::resource('roles', RolesController::class);
     Route::resource('admins', AdminsController::class);
     Route::resource('sites', SiteController::class);
