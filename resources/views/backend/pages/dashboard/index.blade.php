@@ -135,17 +135,6 @@ td {
         font-size: 2rem;
     }
 }
-
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
 </style>
 @endsection
 
@@ -153,27 +142,9 @@ td {
 <!-- page title area start -->
 
 
-<div id="spinner" style="
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-">
-    <div style="
-        width: 50px;
-        height: 50px;
-        border: 5px solid #007bff;
-        border-top: 5px solid transparent;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    "></div>
-</div>
+
+
+
 <div class="page-title-area">
     <div class="row align-items-center">
         <div class="col-sm-6">
@@ -208,12 +179,13 @@ td {
                             <thead class="bg-light text-capitalize">
                                 <tr>
                                     <th width="5%">{{ __('Sl') }}</th>
-                                    <th width="15%">{{ __('User Name') }}</th>
+                                    <th width="15%">Site Name</th>
+                                    <!-- <th width="15%">{{ __('User Name') }}</th> -->
                                     <th width="15%">Fuel Indicator</th>
                                     <th width="15%">DG Running Status</th>
-                                    <th width="15%">Running Hours for admin</th>
+                                    <th width="15%">Actual hours from controller</th>
                                     <th width="15%">Increase Running Hours</th>
-                                    <th width="15%">Site Name</th>
+                                    <th width="15%">Total Running Hours</th>
                                     <th width="10%">{{ __('Login Time') }}</th>
                                     <th width="10%">Login Status</th>
                                     <th width="10%">{{ __('Login as User') }}</th>
@@ -222,8 +194,15 @@ td {
                             <tbody>
                                 @foreach ($logins as $login)
                                 <tr>
+
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $login->name }}</td>
+                                    <td>
+                                        @php
+                                        $site = $sites->firstWhere('email', $login->email);
+                                        @endphp
+                                        {{ $site ? $site->site_name : '_' }}
+                                    </td>
+                                    <!-- <td>{{ $login->name }}</td> -->
                                     <td>
                                         <?php
                                             $addValuerun = 0;
@@ -334,10 +313,11 @@ td {
                                             <input type="hidden" name="site_id" class="site_id"
                                                 value="{{ $present_site->id ?? '' }}">
 
-                                            @php
+                                            <!-- @php
                                             $siteData = $runningHours[$present_site->id ?? ''] ?? null;
-                                            $totalAddrunValue = $addValuerun + ($siteData->increase_running_hours ?? 0);
-                                            @endphp
+                                            $totalAddrunValue = $addValuerun +
+                                            ($siteData->increase_running_hours ?? 0);
+                                            @endphp -->
 
                                             <td>
                                                 <input type="text" class="form-control running_hours_admin"
@@ -345,31 +325,28 @@ td {
                                                     style="outline: none; box-shadow: none;">
                                             </td>
                                             <td>
-                                                <div class="d-flex flex-column gap-2 w-100">
+                                                <div class="d-flex align-items-center gap-2 w-100">
+                                                    <!-- Input Field -->
                                                     <input type="text"
-                                                        class="form-control border-0 bg-transparent px-3 py-2 increase_running_hours increase_running_hours{{ $present_site->id ?? '' }}"
-                                                        name="increase_running_hours"
-                                                        value="{{ $siteData ? $siteData->increase_running_hours : '' }}"
+                                                        class="form-control border-1 px-2 py-1 increase_running_hours"
+                                                        id="increaseRunningHours" name="increase_running_hours"
                                                         data-site-id="{{ $present_site->id ?? '' }}"
-                                                        style="outline: none; box-shadow: none; width: 100%; max-width: 200px;">
+                                                        style="outline: none; box-shadow: none; background: #e9ecef; border-radius: 5px; width: 50px; font-size: 14px; margin:10px">
 
-                                                    <div class="d-flex justify-content-start gap-2">
-                                                        <span class="fw-bold text-primary">Total:</span>
-                                                        <span class="text-dark">{{ $totalAddrunValue }}</span>
-                                                    </div>
+                                                    <!-- Submit Button -->
                                                     <button id="submitButton" style="
-                                                                padding: 4px 10px; 
-                                                                font-size: 14px; 
-                                                                border-radius: 5px; 
-                                                                background-color: #007bff; 
-                                                                color: white; 
-                                                                border: none;
-                                                                cursor: pointer;
-                                                                transition: 0.3s ease-in-out;">
+        padding: 3px 8px; 
+        font-size: 13px; 
+        border-radius: 5px; 
+        background-color: #007bff; 
+        color: white; 
+        border: none;
+        cursor: pointer;
+        transition: 0.3s ease-in-out;">
                                                         Submit
                                                     </button>
-
                                                 </div>
+
 
                                             </td>
 
@@ -383,11 +360,23 @@ td {
                                     </div>
                                     @endif
 
-                                    <td>
+                                    <!-- <td>
                                         @php
                                         $site = $sites->firstWhere('email', $login->email);
                                         @endphp
                                         {{ $site ? $site->site_name : '_' }}
+                                    </td> -->
+                                    <td>
+                                        @php
+                                        $siteData = $runningHours[$present_site->id ?? ''] ?? null;
+                                        $totalAddrunValue = $addValuerun +
+                                        ($siteData->increase_running_hours ?? 0);
+                                        @endphp
+
+                                        <div>
+                                            <!-- <span class="fw-bold text-primary">Total Running Hours:</span> -->
+                                            <span class="text-dark">{{ $totalAddrunValue }}</span>
+                                        </div>
                                     </td>
                                     <td>
                                         {{ \Carbon\Carbon::parse($login->created_at)->timezone('Asia/Kolkata')->format('d M\' Y h:i A') }}
@@ -402,8 +391,8 @@ td {
                                             @csrf
                                             <input type="hidden" name="user_id" value="{{ $login->user_id }}">
                                             <button type="submit" class="btn btn-primary text-white btn-sm px-2 w-100 "
-                                                style="font-size: 8px; padding: 10px 8px;">
-                                                Login as {{ $login->name }}
+                                                style="font-size: 12px; padding: 10px 8px;">
+                                                Login
                                             </button>
                                         </form>
 
@@ -454,7 +443,8 @@ td {
 
 @section('scripts')
 <!-- Start datatable js -->
-<script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+<script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module">
+</script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
 <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
@@ -492,7 +482,7 @@ document.getElementById('downloadReport').addEventListener('click', function() {
 
     // Define options for the PDF export
     const options = {
-        margin: 0.5,
+        margin: 0.1,
         filename: 'login_report.pdf',
         image: {
             type: 'jpeg',
@@ -531,7 +521,8 @@ $(document).ready(function() {
     function sendData(element) {
         let site_id = $(element).data("site-id"); // Get site ID from the input field
         let increase_running_hours = $(element).val(); // Get the entered value
-        increase_running_hours = parseInt(increase_running_hours, 10) || 0; // Convert to integer, default to 0
+        increase_running_hours = parseInt(increase_running_hours, 10) ||
+            0; // Convert to integer, default to 0
 
         // Check if value is greater than 15
         if (increase_running_hours > 15) {
@@ -562,10 +553,7 @@ $(document).ready(function() {
         });
     }
 
-    // Show spinner on page load and hide when loaded
-    $(window).on("load", function() {
-        $("#spinner").fadeOut();
-    });
+
 
     // Trigger AJAX when user changes the input field
     $(document).on("change", ".increase_running_hours", function() {
