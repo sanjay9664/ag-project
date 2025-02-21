@@ -74,9 +74,10 @@ class DashboardController extends Controller
                     } else {
                         return redirect()->back()->withErrors('Invalid or empty module_id values.');
                     }
-                } else {
-                    return redirect()->back()->withErrors('No module_id found in the site data.');
-                }
+                } 
+                // else {
+                //     return redirect()->back()->withErrors('No module_id found in the site data.');
+                // }
             }
         }
         

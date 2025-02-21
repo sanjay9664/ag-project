@@ -548,51 +548,51 @@
 
                         <hr />
                         <?php
-$keya = $sitejsonData->electric_parameters->current->a->add;
-$addValueaa = '_';
+                        $keya = $sitejsonData->electric_parameters->current->a->add;
+                        $addValueaa = '_';
 
-foreach ($eventData as $event) {
-    $eventArraya = $event->getArrayCopy();
-    if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->current->a->md) {
-        if (array_key_exists($keya, $eventArraya)) {
-            $addValueaa = $eventArraya[$keya];
-        }
-        break;
-    }
-}
+                        foreach ($eventData as $event) {
+                            $eventArraya = $event->getArrayCopy();
+                            if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->current->a->md) {
+                                if (array_key_exists($keya, $eventArraya)) {
+                                    $addValueaa = $eventArraya[$keya];
+                                }
+                                break;
+                            }
+                        }
 
-$keyb = $sitejsonData->electric_parameters->current->b->add;
-$addValuebb = '_';
+                        $keyb = $sitejsonData->electric_parameters->current->b->add;
+                        $addValuebb = '_';
 
-foreach ($eventData as $event) {
-    $eventArrayb = $event->getArrayCopy();
-    if ($eventArrayb['module_id'] == $sitejsonData->electric_parameters->current->b->md) {
-        if (array_key_exists($keyb, $eventArrayb)) {
-            $addValuebb = $eventArrayb[$keyb];
-        }
-        break;
-    }
-}
+                        foreach ($eventData as $event) {
+                            $eventArrayb = $event->getArrayCopy();
+                            if ($eventArrayb['module_id'] == $sitejsonData->electric_parameters->current->b->md) {
+                                if (array_key_exists($keyb, $eventArrayb)) {
+                                    $addValuebb = $eventArrayb[$keyb];
+                                }
+                                break;
+                            }
+                        }
 
-$keyc = $sitejsonData->electric_parameters->current->c->add;
-$addValuecc = '_';
+                        $keyc = $sitejsonData->electric_parameters->current->c->add;
+                        $addValuecc = '_';
 
-foreach ($eventData as $event) {
-    $eventArrayc = $event->getArrayCopy();
-    if ($eventArrayc['module_id'] == $sitejsonData->electric_parameters->current->c->md) {
-        if (array_key_exists($keyc, $eventArrayc)) {
-            $addValuecc = $eventArrayc[$keyc];
-        }
-        break;
-    }
-}
+                        foreach ($eventData as $event) {
+                            $eventArrayc = $event->getArrayCopy();
+                            if ($eventArrayc['module_id'] == $sitejsonData->electric_parameters->current->c->md) {
+                                if (array_key_exists($keyc, $eventArrayc)) {
+                                    $addValuecc = $eventArrayc[$keyc];
+                                }
+                                break;
+                            }
+                        }
 
-// Ensure values are numeric before formatting
-$formattedValueaa = is_numeric($addValueaa) ? number_format((float) $addValueaa, 2) : '_';
-$formattedValuebb = is_numeric($addValuebb) ? number_format((float) $addValuebb, 2) : '_';
-$formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc, 2) : '_';
+                        // Ensure values are numeric before formatting
+                        $formattedValueaa = is_numeric($addValueaa) ? number_format((float) $addValueaa, 2) : '_';
+                        $formattedValuebb = is_numeric($addValuebb) ? number_format((float) $addValuebb, 2) : '_';
+                        $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc, 2) : '_';
 
-?>
+                        ?>
 
                         <!-- Current -->
                         <div class="row mb-3">
@@ -1896,58 +1896,60 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
 
                                                 <hr />
                                                 <?php
-                                                    $keya = $sitejsonData->electric_parameters->current->a->add;
-                                                    $addValueaa = '_';
+                        $keya = $sitejsonData->electric_parameters->current->a->add;
+                        $addValueaa = '_';
 
-                                                    foreach ($eventData as $event) {
-                                                        $eventArraya = $event->getArrayCopy();
-                                                        if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->current->a->md) {
-                                                            if (array_key_exists($keya, $eventArraya)) {
-                                                                $addValueaa = $eventArraya[$keya];
-                                                            }
-                                                            break;
-                                                        }
-                                                    }
+                        foreach ($eventData as $event) {
+                            $eventArraya = $event->getArrayCopy();
+                            if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->current->a->md) {
+                                if (array_key_exists($keya, $eventArraya)) {
+                                    $addValueaa = $eventArraya[$keya];
+                                }
+                                break;
+                            }
+                        }
 
-                                                    $keyb = $sitejsonData->electric_parameters->current->b->add;
-                                                    $addValuebb = '_';
+                        $keyb = $sitejsonData->electric_parameters->current->b->add;
+                        $addValuebb = '_';
 
-                                                    foreach ($eventData as $event) {
-                                                        $eventArrayb = $event->getArrayCopy();
-                                                        if ($eventArrayb['module_id'] == $sitejsonData->electric_parameters->current->b->md) {
-                                                            if (array_key_exists($keyb, $eventArrayb)) {
-                                                                $addValuebb = $eventArrayb[$keyb];
-                                                            }
-                                                            break;
-                                                        }
-                                                    }
+                        foreach ($eventData as $event) {
+                            $eventArrayb = $event->getArrayCopy();
+                            if ($eventArrayb['module_id'] == $sitejsonData->electric_parameters->current->b->md) {
+                                if (array_key_exists($keyb, $eventArrayb)) {
+                                    $addValuebb = $eventArrayb[$keyb];
+                                }
+                                break;
+                            }
+                        }
 
-                                                    $keyc = $sitejsonData->electric_parameters->current->c->add;
-                                                    $addValuecc = '_';
+                        $keyc = $sitejsonData->electric_parameters->current->c->add;
+                        $addValuecc = '_';
 
-                                                    foreach ($eventData as $event) {
-                                                        $eventArrayc = $event->getArrayCopy();
-                                                        if ($eventArrayc['module_id'] == $sitejsonData->electric_parameters->current->c->md) {
-                                                            if (array_key_exists($keyc, $eventArrayc)) {
-                                                                $addValuecc = $eventArrayc[$keyc];
-                                                            }
-                                                            break;
-                                                        }
-                                                    }
+                        foreach ($eventData as $event) {
+                            $eventArrayc = $event->getArrayCopy();
+                            if ($eventArrayc['module_id'] == $sitejsonData->electric_parameters->current->c->md) {
+                                if (array_key_exists($keyc, $eventArrayc)) {
+                                    $addValuecc = $eventArrayc[$keyc];
+                                }
+                                break;
+                            }
+                        }
 
-                                                    // Format the values to 2 decimal places
-                                                    $formattedValueaa = number_format($addValueaa, 2);
-                                                    $formattedValuebb = number_format($addValuebb, 2);
-                                                    $formattedValuecc = number_format($addValuecc, 2);
-                                                ?>
+                        // Ensure values are numeric before formatting
+                        $formattedValueaa = is_numeric($addValueaa) ? number_format((float) $addValueaa, 2) : '_';
+                        $formattedValuebb = is_numeric($addValuebb) ? number_format((float) $addValuebb, 2) : '_';
+                        $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc, 2) : '_';
 
-                                                <!-- Current -->
-                                                <div class="row mb-3">
-                                                    <div class="col-3 text-start " style="font-size:12px;">Current, A</div>
-                                                    <div class="col text-center">{{$formattedValueaa}}</div>
-                                                    <div class="col text-center">{{$formattedValuebb}}</div>
-                                                    <div class="col text-center">{{$formattedValuecc}}</div>
-                                                </div>
+                        ?>
+
+                        <!-- Current -->
+                        <div class="row mb-3">
+                            <div class="col-3 text-start " style="font-size:12px;">Current, A</div>
+                            <div class="col text-center"><?= $formattedValueaa ?></div>
+                            <div class="col text-center"><?= $formattedValuebb ?></div>
+                            <div class="col text-center"><?= $formattedValuecc ?></div>
+                        </div>
+
                                                 <hr />
                                                 <?php
                                                     $key = $sitejsonData->electric_parameters->pf_data->add;
