@@ -17,10 +17,17 @@ class AdminsController extends Controller
     public function index(): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['admin.view']);
-
-        return view('backend.pages.admins.index', [
-            'admins' => Admin::all(),
-        ]);
+        $user = Auth::guard('admin')->user();
+        
+        if ($user->hasRole('superadmin')) {
+            return view('backend.pages.admins.index', [
+                'admins' => Admin::all(),
+            ]);
+        } else {
+            return view('backend.pages.admins.index', [
+                'admins' => Admin::where('id', Auth::id())->get(),
+            ]);
+        }
     }
 
     public function create(): Renderable
