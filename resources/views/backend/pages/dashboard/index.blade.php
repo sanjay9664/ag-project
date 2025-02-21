@@ -143,11 +143,7 @@ td {
 
 
 
-<<<<<<< HEAD
 
-
-=======
->>>>>>> fa28de8 (fourth)
 <div class="page-title-area">
     <div class="row align-items-center">
         <div class="col-sm-6">

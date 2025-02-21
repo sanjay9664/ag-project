@@ -71,14 +71,32 @@
                         <div class="card-header text-center fw-bold  text-white fs-6 " style="background:#002E6E;">
                             ASSET NAME: {{ $sitejsonData->asset_name }}
                         </div>
-                        <div>
-                            Group: {{ $sitejsonData->group }} <br />
-                            Generator: {{ $sitejsonData->generator }} <br />
-                            S/N: {{ $sitejsonData->serial_number }} <br />
-                            Model: {{ $sitejsonData->model }} <br />
-                            Brand: {{ $sitejsonData->brand }} <br />
-                            Capacity: {{ $sitejsonData->capacity }}
+                        <div
+                            style="text-align: left; font-size: 16px; color: #333; font-weight: bold; line-height: 1.5; padding: 10px; width: 100%; max-width: 400px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Group</span> <span style="font-weight: normal;"> {{ $sitejsonData->group }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Generator</span> <span
+                                    style="font-weight: normal;">{{ $sitejsonData->generator }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>S/N</span> <span
+                                    style="font-weight: normal;">{{ $sitejsonData->serial_number }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Model</span> <span style="font-weight: normal;">{{ $sitejsonData->model }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Brand</span> <span style="font-weight: normal;">{{ $sitejsonData->brand }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Capacity</span> <span
+                                    style="font-weight: normal;">{{ $sitejsonData->capacity }}</span>
+                            </div>
                         </div>
+
+
                     </div>
                     <?php
                         $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
@@ -109,7 +127,7 @@
                         @else
                         <div class="card mb-1 shadow-sm border-0">
                             <div class="card-body text-center">
-                                <div class=" ">Run status</div>
+                                <div class="fw-bold">Run status</div>
                                 <div class="text-info fs-6">
                                     <i class="fas fa-cogs" style="color: teal; font-size: 20px; margin-right: 8px;"></i>
                                     <div style="color:red;">Stop</div>
@@ -144,11 +162,11 @@
                                     <!-- Running Hours Label and Value -->
                                     <div>
                                         <div style="font-weight: bold; font-size: 16px; color: #333;">
-                                            Running Hours
+                                            Running Hours: <span
+                                                style="font-weight: normal; font-size: 14px; font-weight: bold;">{{ $addValue }}
+                                                Hrs</span>
                                         </div>
-                                        <div style="font-size: 14px; color: #333;">
-                                            {{ $addValue }} Hrs
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -189,10 +207,9 @@
                                     <!-- Total kWh Label and Value on the right -->
                                     <div>
                                         <div style="font-weight: bold; font-size: 16px; color: #333;">
-                                            Total kWh
-                                        </div>
-                                        <div style="font-size: 14px; color: #333; ">
-                                            {{$formattedKwhValue}}
+                                            Total kWh: <span
+                                                style="font-weight: normal; font-size: 14px; font-weight: bold;">{{$formattedKwhValue}}
+                                                Hrs</span>
                                         </div>
                                     </div>
                                 </div>
@@ -233,13 +250,13 @@
                                 </dotlottie-player>
 
                                 <!-- Text on the right -->
-                                <div>
-                                    <div class="fs-6">Fuel - <span id="fuelValue"
-                                            class="fw-bold"><?php echo htmlspecialchars($percentage); ?>%</span></div>
-                                    <div class="">Total Fuel Liter - <span id="fuelValue"
-                                            class="fw-bold"><?php echo htmlspecialchars($totalFuelLiters); ?>L</span>
-                                    </div>
+                                <div style="display: flex; gap: 15px; font-size: 16px;">
+                                    <span>Fuel: <strong><?php echo htmlspecialchars($percentage); ?>%</strong></span>
+                                    <span>Total Fuel Liter:
+                                        <strong><?php echo htmlspecialchars($totalFuelLiters); ?>L</strong></span>
                                 </div>
+
+
                             </div>
                         </div>
 
@@ -402,12 +419,14 @@
 
                             <div class="col-12 d-flex justify-content-start align-items-center py-2">
                                 <ul class="list-unstyled d-flex align-items-center justify-content-start w-100">
-
-                                    <li class="text-start flex-grow-1  fw-bold">UpdatedAt: {{$latestCreatedAt}}</li>
-
-
+                                    <li class="text-start flex-grow-1 fw-bold d-flex">
+                                        <span class="me-4">UpdatedAt</span>
+                                        <span class="mx-4">:</span>
+                                        <span class="fw-normal">{{ $latestCreatedAt }}</span>
+                                    </li>
                                 </ul>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -471,7 +490,7 @@
                         ?>
                         <!-- Voltage L-L -->
                         <div class="row mb-3 ">
-                            <div class="col-4 text-start  ">Volt L-L</div>
+                            <div class="col-3 text-start">Volt L-L</div>
                             <div class="col text-center text-warning">{{$addValuea}}</div>
                             <div class="col text-center text-danger">{{$addValueb}}</div>
                             <div class="col text-center">{{$addValuec}}</div>
@@ -520,8 +539,8 @@
                         ?>
 
                         <!-- Voltage L-N -->
-                        <div class="row mb-2">
-                            <div class="col-5 text-start">Volts L-N</div>
+                        <div class="row mb-3">
+                            <div class="col-3 text-start" style="font-size:14px;">Volts L-N</div>
                             <div class="col text-center">{{ $formattedValueaaa }}</div>
                             <div class="col text-center">{{ $formattedValuebbb }}</div>
                             <div class="col text-center">{{ $formattedValueccc }}</div>
@@ -576,8 +595,8 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
 ?>
 
                         <!-- Current -->
-                        <div class="row mb-2">
-                            <div class="col-4 text-start ">Current, A</div>
+                        <div class="row mb-3">
+                            <div class="col-3 text-start " style="font-size:12px;">Current, A</div>
                             <div class="col text-center"><?= $formattedValueaa ?></div>
                             <div class="col text-center"><?= $formattedValuebb ?></div>
                             <div class="col text-center"><?= $formattedValuecc ?></div>
@@ -1410,14 +1429,27 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
                         <div class="card-header text-center  fw-bold  text-white fs-6 " style="background:#002E6E;">
                              ASSET NAME: {{ $sitejsonData->asset_name }}
                         </div>
-                        <div >
-                            Group: {{ $sitejsonData->group }} <br />
-                            Generator: {{ $sitejsonData->generator }} <br />
-                            S/N: {{ $sitejsonData->serial_number }} <br />
-                            Model: {{ $sitejsonData->model }} <br />
-                            Brand: {{ $sitejsonData->brand }} <br />
-                            Capacity: {{ $sitejsonData->capacity }}
-                        </div>
+  <div style="text-align: left; font-size: 16px; color: #333; font-weight: bold; line-height: 1.5; padding: 10px; width: 100%; max-width: 400px;">
+    <div style="display: flex; justify-content: space-between;">
+        <span>Group</span> <span style="font-weight: normal;"> {{ $sitejsonData->group }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between;">
+        <span>Generator</span> <span style="font-weight: normal;">{{ $sitejsonData->generator }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between;">
+        <span>S/N</span> <span style="font-weight: normal;">{{ $sitejsonData->serial_number }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between;">
+        <span>Model</span> <span style="font-weight: normal;">{{ $sitejsonData->model }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between;">
+        <span>Brand</span> <span style="font-weight: normal;">{{ $sitejsonData->brand }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between;">
+        <span>Capacity</span> <span style="font-weight: normal;">{{ $sitejsonData->capacity }}</span>
+    </div>
+</div>
+
                     </div>
                     <?php
                         $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
@@ -1438,7 +1470,7 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
                         @if($addValuerun > 0)
                         <div class="card mb-1 shadow-sm border-0">
                             <div class="card-body text-center">
-                                <div class=" ">Run status</div>
+                                 <div class="fw-bold">Run status</div>
                                 <div class="text-info fs-6">
                                     <i class="fas fa-cogs" style="color: teal; font-size: 20px; margin-right: 8px;"></i>
                                     Running
@@ -1448,7 +1480,7 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
                         @else
                         <div class="card mb-1 shadow-sm border-0">
                             <div class="card-body text-center">
-                                <div class=" ">Run status</div>
+                                 <div class="fw-bold">Run status</div>
                                 <div class="text-info fs-6">
                                     <i class="fas fa-cogs" style="color: teal; font-size: 20px; margin-right: 8px;"></i>
                                     <div style="color:red;">Stop</div>
@@ -1477,12 +1509,11 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
             
             <!-- Running Hours Label and Value -->
             <div>
-                <div style="font-weight: bold; font-size: 16px; color: #333;">
-                    Running Hours
-                </div>
-                <div style="font-size: 14px; color: #333;">
-                    {{ $addValue }} Hrs
-                </div>
+               <div style="font-weight: bold; font-size: 16px; color: #333;">
+                                            Running Hours: <span
+                                                style="font-weight: normal; font-size: 14px; font-weight: bold;">{{ $addValue }}
+                                                Hrs</span>
+                                        </div>
             </div>
         </div>
     </div>
@@ -1520,12 +1551,12 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
             
             <!-- Total kWh Label and Value on the right -->
             <div>
+                
                 <div style="font-weight: bold; font-size: 16px; color: #333;">
-                    Total kWh
-                </div>
-                <div style="font-size: 14px; color: #333;">
-                    {{$formattedKwhValue}}
-                </div>
+                                            Total kWh: <span
+                                                style="font-weight: normal; font-size: 14px; font-weight: bold;">{{$formattedKwhValue}}
+                                                Hrs</span>
+                                        </div>
             </div>
         </div>
     </div>
@@ -1561,10 +1592,11 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
         </dotlottie-player>
 
         <!-- Text on the right -->
-        <div>
-            <div class="fs-6">Fuel - <span id="fuelValue" class="fw-bold"><?php echo htmlspecialchars($percentage); ?>%</span></div>
-            <div class="">Total Fuel Liter - <span id="fuelValue" class="fw-bold"><?php echo htmlspecialchars($totalFuelLiters); ?>L</span></div>
-        </div>
+      <div style="display: flex; gap: 15px; font-size: 16px;">
+    <span>Fuel: <strong><?php echo htmlspecialchars($percentage); ?>%</strong></span>
+    <span>Total Fuel Liter: <strong><?php echo htmlspecialchars($totalFuelLiters); ?>L</strong></span>
+</div>
+
     </div>
     
                         
@@ -1736,13 +1768,14 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
                 //     }
                 // ?>
                 <div class="col-12 d-flex justify-content-start align-items-center py-2">
-                    <ul class="list-unstyled d-flex align-items-center justify-content-start w-100">
-                       
-                    <li class="text-start flex-grow-1  fw-bold" >UpdatedAt:    {{$latestCreatedAt}}</li>
-                        
-                        
-                    </ul>
-                </div>
+                                <ul class="list-unstyled d-flex align-items-center justify-content-start w-100">
+                                    <li class="text-start flex-grow-1 fw-bold d-flex">
+                                        <span class="me-4">UpdatedAt</span>
+                                        <span class="mx-4">:</span>
+                                        <span class="fw-normal">{{ $latestCreatedAt }}</span>
+                                    </li>
+                                </ul>
+                            </div>
             </div>
         </div>
                                         </div>
@@ -1805,7 +1838,7 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
                                                 ?>
                                                 <!-- Volts L-L -->
                                                 <div class="row mb-3 ">
-                                                    <div class="col-4 text-start  ">Volt L-L</div>
+                                                    <div class="col-3 text-start  ">Volt L-L</div>
                                                     <div class="col text-center text-warning">{{$addValuea}}</div>
                                                     <div class="col text-center text-danger">{{$addValueb}}</div>
                                                     <div class="col text-center">{{$addValuec}}</div>
@@ -1854,8 +1887,8 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
                                                 ?>
 
                                                 <!-- Volts L-N -->
-                                                <div class="row mb-2">
-                                                    <div class="col-5 text-start">Volts L-N</div>
+                                                <div class="row mb-3">
+                                                    <div class="col-3 text-start" style="font-size:14px;">Volts L-N</div>
                                                     <div class="col text-center">{{ $formattedValueaaa }}</div>
                                                     <div class="col text-center">{{ $formattedValuebbb }}</div>
                                                     <div class="col text-center">{{ $formattedValueccc }}</div>
@@ -1863,60 +1896,58 @@ $formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc,
 
                                                 <hr />
                                                 <?php
-$keya = $sitejsonData->electric_parameters->current->a->add;
-$addValueaa = '_';
+                                                    $keya = $sitejsonData->electric_parameters->current->a->add;
+                                                    $addValueaa = '_';
 
-foreach ($eventData as $event) {
-    $eventArraya = $event->getArrayCopy();
-    if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->current->a->md) {
-        if (array_key_exists($keya, $eventArraya)) {
-            $addValueaa = $eventArraya[$keya];
-        }
-        break;
-    }
-}
+                                                    foreach ($eventData as $event) {
+                                                        $eventArraya = $event->getArrayCopy();
+                                                        if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->current->a->md) {
+                                                            if (array_key_exists($keya, $eventArraya)) {
+                                                                $addValueaa = $eventArraya[$keya];
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
 
-$keyb = $sitejsonData->electric_parameters->current->b->add;
-$addValuebb = '_';
+                                                    $keyb = $sitejsonData->electric_parameters->current->b->add;
+                                                    $addValuebb = '_';
 
-foreach ($eventData as $event) {
-    $eventArrayb = $event->getArrayCopy();
-    if ($eventArrayb['module_id'] == $sitejsonData->electric_parameters->current->b->md) {
-        if (array_key_exists($keyb, $eventArrayb)) {
-            $addValuebb = $eventArrayb[$keyb];
-        }
-        break;
-    }
-}
+                                                    foreach ($eventData as $event) {
+                                                        $eventArrayb = $event->getArrayCopy();
+                                                        if ($eventArrayb['module_id'] == $sitejsonData->electric_parameters->current->b->md) {
+                                                            if (array_key_exists($keyb, $eventArrayb)) {
+                                                                $addValuebb = $eventArrayb[$keyb];
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
 
-$keyc = $sitejsonData->electric_parameters->current->c->add;
-$addValuecc = '_';
+                                                    $keyc = $sitejsonData->electric_parameters->current->c->add;
+                                                    $addValuecc = '_';
 
-foreach ($eventData as $event) {
-    $eventArrayc = $event->getArrayCopy();
-    if ($eventArrayc['module_id'] == $sitejsonData->electric_parameters->current->c->md) {
-        if (array_key_exists($keyc, $eventArrayc)) {
-            $addValuecc = $eventArrayc[$keyc];
-        }
-        break;
-    }
-}
+                                                    foreach ($eventData as $event) {
+                                                        $eventArrayc = $event->getArrayCopy();
+                                                        if ($eventArrayc['module_id'] == $sitejsonData->electric_parameters->current->c->md) {
+                                                            if (array_key_exists($keyc, $eventArrayc)) {
+                                                                $addValuecc = $eventArrayc[$keyc];
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
 
-// Ensure values are numeric before formatting
-$formattedValueaa = is_numeric($addValueaa) ? number_format((float) $addValueaa, 2) : '_';
-$formattedValuebb = is_numeric($addValuebb) ? number_format((float) $addValuebb, 2) : '_';
-$formattedValuecc = is_numeric($addValuecc) ? number_format((float) $addValuecc, 2) : '_';
+                                                    // Format the values to 2 decimal places
+                                                    $formattedValueaa = number_format($addValueaa, 2);
+                                                    $formattedValuebb = number_format($addValuebb, 2);
+                                                    $formattedValuecc = number_format($addValuecc, 2);
+                                                ?>
 
-?>
-
-<!-- Current -->
-<div class="row mb-2">
-    <div class="col-4 text-start ">Current, A</div>
-    <div class="col text-center"><?= $formattedValueaa ?></div>
-    <div class="col text-center"><?= $formattedValuebb ?></div>
-    <div class="col text-center"><?= $formattedValuecc ?></div>
-</div>
-
+                                                <!-- Current -->
+                                                <div class="row mb-3">
+                                                    <div class="col-3 text-start " style="font-size:12px;">Current, A</div>
+                                                    <div class="col text-center">{{$formattedValueaa}}</div>
+                                                    <div class="col text-center">{{$formattedValuebb}}</div>
+                                                    <div class="col text-center">{{$formattedValuecc}}</div>
+                                                </div>
                                                 <hr />
                                                 <?php
                                                     $key = $sitejsonData->electric_parameters->pf_data->add;
