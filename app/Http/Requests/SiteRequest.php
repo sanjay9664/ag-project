@@ -27,7 +27,7 @@ class SiteRequest extends FormRequest
 
         return [
             'site_name' => 'required|max:100',
-            'email' => 'required|max:100' . $siteId,
+            // 'email' => 'required|max:100' . $siteId,
         ];
     }
 }

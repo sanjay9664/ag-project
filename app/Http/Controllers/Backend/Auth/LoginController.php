@@ -57,10 +57,14 @@ class LoginController extends Controller
         if ($request->has('user_id') && session('original_superadmin_id')) {
             $superadminId = session('original_superadmin_id');
             $superadmin = Admin::find($superadminId);
-
+            
+            $user = Admin::find($request->user_id);
             if ($superadmin && $superadmin->hasRole('superadmin')) {
+                // dd($user);
                 Auth::guard('admin')->logout();
                 Auth::guard('admin')->login($superadmin);
+                Login::where('user_id', $user->id)->update(['status' => 'inactive']);
+                // dd("Superadmin login");
                 session()->forget('original_superadmin_id');
                 return redirect()->route('admin.dashboard')->with('success', 'Returned to Superadmin account.');
             }
@@ -70,11 +74,14 @@ class LoginController extends Controller
 
         if ($request->has('user_id')) {
             $superadmin = Auth::guard('admin')->user();
+        
             if ($superadmin && $superadmin->hasRole('superadmin')) {
                 session(['original_superadmin_id' => $superadmin->id]);
                 $user = Admin::find($request->user_id);
+        
                 if ($user) {
                     Auth::guard('admin')->login($user);
+                    Login::where('user_id', $user->id)->update(['status' => 'active']);
                     return redirect()->route('admin.dashboard');
                 }
                 session()->flash('error', 'User not found.');
@@ -83,7 +90,7 @@ class LoginController extends Controller
             session()->flash('error', 'Unauthorized access.');
             return back();
         }
-
+             
         // Regular login process
         $request->validate([
             'email' => 'required|max:50',
@@ -94,6 +101,7 @@ class LoginController extends Controller
             $user = Auth::guard('admin')->user();
             Login::where('user_id', $user->id)->delete();
             if (!$user->hasRole('superadmin')) {
+                
                 Login::create([
                     'user_id' => $user->id,
                     'role' => $user->hasRole('superadmin') ? 'superadmin' : 'admin',

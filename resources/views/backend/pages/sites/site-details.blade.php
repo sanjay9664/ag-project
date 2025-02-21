@@ -152,14 +152,7 @@
   border-radius: 50px ;  margin-left:40px; " />
         </a>
         <h5 class="my-3" style="padding-right: 117px;">DG SET MONITORING SYSTEM</h5>
-
     </div>
-
-
-
-
-
-
 
     <div class="row mt-3" id="event-data">
         <!-- First Table for Asset Information -->
@@ -400,7 +393,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
     function fetchSiteData() {
-        const slug = "{{ $siteData->slug }}";
+
+
+        const slug = @json($siteData - > slug);
         const url = `/admin/site-data/${slug}`;
 
         $.ajax({
@@ -640,7 +635,7 @@
                                         </div>   
                                                     
 
-                                        </div>`;
+                        </div>`;
                     }
 
                     // Insert the populated event card into the eventlist container
@@ -655,7 +650,7 @@
 
     // Fetch data immediately when the page loads
     fetchSiteData();
-    setInterval(fetchSiteData, 60000);
+    setInterval(fetchSiteData, 10000);
     </script>
 
 
