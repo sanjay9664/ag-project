@@ -11,6 +11,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Auth;
 
 class AdminsController extends Controller
 {
@@ -25,7 +26,7 @@ class AdminsController extends Controller
             ]);
         } else {
             return view('backend.pages.admins.index', [
-                'admins' => Admin::where('id', Auth::id())->get(),
+                'admins' => Admin::where('admin_id', Auth::id())->get(),
             ]);
         }
     }
@@ -43,12 +44,17 @@ class AdminsController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['admin.create']);
 
-        $admin = new Admin();
-        $admin->name = $request->name;
-        $admin->username = $request->username;
-        $admin->email = $request->email;
-        $admin->password = Hash::make($request->password);
-        $admin->save();
+        $user = Auth::guard('admin')->user();
+        
+        if (!$user->hasRole('superadmin')) {
+            $admin = new Admin();
+            $admin->admin_id = Auth::id();
+            $admin->name = $request->name;
+            $admin->username = $request->username;
+            $admin->email = $request->email;
+            $admin->password = Hash::make($request->password);
+            $admin->save();
+        }
 
         if ($request->roles) {
             $admin->assignRole($request->roles);
@@ -98,12 +104,10 @@ class AdminsController extends Controller
         $admin = Admin::findOrFail($id);
         $login = Login::where('user_id', $id)->first();
     
-        // Delete the login record first, if it exists
         if ($login) {
             $login->delete();
         }
     
-        // Delete the admin record
         $admin->delete();
     
         session()->flash('success', 'Admin and associated login record have been deleted.');

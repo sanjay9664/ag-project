@@ -116,25 +116,40 @@
                         <!-- Run Status -->
                         @if($addValuerun > 0)
                         <div class="card mb-1 shadow-sm border-0">
-                            <div class="card-body text-center">
-                                <div class=" ">Run status</div>
-                                <div class="text-info fs-6">
-                                    <i class="fas fa-cogs" style="color: teal; font-size: 20px; margin-right: 8px;"></i>
+                            <div class="card-body d-flex align-items-center justify-content-between">
+                                <!-- Left: Running Icon -->
+                                <i class="fas fa-cogs" style="color: teal; font-size: 24px;"></i>
+
+                                <!-- Center: Run Status -->
+                                <div class="fw-bold text-center flex-grow-1">
+                                    Run Status
+                                </div>
+
+                                <!-- Right: Running Status -->
+                                <div style="color: teal; font-weight: bold;">
                                     Running
                                 </div>
                             </div>
                         </div>
                         @else
                         <div class="card mb-1 shadow-sm border-0">
-                            <div class="card-body text-center">
-                                <div class="fw-bold">Run status</div>
-                                <div class="text-info fs-6">
-                                    <i class="fas fa-cogs" style="color: teal; font-size: 20px; margin-right: 8px;"></i>
-                                    <div style="color:red;">Stop</div>
+                            <div class="card-body d-flex align-items-center justify-content-between">
+                                <!-- Left: Stopped Icon -->
+                                <i class="fas fa-cogs" style="color: red; font-size: 24px;"></i>
+
+                                <!-- Center: Run Status -->
+                                <div class="fw-bold text-center flex-grow-1">
+                                    Run Status
+                                </div>
+
+                                <!-- Right: Stop Status -->
+                                <div style="color: red; font-weight: bold;">
+                                    Stop
                                 </div>
                             </div>
                         </div>
                         @endif
+
 
 
                         <!-- **************************************************************** -->
@@ -683,11 +698,11 @@
                                 <div class="d-flex align-items-center  gap-4 mb-1">
                                     <!-- Icon (Bolt) on the left -->
                                     <i class="fas fa-bolt"
-                                        style="color: goldenrod; font-size: 40px; margin-right: 20px;"></i>
+                                        style="color: goldenrod; font-size: 40px; margin-right: 60px;"></i>
 
                                     <!-- Active Power, kW Label and Value on the right -->
                                     <div>
-                                        <div style="font-weight: bold; font-size: 16px; color: #333;">
+                                        <div style="font-weight: bold;  font-size: 16px; color: #333; ">
                                             Active power, kW
                                         </div>
                                         <div style="width: 40px; height: 40px; margin: auto;">
@@ -724,7 +739,7 @@
                                 <div class="d-flex align-items-center gap-4 mb-1">
                                     <!-- Icon (Bolt) on the left -->
                                     <i class="fas fa-bolt"
-                                        style="color: goldenrod; font-size: 40px; margin-right: 20px;"></i>
+                                        style="color: goldenrod; font-size: 40px; margin-right: 60px;"></i>
 
                                     <!-- Active power, kVA Label and Value on the right -->
                                     <div>
@@ -1468,26 +1483,41 @@
                     <div class="card-body p-2">
                         <!-- Run Status -->
                         @if($addValuerun > 0)
-                        <div class="card mb-1 shadow-sm border-0">
-                            <div class="card-body text-center">
-                                 <div class="fw-bold">Run status</div>
-                                <div class="text-info fs-6">
-                                    <i class="fas fa-cogs" style="color: teal; font-size: 20px; margin-right: 8px;"></i>
-                                    Running
-                                </div>
-                            </div>
-                        </div>
-                        @else
-                        <div class="card mb-1 shadow-sm border-0">
-                            <div class="card-body text-center">
-                                 <div class="fw-bold">Run status</div>
-                                <div class="text-info fs-6">
-                                    <i class="fas fa-cogs" style="color: teal; font-size: 20px; margin-right: 8px;"></i>
-                                    <div style="color:red;">Stop</div>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
+<div class="card mb-1 shadow-sm border-0">
+    <div class="card-body d-flex align-items-center justify-content-between">
+        <!-- Left: Running Icon -->
+        <i class="fas fa-cogs" style="color: teal; font-size: 24px;"></i>
+
+        <!-- Center: Run Status -->
+        <div class="fw-bold text-center flex-grow-1">
+            Run Status
+        </div>
+
+        <!-- Right: Running Status -->
+        <div style="color: teal; font-weight: bold;">
+            Running
+        </div>
+    </div>
+</div>
+@else
+<div class="card mb-1 shadow-sm border-0">
+    <div class="card-body d-flex align-items-center justify-content-between">
+        <!-- Left: Stopped Icon -->
+        <i class="fas fa-cogs" style="color: red; font-size: 24px;"></i>
+
+        <!-- Center: Run Status -->
+        <div class="fw-bold text-center flex-grow-1">
+            Run Status
+        </div>
+
+        <!-- Right: Stop Status -->
+        <div style="color: red; font-weight: bold;">
+            Stop
+        </div>
+    </div>
+</div>
+@endif
+
                           <?php
                     $key = $sitejsonData->running_hours->add;
                     $addValue = '_';
@@ -2030,7 +2060,7 @@
     <div class="card-body text-center">
         <div class="d-flex align-items-center gap-4 mb-1">
             <!-- Icon (Bolt) on the left -->
-            <i class="fas fa-bolt" style="color: goldenrod; font-size: 40px; margin-right: 20px;"></i>
+            <i class="fas fa-bolt" style="color: goldenrod; font-size: 40px; margin-right: 60px;"></i>
             
             <!-- Active Power, kW Label and Value on the right -->
             <div>
@@ -2069,7 +2099,7 @@
     <div class="card-body text-center">
         <div class="d-flex align-items-center gap-4 mb-1">
             <!-- Icon (Bolt) on the left -->
-            <i class="fas fa-bolt" style="color: goldenrod; font-size: 40px; margin-right: 20px;"></i>
+            <i class="fas fa-bolt" style="color: goldenrod; font-size: 40px; margin-right: 60px;"></i>
             
             <!-- Active power, kVA Label and Value on the right -->
             <div>

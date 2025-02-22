@@ -230,13 +230,27 @@
                                 $inc_addValueFormatted = number_format($inc_addValue, 2);
                             ?>
 
+                            <?php
+                                $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
+                                $addValuerunstatus = '_';
+
+                                foreach ($eventData as $event) {
+                                    $eventArraya = $event->getArrayCopy();
+                                    if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->voltage_l_l->a->md) {
+                                        if (array_key_exists($keya, $eventArraya)) {
+                                            $addValuerunstatus = $eventArraya[$keya];
+                                        }
+                                        break;
+                                    }
+                                }
+                            ?>
                             <td colspan="3">
-                                <div class="d-flex justify-content-around align-items-center text-white">
+                                <div class="d-flex justify-content-around align-items-center text-black">
                                     <div class="text-center" style="vertical-align: middle;">
                                         <i class="fas fa-cogs"
                                             style="color: teal; font-size: 24px; margin-bottom: 8px;"></i>
                                         <p class="fw-bold">Run Status</p>
-                                        @if($inc_addValueFormatted > 0)
+                                        @if($addValuerunstatus > 0)
                                         <span class="badge bg-success px-2 py-1">Running</span>
                                         @else
                                         <span class="badge bg-danger px-2 py-1">Stop</span>
@@ -393,9 +407,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
     function fetchSiteData() {
-
-
-        const slug = @json($siteData - > slug);
+        const slug = "{{ $siteData->slug }}";
         const url = `/admin/site-data/${slug}`;
 
         $.ajax({
@@ -453,51 +465,66 @@
                                                             </tr>
                                                             <tr>
                                                                 <?php
-                                                                    $increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
+                                $increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
 
-                                                                    $increaseRunningHours = 0;
-                                                                    $siteId = $sitejsonData->id ?? null;
+                                $increaseRunningHours = 0;
+                                $siteId = $sitejsonData->id ?? null;
 
-                                                                    if ($siteId && $increased_running_hours) { // Ensure the record exists
-                                                                        foreach ((array) $increased_running_hours as $runningHour) {
-                                                                            if ($runningHour->site_id == $siteId) {
-                                                                                $increaseRunningHours = (float) $runningHour->increase_running_hours; // Convert to float
-                                                                                break;
-                                                                            }
-                                                                        }
-                                                                    }
+                                if ($siteId && $increased_running_hours) { // Ensure the record exists
+                                    foreach ((array) $increased_running_hours as $runningHour) {
+                                        if ($runningHour->site_id == $siteId) {
+                                            $increaseRunningHours = (float) $runningHour->increase_running_hours; // Convert to float
+                                            break;
+                                        }
+                                    }
+                                }
 
-                                                                    // Get addValue from event data
-                                                                    $key = $sitejsonData->running_hours->add ?? null;
-                                                                    $addValue = 0;
+                                // Get addValue from event data
+                                $key = $sitejsonData->running_hours->add ?? null;
+                                $addValue = 0;
 
-                                                                    foreach ($eventData as $event) {
-                                                                        $eventArray = $event->getArrayCopy();
-                                                                        if (isset($eventArray['module_id']) && $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)) {
-                                                                            if ($key && array_key_exists($key, $eventArray)) {
-                                                                                $addValue = (float) $eventArray[$key]; // Convert to float
-                                                                            }
-                                                                            break;
-                                                                        }
-                                                                    }
+                                foreach ($eventData as $event) {
+                                    $eventArray = $event->getArrayCopy();
+                                    if (isset($eventArray['module_id']) && $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)) {
+                                        if ($key && array_key_exists($key, $eventArray)) {
+                                            $addValue = (float) $eventArray[$key]; // Convert to float
+                                        }
+                                        break;
+                                    }
+                                }
 
-                                                                    // Handle null case safely
-                                                                    $inc_addValue = $addValue + ($increased_running_hours->increase_running_hours ?? 0);
+                                // Handle null case safely
+                                $inc_addValue = $addValue + ($increased_running_hours->increase_running_hours ?? 0);
 
-                                                                    $inc_addValueFormatted = number_format($inc_addValue, 2);
-                                                                ?>
-                                                                <td colspan="3">
-                                                                    <div class="d-flex justify-content-around align-items-center">
-                                                                        <div class="text-center" style="vertical-align: middle;">
-                                                                            <i class="fas fa-cogs"
-                                                                                style="color: teal; font-size: 24px; margin-bottom: 8px;"></i>
-                                                                            <p class="fw-bold">Run Status</p>
-                                                                            @if($inc_addValueFormatted > 0)
-                                                                            <span class="badge bg-success px-2 py-1">Running</span>
-                                                                            @else
-                                                                            <span class="badge bg-danger px-2 py-1">Stop</span>
-                                                                            @endif
-                                                                        </div>
+                                $inc_addValueFormatted = number_format($inc_addValue, 2);
+                            ?>
+
+                            <?php
+                                $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
+                                $addValuerunstatus = '_';
+
+                                foreach ($eventData as $event) {
+                                    $eventArraya = $event->getArrayCopy();
+                                    if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->voltage_l_l->a->md) {
+                                        if (array_key_exists($keya, $eventArraya)) {
+                                            $addValuerunstatus = $eventArraya[$keya];
+                                        }
+                                        break;
+                                    }
+                                }
+                            ?>
+                            <td colspan="3">
+                                <div class="d-flex justify-content-around align-items-center text-black">
+                                    <div class="text-center" style="vertical-align: middle;">
+                                        <i class="fas fa-cogs"
+                                            style="color: teal; font-size: 24px; margin-bottom: 8px;"></i>
+                                        <p class="fw-bold ">Run Status</p>
+                                        @if($addValuerunstatus > 0)
+                                        <span class="badge bg-success px-2 py-1">Running</span>
+                                        @else
+                                        <span class="badge bg-danger px-2 py-1">Stop</span>
+                                        @endif
+                                    </div>
                                                                         <div class="text-center" style="vertical-align: middle;">
                                                                             <i class="fas fa-running text-primary"></i>
                                                                             <p><strong>Running Hours:</strong></p>

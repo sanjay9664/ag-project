@@ -381,21 +381,147 @@ td {
                                         {{ \Carbon\Carbon::parse($login->created_at)->timezone('Asia/Kolkata')->format('d M\' Y h:i A') }}
                                     </td>
                                     <td>
-                                        <span class="dot-{{ $login->status === 'active' ? 'green' : 'red' }}"></span>
+                                        <span class="dot-{{ $login->status === 'active' ? 'red' : 'green' }}"></span>
                                     </td>
                                     <td>
                                         @if(auth()->user()->hasRole('superadmin'))
-                                        <form action="{{ route('admin.login.submit') }}" method="POST"
-                                            class="text-center">
+                                        <form class="text-center">
                                             @csrf
                                             <input type="hidden" name="user_id" value="{{ $login->user_id }}">
-                                            <button type="submit" class="btn btn-primary text-white btn-sm px-2 w-100 "
-                                                style="font-size: 12px; padding: 10px 8px;">
-                                                Login
-                                            </button>
+
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary viewUIButton">User UI</button>
+                                                <div class="dropdown-menu">
+                                                    <a href="http://127.0.0.1:8000/admin/sites/gen-1-1?role=admin"
+                                                        target="_blank" class="dropdown-item">Admin View</a>
+                                                    <a href="http://127.0.0.1:8000/admin/sites/gen-1-1?role=superadmin"
+                                                        target="_blank" class="dropdown-item">SuperAdmin View</a>
+                                                </div>
+                                            </div>
                                         </form>
 
+                                        <style>
+                                        .dropdown {
+                                            position: relative;
+                                            display: inline-block;
+                                        }
+
+                                        .viewUIButton {
+                                            background: linear-gradient(45deg, #007bff, #6610f2);
+                                            border: none;
+                                            color: white;
+                                            padding: 12px 20px;
+                                            border-radius: 8px;
+                                            font-size: 16px;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease-in-out;
+                                            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                                        }
+
+                                        .viewUIButton:hover {
+                                            transform: scale(1.05);
+                                            background: linear-gradient(45deg, #6610f2, #007bff);
+                                        }
+
+                                        .dropdown-menu {
+                                            display: none;
+                                            position: absolute;
+                                            left: 50%;
+                                            transform: translateX(-50%);
+                                            background: white;
+                                            border-radius: 10px;
+                                            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+                                            overflow: hidden;
+                                            opacity: 0;
+                                            visibility: hidden;
+                                            transition: all 0.3s ease-in-out;
+                                            min-width: 170px;
+                                            z-index: 1000;
+                                        }
+
+                                        .dropdown-item {
+                                            padding: 12px 20px;
+                                            text-decoration: none;
+                                            color: #333;
+                                            font-weight: bold;
+                                            display: block;
+                                            text-align: center;
+                                            transition: all 0.3s ease-in-out;
+                                        }
+
+                                        .dropdown-item:hover {
+                                            background: linear-gradient(45deg, #007bff, #6610f2);
+                                            color: white;
+                                            transform: scale(1.05);
+                                        }
+                                        </style>
+
+                                        <script>
+                                        document.addEventListener("DOMContentLoaded", function() {
+                                            let buttons = document.querySelectorAll(".viewUIButton");
+
+                                            buttons.forEach(button => {
+                                                let dropdownMenu = button.nextElementSibling;
+                                                let timeoutId;
+
+                                                // Show menu on button hover
+                                                button.addEventListener("mouseenter", function() {
+                                                    clearTimeout(timeoutId);
+                                                    dropdownMenu.style.display = "block";
+                                                    setTimeout(() => {
+                                                        dropdownMenu.style.opacity =
+                                                            "1";
+                                                        dropdownMenu.style.visibility =
+                                                            "visible";
+                                                    }, 100);
+                                                });
+
+                                                // Keep menu open when hovering inside it
+                                                dropdownMenu.addEventListener("mouseenter", function() {
+                                                    clearTimeout(timeoutId);
+                                                    dropdownMenu.style.display = "block";
+                                                    dropdownMenu.style.opacity = "1";
+                                                    dropdownMenu.style.visibility = "visible";
+                                                });
+
+                                                // Hide menu when cursor leaves button or dropdown
+                                                button.addEventListener("mouseleave", function() {
+                                                    timeoutId = setTimeout(() => {
+                                                        if (!dropdownMenu.matches(
+                                                                ":hover")) {
+                                                            dropdownMenu.style.opacity =
+                                                                "0";
+                                                            dropdownMenu.style
+                                                                .visibility = "hidden";
+                                                            setTimeout(() => {
+                                                                dropdownMenu
+                                                                    .style
+                                                                    .display =
+                                                                    "none";
+                                                            }, 500);
+                                                        }
+                                                    }, 1000); // 1-second delay before hiding
+                                                });
+
+                                                dropdownMenu.addEventListener("mouseleave", function() {
+                                                    timeoutId = setTimeout(() => {
+                                                        dropdownMenu.style.opacity =
+                                                            "0";
+                                                        dropdownMenu.style.visibility =
+                                                            "hidden";
+                                                        setTimeout(() => {
+                                                            dropdownMenu.style
+                                                                .display =
+                                                                "none";
+                                                        }, 500);
+                                                    }, 1000); // 1-second delay before hiding
+                                                });
+                                            });
+                                        });
+                                        </script>
                                         @endif
+
+
                                     </td>
 
                                 </tr>

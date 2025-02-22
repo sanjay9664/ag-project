@@ -56,15 +56,16 @@ class LoginController extends Controller
         // Check if returning to Superadmin
         if ($request->has('user_id') && session('original_superadmin_id')) {
             $superadminId = session('original_superadmin_id');
+            $originaladminId = session('original_admin_id');
             $superadmin = Admin::find($superadminId);
             
             $user = Admin::find($request->user_id);
             if ($superadmin && $superadmin->hasRole('superadmin')) {
-                // dd($user);
+                // dd($originaladminId);
                 Auth::guard('admin')->logout();
                 Auth::guard('admin')->login($superadmin);
-                Login::where('user_id', $user->id)->update(['status' => 'inactive']);
-                // dd("Superadmin login");
+                Login::where('user_id', $originaladminId)->update(['status' => 'inactive']);
+            
                 session()->forget('original_superadmin_id');
                 return redirect()->route('admin.dashboard')->with('success', 'Returned to Superadmin account.');
             }
@@ -78,7 +79,7 @@ class LoginController extends Controller
             if ($superadmin && $superadmin->hasRole('superadmin')) {
                 session(['original_superadmin_id' => $superadmin->id]);
                 $user = Admin::find($request->user_id);
-        
+                session(['original_admin_id' => $request->user_id]);
                 if ($user) {
                     Auth::guard('admin')->login($user);
                     Login::where('user_id', $user->id)->update(['status' => 'active']);
@@ -98,18 +99,20 @@ class LoginController extends Controller
         ]);
 
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
-            $user = Auth::guard('admin')->user();
-            Login::where('user_id', $user->id)->delete();
-            if (!$user->hasRole('superadmin')) {
-                
-                Login::create([
-                    'user_id' => $user->id,
-                    'role' => $user->hasRole('superadmin') ? 'superadmin' : 'admin',
-                    'ip_address' => $request->ip(),
-                    'status' => 'active',
-                ]);
-            }
-            return redirect()->route('admin.dashboard');
+            $users = Auth::guard('admin')->user();
+            Login::where('user_id', $users->id)->delete();
+            if (!$users->hasRole('superadmin')) {
+                $data = Login::updateOrCreate(
+                    ['user_id' => $users->id],
+                    [
+                        'role' => 'admin',
+                        'ip_address' => $request->ip(),
+                        'status' => 'active',
+                    ]
+                );
+            }            
+           
+            return redirect('admin/sites');
         }
         session()->flash('error', 'Invalid email and password');
         return back();

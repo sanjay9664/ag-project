@@ -15,7 +15,7 @@ class Login extends Model
     use Notifiable, HasRoles;
 
     protected $table = 'logins';
-    protected $fillable = ['user_id', 'role', 'ip_address'];
+    protected $fillable = ['user_id', 'role', 'ip_address','status'];
 
     public function user()
     {

@@ -17,6 +17,7 @@ use MongoDB\Client as MongoClient;
 use Illuminate\Support\Str;
 use MongoDB\BSON\UTCDateTime;
 use DateTimeZone;
+use Illuminate\Http\Request;
 use Auth;
 
 class SiteController extends Controller
@@ -506,7 +507,7 @@ class SiteController extends Controller
         return back();
     }
 
-    public function show($slug)
+    public function show(Request $request, $slug)
     {
         // Fetch site data using the provided slug
         $siteData = Site::where('slug', $slug)->first();
@@ -580,24 +581,45 @@ class SiteController extends Controller
         // return $siteData;
         $user = Auth::guard('admin')->user();
        
+        $user = Auth::guard('admin')->user();
+        $role = $request->query('role');
+    
+        if ($role == 'superadmin') {
+            return view('backend.pages.sites.superadmin-site-details', [
+                'siteData' => $siteData,
+                'sitejsonData' => $sitejsonData,
+                'eventData' => $events,
+                'latestCreatedAt' => $latestCreatedAtFormatted,
+            ]);
+        }
+
+        if ($role == 'admin') {
+            return view('backend.pages.sites.site-details', [
+                'siteData' => $siteData,
+                'sitejsonData' => $sitejsonData,
+                'eventData' => $events,
+                'latestCreatedAt' => $latestCreatedAtFormatted,
+            ]);
+        }
+        
         if ($user->hasRole('superadmin')) {
             return view(
                 'backend.pages.sites.superadmin-site-details',
                 [
-                    'siteData' => $siteData,
-                    'sitejsonData' => $sitejsonData,
-                    'eventData' => $events,
-                    'latestCreatedAt' => $latestCreatedAtFormatted,
+                'siteData' => $siteData,
+                'sitejsonData' => $sitejsonData,
+                'eventData' => $events,
+                'latestCreatedAt' => $latestCreatedAtFormatted,
                 ]
-            );
-        } else {
+                );
+            } else {
             return view(
-                'backend.pages.sites.site-details',
+            'backend.pages.sites.site-details',
                 [
-                    'siteData' => $siteData,
-                    'sitejsonData' => $sitejsonData,
-                    'eventData' => $events, 
-                    'latestCreatedAt' => $latestCreatedAtFormatted, 
+                'siteData' => $siteData,
+                'sitejsonData' => $sitejsonData,
+                'eventData' => $events,
+                'latestCreatedAt' => $latestCreatedAtFormatted,
                 ]
             );
         }
