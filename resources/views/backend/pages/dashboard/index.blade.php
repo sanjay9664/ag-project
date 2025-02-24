@@ -385,6 +385,7 @@ td {
                                     </td>
                                     <td>
                                         @if(auth()->user()->hasRole('superadmin'))
+
                                         <form class="text-center">
                                             @csrf
                                             <input type="hidden" name="user_id" value="{{ $login->user_id }}">
@@ -392,9 +393,9 @@ td {
                                             <div class="dropdown">
                                                 <button class="btn btn-primary viewUIButton">User UI</button>
                                                 <div class="dropdown-menu">
-                                                    <a href="http://127.0.0.1:8000/admin/sites/gen-1-1?role=admin"
+                                                    <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
                                                         target="_blank" class="dropdown-item">Admin View</a>
-                                                    <a href="http://127.0.0.1:8000/admin/sites/gen-1-1?role=superadmin"
+                                                    <a href="{{ url($site->slug . '?role=superadmin') }}"
                                                         target="_blank" class="dropdown-item">SuperAdmin View</a>
                                                 </div>
                                             </div>
