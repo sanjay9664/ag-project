@@ -395,7 +395,7 @@ td {
                                                 <div class="dropdown-menu">
                                                     <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
                                                         target="_blank" class="dropdown-item">Admin View</a>
-                                                    <a href="{{ url($site->slug . '?role=superadmin') }}"
+                                                    <a href="{{ url('admin/sites/'.$site->slug . '?role=superadmin') }}"
                                                         target="_blank" class="dropdown-item">SuperAdmin View</a>
                                                 </div>
                                             </div>
