@@ -23,6 +23,7 @@ Dashboard Page - Admin Panel
     margin-left: 20px;
 }
 
+
 .dot-red {
     height: 20px;
     width: 20px;
@@ -32,6 +33,7 @@ Dashboard Page - Admin Panel
     background-color: red;
     margin-left: 20px;
 }
+
 
 table {
     width: 100%;
@@ -126,6 +128,76 @@ td {
     background: linear-gradient(135deg, #dc3545, #a71d2a);
 }
 
+/* Table Container for Full Responsiveness */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    max-width: 100vw;
+}
+
+/* Table Formatting */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    /* Auto Layout for Adjusting Columns */
+}
+
+th,
+td {
+    word-wrap: break-word;
+    white-space: normal;
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* Dots for Status */
+.dot-green,
+.dot-red {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.dot-green {
+    background-color: green;
+}
+
+.dot-red {
+    background-color: red;
+}
+
+/* Responsive Font & Padding for Different Screens */
+@media (max-width: 1180px) {
+
+    th,
+    td {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 1024px) {
+
+    th,
+    td {
+        font-size: 13px;
+        padding: 9px;
+    }
+}
+
+@media (max-width: 820px) {
+
+    th,
+    td {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
 @media (max-width: 768px) {
     .icon-container {
         padding: 10px;
@@ -133,6 +205,110 @@ td {
 
     .fa-3x {
         font-size: 2rem;
+    }
+
+    th,
+    td {
+        font-size: 11px;
+        padding: 7px;
+    }
+}
+
+/* Perfect for Mobile Screens */
+@media (max-width: 600px) {
+
+    th,
+    td {
+        font-size: 10px;
+        padding: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    th,
+    td {
+        font-size: 9px;
+        padding: 5px;
+    }
+}
+
+@media (max-width: 414px) {
+
+    th,
+    td {
+        font-size: 8px;
+        padding: 4px;
+    }
+}
+
+@media (max-width: 390px) {
+
+    th,
+    td {
+        font-size: 7px;
+        padding: 3px;
+    }
+}
+
+@media (max-width: 360px) {
+
+    th,
+    td {
+        font-size: 6px;
+        padding: 2px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    th,
+    td {
+        font-size: 9px;
+        padding: 5px;
+    }
+
+    .table-container {
+        overflow-x: scroll;
+    }
+}
+
+@media (max-width: 414px) {
+
+    th,
+    td {
+        font-size: 8px;
+        padding: 4px;
+    }
+
+    .table-container {
+        overflow-x: scroll;
+    }
+}
+
+@media (max-width: 390px) {
+
+    th,
+    td {
+        font-size: 7px;
+        padding: 3px;
+    }
+
+    .table-container {
+        overflow-x: scroll;
+    }
+}
+
+@media (max-width: 360px) {
+
+    th,
+    td {
+        font-size: 6px;
+        padding: 2px;
+    }
+
+    .table-container {
+        overflow-x: scroll;
     }
 }
 </style>
@@ -334,14 +510,14 @@ td {
 
                                                     <!-- Submit Button -->
                                                     <button id="submitButton" style="
-        padding: 3px 8px; 
-        font-size: 13px; 
-        border-radius: 5px; 
-        background-color: #007bff; 
-        color: white; 
-        border: none;
-        cursor: pointer;
-        transition: 0.3s ease-in-out;">
+                                                        padding: 3px 8px; 
+                                                        font-size: 13px; 
+                                                        border-radius: 5px; 
+                                                        background-color: #007bff; 
+                                                        color: white; 
+                                                        border: none;
+                                                        cursor: pointer;
+                                                        transition: 0.3s ease-in-out;">
                                                         Submit
                                                     </button>
                                                 </div>
@@ -396,7 +572,7 @@ td {
                                                     <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
                                                         target="_blank" class="dropdown-item">Admin View</a>
                                                     <a href="{{ url('admin/sites/'.$site->slug . '?role=superadmin') }}"
-                                                        target="_blank" class="dropdown-item">SuperAdmin View</a>
+                                                        <a target="_blank" class="dropdown-item">SuperAdmin View</a>
                                                 </div>
                                             </div>
                                         </form>
