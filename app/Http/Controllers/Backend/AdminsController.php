@@ -1,8 +1,8 @@
 <?php
 
-
 declare(strict_types=1);
 namespace App\Http\Controllers\Backend;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
@@ -20,7 +20,7 @@ class AdminsController extends Controller
         $this->checkAuthorization(auth()->user(), ['admin.view']);
         $user = Auth::guard('admin')->user();
         
-        if ($user->hasRole('superadmin')) {
+        if ($user && $user->hasRole('superadmin')) {  
             return view('backend.pages.admins.index', [
                 'admins' => Admin::all(),
             ]);
@@ -44,9 +44,10 @@ class AdminsController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['admin.create']);
 
-        $admin = null;  // Define $admin outside
+        $user = Auth::guard('admin')->user();   
+        $admin = null;  
 
-        if (!$user->hasRole('superadmin')) {
+        if ($user && !$user->hasRole('superadmin')) {  
             $admin = new Admin();
             $admin->admin_id = Auth::id();
             $admin->name = $request->name;
@@ -56,11 +57,10 @@ class AdminsController extends Controller
             $admin->save();
         }
         
-        if ($request->roles && $admin) {  // Check if $admin is not null
+        if ($request->roles && $admin) {  
             $admin->assignRole($request->roles);
         }
         
-
         session()->flash('success', __('Admin has been created.'));
         return redirect()->route('admin.admins.index');
     }
@@ -114,5 +114,4 @@ class AdminsController extends Controller
         session()->flash('success', 'Admin and associated login record have been deleted.');
         return back();
     }
-    
 }
