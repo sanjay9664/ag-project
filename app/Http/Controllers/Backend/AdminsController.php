@@ -22,14 +22,18 @@ class AdminsController extends Controller
         
         if ($user && $user->hasRole('superadmin')) {  
             return view('backend.pages.admins.index', [
-                'admins' => Admin::all(),
+                'admins' => Admin::all(),  // ✅ Sabhi admins dikhaye superadmin ko
             ]);
         } else {
             return view('backend.pages.admins.index', [
-                'admins' => Admin::where('admin_id', Auth::id())->get(),
+                // ✅ Current admin ke dwara banaye gaye sabhi admins dikhaye
+                'admins' => Admin::where('admin_id', Auth::id())
+                                 ->orWhere('id', Auth::id())  // ✅ Current admin bhi dikhaye
+                                 ->get(),
             ]);
         }
     }
+    
 
     public function create(): Renderable
     {
@@ -43,27 +47,29 @@ class AdminsController extends Controller
     public function store(AdminRequest $request): RedirectResponse
     {
         $this->checkAuthorization(auth()->user(), ['admin.create']);
-
-        $user = Auth::guard('admin')->user();   
-        $admin = null;  
-
-        if ($user && !$user->hasRole('superadmin')) {  
-            $admin = new Admin();
-            $admin->admin_id = Auth::id();
-            $admin->name = $request->name;
-            $admin->username = $request->username;
-            $admin->email = $request->email;
-            $admin->password = Hash::make($request->password);
-            $admin->save();
-        }
-        
-        if ($request->roles && $admin) {  
+    
+        $user = Auth::guard('admin')->user();  // ✅ $user ko define kiya
+        $admin = null;  // ✅ $admin ko pehle se null define kiya
+    
+        // ✅ Naya admin hamesha create ho sakta hai, superadmin check hata diya
+        $admin = new Admin();
+        $admin->admin_id = Auth::id();  // ✅ admin_id ko current user ka id diya
+        $admin->name = $request->name;
+        $admin->username = $request->username;
+        $admin->email = $request->email;
+        $admin->password = Hash::make($request->password);
+        $admin->save();
+    
+        if ($request->roles && $admin) {  // ✅ Role assign karte waqt null check
             $admin->assignRole($request->roles);
+        } else {
+            $admin->assignRole('admin');  // ✅ Default role assign kar diya agar koi role select nahi hai
         }
         
         session()->flash('success', __('Admin has been created.'));
         return redirect()->route('admin.admins.index');
     }
+    
 
     public function edit(int $id): Renderable
     {
