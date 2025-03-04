@@ -44,8 +44,8 @@ class AdminsController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['admin.create']);
 
-        $user = Auth::guard('admin')->user();
-        
+        $admin = null;  // Define $admin outside
+
         if (!$user->hasRole('superadmin')) {
             $admin = new Admin();
             $admin->admin_id = Auth::id();
@@ -55,10 +55,11 @@ class AdminsController extends Controller
             $admin->password = Hash::make($request->password);
             $admin->save();
         }
-
-        if ($request->roles) {
+        
+        if ($request->roles && $admin) {  // Check if $admin is not null
             $admin->assignRole($request->roles);
         }
+        
 
         session()->flash('success', __('Admin has been created.'));
         return redirect()->route('admin.admins.index');
