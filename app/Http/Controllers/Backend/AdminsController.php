@@ -1,8 +1,8 @@
 <?php
 
+
 declare(strict_types=1);
 namespace App\Http\Controllers\Backend;
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
@@ -20,20 +20,16 @@ class AdminsController extends Controller
         $this->checkAuthorization(auth()->user(), ['admin.view']);
         $user = Auth::guard('admin')->user();
         
-        if ($user && $user->hasRole('superadmin')) {  
+        if ($user->hasRole('superadmin')) {
             return view('backend.pages.admins.index', [
-                'admins' => Admin::all(),  // ✅ Sabhi admins dikhaye superadmin ko
+                'admins' => Admin::all(),
             ]);
         } else {
             return view('backend.pages.admins.index', [
-                // ✅ Current admin ke dwara banaye gaye sabhi admins dikhaye
-                'admins' => Admin::where('admin_id', Auth::id())
-                                 ->orWhere('id', Auth::id())  // ✅ Current admin bhi dikhaye
-                                 ->get(),
+                'admins' => Admin::where('admin_id', Auth::id())->get(),
             ]);
         }
     }
-    
 
     public function create(): Renderable
     {
@@ -47,29 +43,31 @@ class AdminsController extends Controller
     public function store(AdminRequest $request): RedirectResponse
     {
         $this->checkAuthorization(auth()->user(), ['admin.create']);
-    
-        $user = Auth::guard('admin')->user();  // ✅ $user ko define kiya
-        $admin = null;  // ✅ $admin ko pehle se null define kiya
-    
-        // ✅ Naya admin hamesha create ho sakta hai, superadmin check hata diya
-        $admin = new Admin();
-        $admin->admin_id = Auth::id();  // ✅ admin_id ko current user ka id diya
-        $admin->name = $request->name;
-        $admin->username = $request->username;
-        $admin->email = $request->email;
-        $admin->password = Hash::make($request->password);
-        $admin->save();
-    
-        if ($request->roles && $admin) {  // ✅ Role assign karte waqt null check
-            $admin->assignRole($request->roles);
+
+        $user = Auth::guard('admin')->user();
+
+        // Allow both superadmin and admin to create new admins
+        if ($user->hasAnyRole(['superadmin', 'admin'])) {
+            $admin = Admin::create([
+                'admin_id' => Auth::id(),
+                'name' => $request->name,
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+
+            // Assign roles if provided
+            if ($request->filled('roles')) {
+                $admin->assignRole($request->roles);
+            }
+
+            session()->flash('success', __('Admin has been created.'));
         } else {
-            $admin->assignRole('admin');  // ✅ Default role assign kar diya agar koi role select nahi hai
+            session()->flash('error', __('You are not authorized to create an admin.'));
         }
-        
-        session()->flash('success', __('Admin has been created.'));
+
         return redirect()->route('admin.admins.index');
     }
-    
 
     public function edit(int $id): Renderable
     {
@@ -120,4 +118,5 @@ class AdminsController extends Controller
         session()->flash('success', 'Admin and associated login record have been deleted.');
         return back();
     }
+    
 }
