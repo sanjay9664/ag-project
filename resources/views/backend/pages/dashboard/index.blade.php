@@ -569,11 +569,17 @@ td {
                                             <div class="dropdown">
                                                 <button class="btn btn-primary viewUIButton">User UI</button>
                                                 <div class="dropdown-menu">
+                                                    @if(isset($site) && $site->slug)
+
                                                     <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
                                                         target="_blank" class="dropdown-item">Admin View</a>
                                                     <a href="{{ url('admin/sites/'.$site->slug . '?role=superadmin') }}"
-                                                        <a target="_blank" class="dropdown-item">SuperAdmin View</a>
+                                                        target="_blank" class="dropdown-item">SuperAdmin View</a>
+                                                    @else
+                                                    <span class="dropdown-item text-muted">No Site Available</span>
+                                                    @endif
                                                 </div>
+
                                             </div>
                                         </form>
 
