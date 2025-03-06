@@ -12,320 +12,16 @@ Dashboard Page - Admin Panel
     href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
 <link rel="stylesheet" type="text/css"
     href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
-<style>
-.dot-green {
-    height: 20px;
-    width: 20px;
-    background-color: #bbb;
-    border-radius: 50%;
-    display: inline-block;
-    background-color: green;
-    margin-left: 20px;
-}
-
-
-.dot-red {
-    height: 20px;
-    width: 20px;
-    background-color: #bbb;
-    border-radius: 50%;
-    display: inline-block;
-    background-color: red;
-    margin-left: 20px;
-}
-
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    /* Ensures consistent width for all columns */
-}
-
-th,
-td {
-    word-wrap: break-word;
-    white-space: normal;
-    /* Ensure long content breaks to new lines */
-    padding: 8px;
-    /* Adjust padding */
-}
-
-@media only screen and (max-width: 768px) {
-    table {
-        font-size: 12px;
-        /* Adjust font size for mobile */
-    }
-}
-
-.card-body {
-    max-width: 150%;
-    margin: auto;
-    padding: 10px;
-}
-
-.card-body h4 {
-    font-size: 18px;
-}
-
-.card-body button {
-    font-size: 14px;
-    padding: 6px 12px;
-}
-
-.data-tables table {
-    font-size: 12px;
-}
-
-.data-tables th,
-.data-tables td {
-    padding: 5px;
-}
-
-.site-form-container input {
-    font-size: 12px;
-    padding: 5px;
-}
-
-.site-form-container {
-    gap: 10px;
-}
-
-.card {
-    transition: all 0.3s ease-in-out;
-    border-radius: 12px;
-}
-
-/* .card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
-} */
-
-.icon-container {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 15px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.fa-users,
-.fa-user-check,
-.fa-chart-line {
-    color: white;
-}
-
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-}
-
-.bg-gradient-success {
-    background: linear-gradient(135deg, #28a745, #1e7e34);
-}
-
-.bg-gradient-danger {
-    background: linear-gradient(135deg, #dc3545, #a71d2a);
-}
-
-/* Table Container for Full Responsiveness */
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-    white-space: nowrap;
-    max-width: 100vw;
-}
-
-/* Table Formatting */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: auto;
-    /* Auto Layout for Adjusting Columns */
-}
-
-th,
-td {
-    word-wrap: break-word;
-    white-space: normal;
-    padding: 10px;
-    font-size: 14px;
-}
-
-/* Dots for Status */
-.dot-green,
-.dot-red {
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-left: 10px;
-}
-
-.dot-green {
-    background-color: green;
-}
-
-.dot-red {
-    background-color: red;
-}
-
-/* Responsive Font & Padding for Different Screens */
-@media (max-width: 1180px) {
-
-    th,
-    td {
-        font-size: 14px;
-        padding: 10px;
-    }
-}
-
-@media (max-width: 1024px) {
-
-    th,
-    td {
-        font-size: 13px;
-        padding: 9px;
-    }
-}
-
-@media (max-width: 820px) {
-
-    th,
-    td {
-        font-size: 12px;
-        padding: 8px;
-    }
-}
-
-@media (max-width: 768px) {
-    .icon-container {
-        padding: 10px;
-    }
-
-    .fa-3x {
-        font-size: 2rem;
-    }
-
-    th,
-    td {
-        font-size: 11px;
-        padding: 7px;
-    }
-}
-
-/* Perfect for Mobile Screens */
-@media (max-width: 600px) {
-
-    th,
-    td {
-        font-size: 10px;
-        padding: 6px;
-    }
-}
-
-@media (max-width: 480px) {
-
-    th,
-    td {
-        font-size: 9px;
-        padding: 5px;
-    }
-}
-
-@media (max-width: 414px) {
-
-    th,
-    td {
-        font-size: 8px;
-        padding: 4px;
-    }
-}
-
-@media (max-width: 390px) {
-
-    th,
-    td {
-        font-size: 7px;
-        padding: 3px;
-    }
-}
-
-@media (max-width: 360px) {
-
-    th,
-    td {
-        font-size: 6px;
-        padding: 2px;
-    }
-}
-
-@media (max-width: 480px) {
-
-    th,
-    td {
-        font-size: 9px;
-        padding: 5px;
-    }
-
-    .table-container {
-        overflow-x: scroll;
-    }
-}
-
-@media (max-width: 414px) {
-
-    th,
-    td {
-        font-size: 8px;
-        padding: 4px;
-    }
-
-    .table-container {
-        overflow-x: scroll;
-    }
-}
-
-@media (max-width: 390px) {
-
-    th,
-    td {
-        font-size: 7px;
-        padding: 3px;
-    }
-
-    .table-container {
-        overflow-x: scroll;
-    }
-}
-
-@media (max-width: 360px) {
-
-    th,
-    td {
-        font-size: 6px;
-        padding: 2px;
-    }
-
-    .table-container {
-        overflow-x: scroll;
-    }
-}
-</style>
+<link rel="stylesheet" href="{{url('backend/assets/css/dashboard.css')}}">
 @endsection
 
 @section('admin-content')
-<!-- page title area start -->
-
-
-
-
 <div class="page-title-area">
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
                 <h4 class="page-title pull-left">{{ __('Logins') }}</h4>
-                <ul class="breadcrumbs pull-left">
+                <ul class=" breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
                     <li><span>{{ __('All Logins') }}</span></li>
                 </ul>
@@ -339,6 +35,7 @@ td {
 <!-- page title area end -->
 
 <div class="main-content-inner">
+
     <div class="row">
         <!-- data table start -->
         <div class="col-12 mt-5">
@@ -488,42 +185,56 @@ td {
                                             <input type="hidden" name="site_id" class="site_id"
                                                 value="{{ $present_site->id ?? '' }}">
 
-                                            <!-- @php
-                                            $siteData = $runningHours[$present_site->id ?? ''] ?? null;
-                                            $totalAddrunValue = $addValuerun +
-                                            ($siteData->increase_running_hours ?? 0);
-                                            @endphp -->
+
 
                                             <td>
                                                 <input type="text" class="form-control running_hours_admin"
                                                     value="{{ $addValuerun }}" readonly
                                                     style="outline: none; box-shadow: none;">
                                             </td>
+                                            <!-- Button: Show Input and Button (By Default Visible) -->
                                             <td>
-                                                <div class="d-flex align-items-center gap-2 w-100">
-                                                    <!-- Input Field -->
-                                                    <input type="text"
-                                                        class="form-control border-1 px-2 py-1 increase_running_hours"
-                                                        id="increaseRunningHours" name="increase_running_hours"
-                                                        data-site-id="{{ $present_site->id ?? '' }}"
-                                                        style="outline: none; box-shadow: none; background: #e9ecef; border-radius: 5px; width: 50px; font-size: 14px; margin:10px">
+                                                <button id="toggleButton" onclick="toggleDivVisibility()" style="
+                                                    padding: 5px 10px; 
+                                                    font-size: 14px; 
+                                                    border-radius: 5px; 
+                                                    background-color: #007bff; 
+                                                    color: white; 
+                                                    border: none;
+                                                    cursor: pointer;
+                                                    transition: 0.3s ease-in-out; 
+                                                    margin-bottom: 10px;">
+                                                    Show Input and Button
+                                                </button>
 
-                                                    <!-- Submit Button -->
-                                                    <button id="submitButton" style="
+                                                <!-- Div with Input and Button (Hidden by Default) -->
+                                                <div id="inputButtonDiv" style="display: none; margin-top: 10px;">
+                                                    <div class="d-flex align-items-center gap-2 w-100">
+                                                        <!-- Input Field -->
+                                                        <input type="text"
+                                                            class="form-control border-1 px-2 py-1 increase_running_hours"
+                                                            id="increaseRunningHours" name="increase_running_hours"
+                                                            data-site-id="{{ $present_site->id ?? '' }}"
+                                                            style="outline: none; box-shadow: none; background: #e9ecef; border-radius: 5px; width: 70px; font-size: 14px; margin:10px">
+
+                                                        <!-- Submit Button -->
+                                                        <button id="submitButton" style="
                                                         padding: 3px 8px; 
                                                         font-size: 13px; 
                                                         border-radius: 5px; 
-                                                        background-color: #007bff; 
+                                                        background-color: #28a745; 
                                                         color: white; 
                                                         border: none;
                                                         cursor: pointer;
                                                         transition: 0.3s ease-in-out;">
-                                                        Submit
-                                                    </button>
+                                                            Submit
+                                                        </button>
+                                                    </div>
                                                 </div>
-
-
                                             </td>
+
+
+
 
                                         </form>
                                     </div>
@@ -583,125 +294,8 @@ td {
                                             </div>
                                         </form>
 
-                                        <style>
-                                        .dropdown {
-                                            position: relative;
-                                            display: inline-block;
-                                        }
 
-                                        .viewUIButton {
-                                            background: linear-gradient(45deg, #007bff, #6610f2);
-                                            border: none;
-                                            color: white;
-                                            padding: 12px 20px;
-                                            border-radius: 8px;
-                                            font-size: 16px;
-                                            cursor: pointer;
-                                            transition: all 0.3s ease-in-out;
-                                            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-                                        }
 
-                                        .viewUIButton:hover {
-                                            transform: scale(1.05);
-                                            background: linear-gradient(45deg, #6610f2, #007bff);
-                                        }
-
-                                        .dropdown-menu {
-                                            display: none;
-                                            position: absolute;
-                                            left: 50%;
-                                            transform: translateX(-50%);
-                                            background: white;
-                                            border-radius: 10px;
-                                            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-                                            overflow: hidden;
-                                            opacity: 0;
-                                            visibility: hidden;
-                                            transition: all 0.3s ease-in-out;
-                                            min-width: 170px;
-                                            z-index: 1000;
-                                        }
-
-                                        .dropdown-item {
-                                            padding: 12px 20px;
-                                            text-decoration: none;
-                                            color: #333;
-                                            font-weight: bold;
-                                            display: block;
-                                            text-align: center;
-                                            transition: all 0.3s ease-in-out;
-                                        }
-
-                                        .dropdown-item:hover {
-                                            background: linear-gradient(45deg, #007bff, #6610f2);
-                                            color: white;
-                                            transform: scale(1.05);
-                                        }
-                                        </style>
-
-                                        <script>
-                                        document.addEventListener("DOMContentLoaded", function() {
-                                            let buttons = document.querySelectorAll(".viewUIButton");
-
-                                            buttons.forEach(button => {
-                                                let dropdownMenu = button.nextElementSibling;
-                                                let timeoutId;
-
-                                                // Show menu on button hover
-                                                button.addEventListener("mouseenter", function() {
-                                                    clearTimeout(timeoutId);
-                                                    dropdownMenu.style.display = "block";
-                                                    setTimeout(() => {
-                                                        dropdownMenu.style.opacity =
-                                                            "1";
-                                                        dropdownMenu.style.visibility =
-                                                            "visible";
-                                                    }, 100);
-                                                });
-
-                                                // Keep menu open when hovering inside it
-                                                dropdownMenu.addEventListener("mouseenter", function() {
-                                                    clearTimeout(timeoutId);
-                                                    dropdownMenu.style.display = "block";
-                                                    dropdownMenu.style.opacity = "1";
-                                                    dropdownMenu.style.visibility = "visible";
-                                                });
-
-                                                // Hide menu when cursor leaves button or dropdown
-                                                button.addEventListener("mouseleave", function() {
-                                                    timeoutId = setTimeout(() => {
-                                                        if (!dropdownMenu.matches(
-                                                                ":hover")) {
-                                                            dropdownMenu.style.opacity =
-                                                                "0";
-                                                            dropdownMenu.style
-                                                                .visibility = "hidden";
-                                                            setTimeout(() => {
-                                                                dropdownMenu
-                                                                    .style
-                                                                    .display =
-                                                                    "none";
-                                                            }, 500);
-                                                        }
-                                                    }, 1000); // 1-second delay before hiding
-                                                });
-
-                                                dropdownMenu.addEventListener("mouseleave", function() {
-                                                    timeoutId = setTimeout(() => {
-                                                        dropdownMenu.style.opacity =
-                                                            "0";
-                                                        dropdownMenu.style.visibility =
-                                                            "hidden";
-                                                        setTimeout(() => {
-                                                            dropdownMenu.style
-                                                                .display =
-                                                                "none";
-                                                        }, 500);
-                                                    }, 1000); // 1-second delay before hiding
-                                                });
-                                            });
-                                        });
-                                        </script>
                                         @endif
 
 
@@ -875,5 +469,87 @@ $(document).ready(function() {
 });
 </script>
 
+<!-- JavaScript for Toggle Functionality -->
+<script>
+// Function to Toggle Visibility
+function toggleDivVisibility() {
+    var div = document.getElementById("inputButtonDiv");
+    var toggleButton = document.getElementById("toggleButton");
 
+    // Check current display status
+    if (div.style.display === "none") {
+        div.style.display = "block"; // Show the input and button
+        toggleButton.innerText =
+            "Hide Input and Button"; // Change button text
+    } else {
+        div.style.display = "none"; // Hide the input and button
+        toggleButton.innerText =
+            "Show Input and Button"; // Change button text back
+    }
+}
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let buttons = document.querySelectorAll(".viewUIButton");
+
+    buttons.forEach(button => {
+        let dropdownMenu = button.nextElementSibling;
+        let timeoutId;
+
+        // Show menu on button hover
+        button.addEventListener("mouseenter", function() {
+            clearTimeout(timeoutId);
+            dropdownMenu.style.display = "block";
+            setTimeout(() => {
+                dropdownMenu.style.opacity =
+                    "1";
+                dropdownMenu.style.visibility =
+                    "visible";
+            }, 100);
+        });
+
+        // Keep menu open when hovering inside it
+        dropdownMenu.addEventListener("mouseenter", function() {
+            clearTimeout(timeoutId);
+            dropdownMenu.style.display = "block";
+            dropdownMenu.style.opacity = "1";
+            dropdownMenu.style.visibility = "visible";
+        });
+
+        // Hide menu when cursor leaves button or dropdown
+        button.addEventListener("mouseleave", function() {
+            timeoutId = setTimeout(() => {
+                if (!dropdownMenu.matches(
+                        ":hover")) {
+                    dropdownMenu.style.opacity =
+                        "0";
+                    dropdownMenu.style
+                        .visibility = "hidden";
+                    setTimeout(() => {
+                        dropdownMenu
+                            .style
+                            .display =
+                            "none";
+                    }, 500);
+                }
+            }, 1000); // 1-second delay before hiding
+        });
+
+        dropdownMenu.addEventListener("mouseleave", function() {
+            timeoutId = setTimeout(() => {
+                dropdownMenu.style.opacity =
+                    "0";
+                dropdownMenu.style.visibility =
+                    "hidden";
+                setTimeout(() => {
+                    dropdownMenu.style
+                        .display =
+                        "none";
+                }, 500);
+            }, 1000); // 1-second delay before hiding
+        });
+    });
+});
+</script>
 @endsection

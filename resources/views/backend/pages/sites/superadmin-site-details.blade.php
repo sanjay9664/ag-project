@@ -18,8 +18,8 @@
         style="background:#002E6E; flex-wrap: wrap;">
         <!-- Logo Section -->
         <a class="navbar-brand" href="#">
-            <img src="https://sochiot.com/wp-content/uploads/2022/04/sochiotlogo-re-e1688377669450.png"
-                alt="sochiot_Logo" style="width: 120px; height: 40px; background: transparent;">
+            <img src="https://genset.innovatorautomation.co.in/assets/logo.svg" alt="sochiot_Logo"
+                style="width: 120px; height: 40px;background: white;border-radius: 50px;margin-left: 40px;">
         </a>
         <!-- Title Section -->
         <h5 class="my-3" style="padding-right: 117px;">DG SET MONITORING SYSTEM</h5>
