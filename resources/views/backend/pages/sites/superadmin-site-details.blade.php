@@ -151,21 +151,30 @@
                         @endif
 
 
-
-                        <!-- **************************************************************** -->
                         <?php
-                    $key = $sitejsonData->running_hours->add;
-                    $addValue = '_';
-                    foreach ($eventData as $event) {
-                        $eventArray = $event->getArrayCopy();
-                        if ($eventArray['module_id'] == $sitejsonData->running_hours->md) {
-                            if (array_key_exists($key, $eventArray)) {
-                                $addValue = number_format((float)$eventArray[$key], 2);  // Limiting decimal to 2
+                        $key = $sitejsonData->running_hours->add;
+                        $addValue = '_';
+                        $increaseMinutes = isset($sitejsonData->running_hours->increase_minutes) 
+                            ? $sitejsonData->running_hours->increase_minutes 
+                            : null;
+
+                        foreach ($eventData as $event) {
+                            $eventArray = $event->getArrayCopy();
+                            if ($eventArray['module_id'] == $sitejsonData->running_hours->md) {
+                                if (array_key_exists($key, $eventArray)) {
+                                    $addValue = (float)$eventArray[$key];
+
+                                    if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
+                                        $addValue = $addValue / (float)$increaseMinutes;
+                                    }
+
+                                    $addValue = number_format($addValue, 2);
+                                }
+                                break;
                             }
-                            break;
                         }
-                    }
-                ?>
+                        ?>
+
 
                         <div class="card mb-1 shadow-sm border-0">
                             <div class="card-body text-center">
@@ -224,7 +233,7 @@
                                         <div style="font-weight: bold; font-size: 16px; color: #333;">
                                             Total kWh: <span
                                                 style="font-weight: normal; font-size: 14px; font-weight: bold;">{{$formattedKwhValue}}
-                                                Hrs</span>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -1518,36 +1527,48 @@
 </div>
 @endif
 
-                          <?php
+                        <?php
                     $key = $sitejsonData->running_hours->add;
                     $addValue = '_';
+                    $increaseMinutes = isset($sitejsonData->running_hours->increase_minutes) 
+                        ? $sitejsonData->running_hours->increase_minutes 
+                        : null;
+
                     foreach ($eventData as $event) {
                         $eventArray = $event->getArrayCopy();
                         if ($eventArray['module_id'] == $sitejsonData->running_hours->md) {
                             if (array_key_exists($key, $eventArray)) {
-                                $addValue = number_format((float)$eventArray[$key], 2);  // Limiting decimal to 2
+                                $addValue = (float)$eventArray[$key];
+
+                                if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
+                                    $addValue = $addValue / (float)$increaseMinutes;
+                                }
+
+                                $addValue = number_format($addValue, 2);
                             }
                             break;
                         }
                     }
-                ?>
-<div class="card mb-1 shadow-sm border-0">
-    <div class="card-body text-center">
-        <div class="d-flex align-items-center gap-4 mb-1"> 
-            <!-- Running Person Icon (Logo) -->
-            <i class="fas fa-running" style="color: goldenrod; font-size: 40px; margin-right: 20px;"></i>
-            
-            <!-- Running Hours Label and Value -->
-            <div>
-               <div style="font-weight: bold; font-size: 16px; color: #333;">
-                                            Running Hours: <span
-                                                style="font-weight: normal; font-size: 14px; font-weight: bold;">{{ $addValue }}
-                                                Hrs</span>
-                                        </div>
-            </div>
-        </div>
-    </div>
-</div>
+                    ?>
+
+
+                        <div class="card mb-1 shadow-sm border-0">
+                            <div class="card-body text-center">
+                                <div class="d-flex align-items-center gap-4 mb-1"> 
+                                    <!-- Running Person Icon (Logo) -->
+                                    <i class="fas fa-running" style="color: goldenrod; font-size: 40px; margin-right: 20px;"></i>
+                                    
+                                    <!-- Running Hours Label and Value -->
+                                    <div>
+                                    <div style="font-weight: bold; font-size: 16px; color: #333;">
+                                                                    Running Hours: <span
+                                                                        style="font-weight: normal; font-size: 14px; font-weight: bold;">{{ $addValue }}
+                                                                        Hrs</span>
+                                                                </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
  <!-- ************************************************************************************* -->
                         <!-- last running -->
                         
@@ -1585,7 +1606,7 @@
                 <div style="font-weight: bold; font-size: 16px; color: #333;">
                                             Total kWh: <span
                                                 style="font-weight: normal; font-size: 14px; font-weight: bold;">{{$formattedKwhValue}}
-                                                Hrs</span>
+                                                </span>
                                         </div>
             </div>
         </div>

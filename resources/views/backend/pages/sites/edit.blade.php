@@ -391,6 +391,9 @@ input {
                                                     <input type="text" name="running_hours_add" class="form-control"
                                                         value="{{ old('running_hours', $siteData['running_hours']['add'] ?? '') }}"
                                                         style="width: 80px;" placeholder="ADD">
+                                                    <input type="text" name="increase_minutes" class="form-control"
+                                                        value="{{ old('running_hours', $siteData['running_hours']['increase_minutes'] ?? '') }}"
+                                                        style="width: 80px;" placeholder="Minutes">
                                                 </div>
                                                 <div class="d-flex">
                                                     <div class="fw-bold text-secondary text-center">
