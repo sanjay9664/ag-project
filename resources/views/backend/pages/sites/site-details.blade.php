@@ -196,39 +196,46 @@
                         </tr>
                         <tr>
                             <?php
-                                $increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
+// Fetch `increase_running_hours` from running_hours table based on site_id
+$increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
 
-                                $increaseRunningHours = 0;
-                                $siteId = $sitejsonData->id ?? null;
+$increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
 
-                                if ($siteId && $increased_running_hours) { // Ensure the record exists
-                                    foreach ((array) $increased_running_hours as $runningHour) {
-                                        if ($runningHour->site_id == $siteId) {
-                                            $increaseRunningHours = (float) $runningHour->increase_running_hours; // Convert to float
-                                            break;
-                                        }
-                                    }
-                                }
+// Ensure `$siteId` is properly used
+$siteId = $sitejsonData->id ?? null;
 
-                                // Get addValue from event data
-                                $key = $sitejsonData->running_hours->add ?? null;
-                                $addValue = 0;
+// Initialize $addValue
+$addValue = 0;
+$key = $sitejsonData->running_hours->add ?? null;
 
-                                foreach ($eventData as $event) {
-                                    $eventArray = $event->getArrayCopy();
-                                    if (isset($eventArray['module_id']) && $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)) {
-                                        if ($key && array_key_exists($key, $eventArray)) {
-                                            $addValue = (float) $eventArray[$key]; // Convert to float
-                                        }
-                                        break;
-                                    }
-                                }
+foreach ($eventData as $event) {
+    $eventArray = $event->getArrayCopy();
 
-                                // Handle null case safely
-                                $inc_addValue = $addValue + ($increased_running_hours->increase_running_hours ?? 0);
+    if (
+        isset($eventArray['module_id']) && 
+        $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)
+    ) {
+        if ($key && array_key_exists($key, $eventArray)) {
+            $addValue = (float) $eventArray[$key];
+        }
+        break;
+    }
+}
 
-                                $inc_addValueFormatted = number_format($inc_addValue, 2);
-                            ?>
+// Handle `increase_minutes` calculation
+$increaseMinutes = $sitejsonData->running_hours->increase_minutes ?? null;
+echo $increaseRunningHours;
+
+$inc_addValue = $addValue;
+
+if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
+    $inc_addValue /= (float)$increaseMinutes;
+}
+
+$tempvariable = number_format($inc_addValue, 2);
+$inc_addValueFormatted = $tempvariable + $increaseRunningHours;
+?>
+
 
                             <?php
                                 $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
@@ -262,7 +269,7 @@
                                         @if(auth()->user()->hasRole('superadmin'))
                                         <h4 class="text-dark">{{ $inc_addValueFormatted }} Hrs</h4>
                                         @else
-                                        <h4 class="text-dark">{{ $inc_addValueFormatted; }} Hrs
+                                        <h4 class="text-dark">{{ $inc_addValueFormatted }} Hrs
                                         </h4>
                                         @endif
                                     </div>
@@ -464,40 +471,47 @@
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <?php
-                                $increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
+                                                            <?php
+// Fetch `increase_running_hours` from running_hours table based on site_id
+$increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
 
-                                $increaseRunningHours = 0;
-                                $siteId = $sitejsonData->id ?? null;
+$increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
 
-                                if ($siteId && $increased_running_hours) { // Ensure the record exists
-                                    foreach ((array) $increased_running_hours as $runningHour) {
-                                        if ($runningHour->site_id == $siteId) {
-                                            $increaseRunningHours = (float) $runningHour->increase_running_hours; // Convert to float
-                                            break;
-                                        }
-                                    }
-                                }
+// Ensure `$siteId` is properly used
+$siteId = $sitejsonData->id ?? null;
 
-                                // Get addValue from event data
-                                $key = $sitejsonData->running_hours->add ?? null;
-                                $addValue = 0;
+// Initialize $addValue
+$addValue = 0;
+$key = $sitejsonData->running_hours->add ?? null;
 
-                                foreach ($eventData as $event) {
-                                    $eventArray = $event->getArrayCopy();
-                                    if (isset($eventArray['module_id']) && $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)) {
-                                        if ($key && array_key_exists($key, $eventArray)) {
-                                            $addValue = (float) $eventArray[$key]; // Convert to float
-                                        }
-                                        break;
-                                    }
-                                }
+foreach ($eventData as $event) {
+    $eventArray = $event->getArrayCopy();
 
-                                // Handle null case safely
-                                $inc_addValue = $addValue + ($increased_running_hours->increase_running_hours ?? 0);
+    if (
+        isset($eventArray['module_id']) && 
+        $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)
+    ) {
+        if ($key && array_key_exists($key, $eventArray)) {
+            $addValue = (float) $eventArray[$key];
+        }
+        break;
+    }
+}
 
-                                $inc_addValueFormatted = number_format($inc_addValue, 2);
-                            ?>
+// Handle `increase_minutes` calculation
+$increaseMinutes = $sitejsonData->running_hours->increase_minutes ?? null;
+
+$inc_addValue = $addValue;
+
+if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
+    $inc_addValue /= (float)$increaseMinutes;
+}
+
+$tempvariable = number_format($inc_addValue, 2);
+$inc_addValueFormatted = $tempvariable + $increaseRunningHours;
+?>
+
+
 
                             <?php
                                 $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;

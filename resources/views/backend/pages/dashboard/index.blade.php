@@ -143,36 +143,45 @@ Dashboard Page - Admin Panel
                                     </td>
 
                                     <?php
-                                        $addValuerun = 0;
+$addValuerun = 0;
 
-                                        foreach ($sites as $site) {
-                                            $data = json_decode($site->data);
+foreach ($sites as $site) {
+    $data = json_decode($site->data);
 
-                                            if ($data && isset($data->running_hours)) {
-                                                $parameters = $data->running_hours;
+    if ($data && isset($data->running_hours)) {
+        $parameters = $data->running_hours;
 
-                                                // Ensure md and add fields exist
-                                                if (isset($parameters->md, $parameters->add)) {
-                                                    $moduleId = $parameters->md;
-                                                    $fieldValue = $parameters->add;
+        if (isset($parameters->md, $parameters->add)) {
+            $moduleId = $parameters->md;
+            $fieldValue = $parameters->add;
 
-                                                    foreach ($events as $event) {
-                                                        if ($event['admin_id'] == $login->user_id && isset($event['module_id']) && $event['module_id'] == $moduleId) {
-                                                            if (isset($event[$fieldValue]) && is_numeric($event[$fieldValue])) {
-                                                                $addValuerun = (float) $event[$fieldValue]; // Ensure it's numeric
-                                                                break 2; // Exit both loops after finding the value
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    ?>
+            $increaseMinutes = $parameters->increase_minutes ?? null; // Get increase_minutes value
+
+            foreach ($events as $event) {
+                if ($event['admin_id'] == $login->user_id && isset($event['module_id']) && $event['module_id'] == $moduleId) {
+                    if (isset($event[$fieldValue]) && is_numeric($event[$fieldValue])) {
+                        $addValuerun = (float) $event[$fieldValue];
+
+                        // Divide by increase_minutes if it's numeric and greater than zero
+                        if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
+                            $addValuerun /= (float)$increaseMinutes;
+                        }
+
+                        $addValuerun = number_format($addValuerun, 2); // Format to 2 decimal places
+                        break 2; // Exit both loops after finding the value
+                    }
+                }
+            }
+        }
+    }
+}
+?>
+
+
+
 
                                     @php
                                     $present_site = $sites->firstWhere('email', $login->email);
-
-
                                     $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
                                     @endphp
 
@@ -184,7 +193,6 @@ Dashboard Page - Admin Panel
                                             @csrf
                                             <input type="hidden" name="site_id" class="site_id"
                                                 value="{{ $present_site->id ?? '' }}">
-
 
 
                                             <td>
@@ -246,12 +254,7 @@ Dashboard Page - Admin Panel
                                     </div>
                                     @endif
 
-                                    <!-- <td>
-                                        @php
-                                        $site = $sites->firstWhere('email', $login->email);
-                                        @endphp
-                                        {{ $site ? $site->site_name : '_' }}
-                                    </td> -->
+
                                     <td>
                                         @php
                                         $siteData = $runningHours[$present_site->id ?? ''] ?? null;

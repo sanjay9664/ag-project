@@ -233,6 +233,7 @@
                                         <div style="font-weight: bold; font-size: 16px; color: #333;">
                                             Total kWh: <span
                                                 style="font-weight: normal; font-size: 14px; font-weight: bold;">{{$formattedKwhValue}}
+                                                Units
                                             </span>
                                         </div>
                                     </div>
@@ -1605,7 +1606,7 @@
                 
                 <div style="font-weight: bold; font-size: 16px; color: #333;">
                                             Total kWh: <span
-                                                style="font-weight: normal; font-size: 14px; font-weight: bold;">{{$formattedKwhValue}}
+                                                style="font-weight: normal; font-size: 14px; font-weight: bold;">{{$formattedKwhValue}} Units
                                                 </span>
                                         </div>
             </div>
