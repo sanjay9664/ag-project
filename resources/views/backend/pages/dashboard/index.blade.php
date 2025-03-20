@@ -158,17 +158,24 @@ foreach ($sites as $site) {
             $increaseMinutes = $parameters->increase_minutes ?? null; // Get increase_minutes value
 
             foreach ($events as $event) {
-                if ($event['admin_id'] == $login->user_id && isset($event['module_id']) && $event['module_id'] == $moduleId) {
+                if (
+                    isset($event['admin_id'], $event['module_id']) && 
+                    $event['admin_id'] == $login->user_id && 
+                    $event['module_id'] == $moduleId
+                ) {
                     if (isset($event[$fieldValue]) && is_numeric($event[$fieldValue])) {
                         $addValuerun = (float) $event[$fieldValue];
 
-                        // Divide by increase_minutes if it's numeric and greater than zero
-                        if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
+                        // Additional check to ensure $increaseMinutes is valid and numeric
+                        if (!empty($increaseMinutes) && is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
                             $addValuerun /= (float)$increaseMinutes;
                         }
 
                         $addValuerun = number_format($addValuerun, 2); // Format to 2 decimal places
                         break 2; // Exit both loops after finding the value
+                    } else {
+                        // Log unexpected non-numeric values for debugging
+                        error_log("Non-numeric value encountered in event field: " . print_r($event[$fieldValue], true));
                     }
                 }
             }
