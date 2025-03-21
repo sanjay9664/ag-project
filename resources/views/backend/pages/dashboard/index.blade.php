@@ -142,48 +142,46 @@ Dashboard Page - Admin Panel
                                         {{ $siteFound ? ($isRunning ? 'Running' : 'Stop') : '_' }}
                                     </td>
 
+
                                     <?php
-$addValuerun = 0;
+                                        $addValuerun = 0;
 
-foreach ($sites as $site) {
-    $data = json_decode($site->data);
+                                        foreach ($sites as $site) {
+                                            $data = json_decode($site->data);
 
-    if ($data && isset($data->running_hours)) {
-        $parameters = $data->running_hours;
+                                            if ($data && isset($data->running_hours)) {
+                                                $parameters = $data->running_hours;
 
-        if (isset($parameters->md, $parameters->add)) {
-            $moduleId = $parameters->md;
-            $fieldValue = $parameters->add;
+                                                if (isset($parameters->md, $parameters->add)) {
+                                                    $moduleId = $parameters->md;
+                                                    $fieldValue = $parameters->add;
 
-            $increaseMinutes = $parameters->increase_minutes ?? null; // Get increase_minutes value
+                                                    $increaseMinutes = $parameters->increase_minutes ?? null; 
 
-            foreach ($events as $event) {
-                if (
-                    isset($event['admin_id'], $event['module_id']) && 
-                    $event['admin_id'] == $login->user_id && 
-                    $event['module_id'] == $moduleId
-                ) {
-                    if (isset($event[$fieldValue]) && is_numeric($event[$fieldValue])) {
-                        $addValuerun = (float) $event[$fieldValue];
+                                                    foreach ($events as $event) {
+                                                        if (
+                                                            isset($event['admin_id'], $event['module_id']) && 
+                                                            $event['admin_id'] == $login->user_id && 
+                                                            $event['module_id'] == $moduleId
+                                                        ) {
+                                                            if (!isset($event[$fieldValue]) || !is_numeric($event[$fieldValue])) {
+                                                                continue;
+                                                            }
 
-                        // Additional check to ensure $increaseMinutes is valid and numeric
-                        if (!empty($increaseMinutes) && is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
-                            $addValuerun /= (float)$increaseMinutes;
-                        }
+                                                            $addValuerun = (float) $event[$fieldValue];
 
-                        $addValuerun = number_format($addValuerun, 2); // Format to 2 decimal places
-                        break 2; // Exit both loops after finding the value
-                    } else {
-                        // Log unexpected non-numeric values for debugging
-                        error_log("Non-numeric value encountered in event field: " . print_r($event[$fieldValue], true));
-                    }
-                }
-            }
-        }
-    }
-}
-?>
+                                                            if (!empty($increaseMinutes) && is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
+                                                                $addValuerun /= (float)$increaseMinutes;
+                                                            }
 
+                                                            $addValuerun = number_format($addValuerun, 2);
+                                                            break 2; 
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ?>
 
 
 
@@ -247,9 +245,6 @@ foreach ($sites as $site) {
                                                     </div>
                                                 </div>
                                             </td>
-
-
-
 
                                         </form>
                                     </div>
