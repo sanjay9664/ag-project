@@ -144,45 +144,27 @@ Dashboard Page - Admin Panel
 
 
                                     <?php
-                                        $addValuerun = 0;
-
-                                        foreach ($sites as $site) {
+                                         $addValuerun = 0;
+                                         foreach ($sites as $site) {
                                             $data = json_decode($site->data);
-
                                             if ($data && isset($data->running_hours)) {
                                                 $parameters = $data->running_hours;
-
+                                                // Ensure md and add fields exist
                                                 if (isset($parameters->md, $parameters->add)) {
                                                     $moduleId = $parameters->md;
                                                     $fieldValue = $parameters->add;
-
-                                                    $increaseMinutes = $parameters->increase_minutes ?? null; 
-
                                                     foreach ($events as $event) {
-                                                        if (
-                                                            isset($event['admin_id'], $event['module_id']) && 
-                                                            $event['admin_id'] == $login->user_id && 
-                                                            $event['module_id'] == $moduleId
-                                                        ) {
-                                                            if (!isset($event[$fieldValue]) || !is_numeric($event[$fieldValue])) {
-                                                                continue;
-                                                            }
-
-                                                            $addValuerun = (float) $event[$fieldValue];
-
-                                                            if (!empty($increaseMinutes) && is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
-                                                                $addValuerun /= (float)$increaseMinutes;
-                                                            }
-
-                                                            $addValuerun = number_format($addValuerun, 2);
-                                                            break 2; 
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    ?>
-
+                                                         if ($event['admin_id'] == $login->user_id && isset($event['module_id']) && $event['module_id'] == $moduleId) {
+                                                             if (isset($event[$fieldValue]) && is_numeric($event[$fieldValue])) {
+                                                                 $addValuerun = (float) $event[$fieldValue]; // Ensure it's numeric
+                                                                 break 2; // Exit both loops after finding the value
+                                                             }
+                                                         }
+                                                     }
+                                                 }
+                                             }
+                                         }
+                                     ?>
 
 
                                     @php
