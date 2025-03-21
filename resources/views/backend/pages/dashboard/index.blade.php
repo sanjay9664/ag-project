@@ -8,7 +8,7 @@ Dashboard Page - Admin Panel
 <!-- Start datatable css -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="{{url('backend/assets/css//responsive.bootstrap.min.css'}}">
+<link rel="stylesheet" type="text/css" href="{{url('backend/assets/css//responsive.bootstrap.min.css')}}">
 <link rel="stylesheet" type="text/css"
     href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
 <link rel="stylesheet" href="{{url('backend/assets/css/dashboard.css')}}">
@@ -141,29 +141,53 @@ Dashboard Page - Admin Panel
                                         {{ $siteFound ? ($isRunning ? 'Running' : 'Stop') : '_' }}
                                     </td>
 
-
                                     <?php
-                                         $addValuerun = 0;
-                                         foreach ($sites as $site) {
-                                            $data = json_decode($site->data);
-                                            if ($data && isset($data->running_hours)) {
-                                                $parameters = $data->running_hours;
-                                                // Ensure md and add fields exist
-                                                if (isset($parameters->md, $parameters->add)) {
-                                                    $moduleId = $parameters->md;
-                                                    $fieldValue = $parameters->add;
-                                                    foreach ($events as $event) {
-                                                         if ($event['admin_id'] == $login->user_id && isset($event['module_id']) && $event['module_id'] == $moduleId) {
-                                                             if (isset($event[$fieldValue]) && is_numeric($event[$fieldValue])) {
-                                                                 $addValuerun = (float) $event[$fieldValue]; // Ensure it's numeric
-                                                                 break 2; // Exit both loops after finding the value
-                                                             }
-                                                         }
-                                                     }
-                                                 }
-                                             }
-                                         }
-                                     ?>
+    $addValuerun = 0;
+
+    foreach ($sites as $site) {
+        $data = json_decode($site->data);
+
+        if ($data && isset($data->running_hours)) {
+            $parameters = $data->running_hours;
+
+            if (isset($parameters->md, $parameters->add)) {
+                $moduleId = $parameters->md;
+                $fieldValue = $parameters->add;
+
+                // Ensure $increaseMinutes is numeric; set default to 1 if null or invalid
+                $increaseMinutes = isset($parameters->increase_minutes) && is_numeric($parameters->increase_minutes) && (float)$parameters->increase_minutes > 0 
+                    ? (float)$parameters->increase_minutes 
+                    : 1; 
+
+                foreach ($events as $event) {
+                    if (
+                        isset($event['admin_id'], $event['module_id']) && 
+                        $event['admin_id'] == $login->user_id && 
+                        $event['module_id'] == $moduleId
+                    ) {
+                        // Check if $fieldValue exists and is numeric before casting
+                        if (!isset($event[$fieldValue]) || !is_numeric($event[$fieldValue])) {
+                            continue;
+                        }
+
+                        // Explicitly cast to float to prevent non-numeric issues
+                        $addValuerun = (float) $event[$fieldValue];
+
+                        // Perform division only if increaseMinutes is valid
+                        if ($increaseMinutes > 0) {
+                            $addValuerun /= $increaseMinutes;
+                        }
+
+                        // Ensure numeric formatting
+                        $addValuerun = number_format($addValuerun, 2, '.', '');
+                        break 2; 
+                    }
+                }
+            }
+        }
+    }
+?>
+
 
 
                                     @php
