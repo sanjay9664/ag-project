@@ -1,4 +1,3 @@
-
 @extends('backend.layouts.master')
 
 @section('title')
@@ -6,11 +5,12 @@
 @endsection
 
 @section('styles')
-    <!-- Start datatable css -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+<!-- Start datatable css -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="{{url('backend/assets/css//responsive.bootstrap.min.css')}}">
+<link rel="stylesheet" type="text/css"
+    href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
 @endsection
 
 @section('admin-content')
@@ -43,7 +43,8 @@
                     <h4 class="header-title float-left">{{ __('Roles') }}</h4>
                     <p class="float-right mb-2">
                         @if (Auth::user()->can('role.create'))
-                            <a class="btn btn-primary text-white" href="{{ route('admin.roles.create') }}">Create New Role</a>
+                        <a class="btn btn-primary text-white" href="{{ route('admin.roles.create') }}">Create New
+                            Role</a>
                         @endif
                     </p>
                     <div class="clearfix"></div>
@@ -59,36 +60,39 @@
                                 </tr>
                             </thead>
                             <tbody>
-                               @foreach ($roles as $role)
-                               <tr>
+                                @foreach ($roles as $role)
+                                <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $role->name }}</td>
                                     <td>
                                         @foreach ($role->permissions as $permission)
-                                            <span class="badge badge-info mr-1">
-                                                {{ $permission->name }}
-                                            </span>
+                                        <span class="badge badge-info mr-1">
+                                            {{ $permission->name }}
+                                        </span>
                                         @endforeach
                                     </td>
                                     <td>
                                         @if (auth::user()->can('admin.edit'))
-                                            <a class="btn btn-success text-white" href="{{ route('admin.roles.edit', $role->id) }}">Edit</a>
+                                        <a class="btn btn-success text-white"
+                                            href="{{ route('admin.roles.edit', $role->id) }}">Edit</a>
                                         @endif
 
                                         @if (auth::user()->can('admin.edit'))
-                                            <a class="btn btn-danger text-white" href="javascript:void(0);"
-                                                onclick="event.preventDefault(); if(confirm('Are you sure to delete?')) { document.getElementById('delete-form-{{ $role->id }}').submit(); }">
-                                                {{ __('Delete') }}
-                                            </a>
+                                        <a class="btn btn-danger text-white" href="javascript:void(0);"
+                                            onclick="event.preventDefault(); if(confirm('Are you sure to delete?')) { document.getElementById('delete-form-{{ $role->id }}').submit(); }">
+                                            {{ __('Delete') }}
+                                        </a>
 
-                                            <form id="delete-form-{{ $role->id }}" action="{{ route('admin.roles.destroy', $role->id) }}" method="POST" style="display: none;">
-                                                @method('DELETE')
-                                                @csrf
-                                            </form>
+                                        <form id="delete-form-{{ $role->id }}"
+                                            action="{{ route('admin.roles.destroy', $role->id) }}" method="POST"
+                                            style="display: none;">
+                                            @method('DELETE')
+                                            @csrf
+                                        </form>
                                         @endif
                                     </td>
                                 </tr>
-                               @endforeach
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -101,18 +105,18 @@
 @endsection
 
 @section('scripts')
-     <!-- Start datatable js -->
-     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
-     <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
-     <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
-     <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
-     <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
-     
-     <script>
-        if ($('#dataTable').length) {
-            $('#dataTable').DataTable({
-                responsive: true
-            });
-        }
-     </script>
+<!-- Start datatable js -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
+
+<script>
+if ($('#dataTable').length) {
+    $('#dataTable').DataTable({
+        responsive: true
+    });
+}
+</script>
 @endsection

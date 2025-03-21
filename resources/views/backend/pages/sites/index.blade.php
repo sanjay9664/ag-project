@@ -8,8 +8,7 @@
 <!-- Start datatable css -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css"
-    href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="{{url('backend/assets/css//responsive.bootstrap.min.css')}}">
 <link rel="stylesheet" type="text/css"
     href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
 @endsection
@@ -57,7 +56,7 @@
                                 <tr>
                                     <th width="5%">{{ __('Sl') }}</th>
                                     <th width="10%">{{ __('Site Name') }}</th>
-                                   
+
                                     <th width="10%">{{ __('Email') }}</th>
                                     <th width="15%">{{ __('Action') }}</th>
                                 </tr>
@@ -88,7 +87,8 @@
                                         </form>
                                         @endif
 
-                                        <a class="btn btn-primary text-white" href="{{ route('admin.sites.show', $site->slug) }}" target="_blank">View</a>
+                                        <a class="btn btn-primary text-white"
+                                            href="{{ route('admin.sites.show', $site->slug) }}" target="_blank">View</a>
                                     </td>
                                 </tr>
                                 @endforeach
