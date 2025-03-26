@@ -250,7 +250,7 @@ input {
                                 </div>
 
                                 <div class="col-md-3">
-                                    <div class="card" style="width: 100%; height: 975px;">
+                                    <div class="card" style="width: 100%; height: 905px;">
                                         <div class="card-header text-center bg-secondary text-white">
                                             ENGINE PARAMETERS
                                         </div>
@@ -367,13 +367,15 @@ input {
                                                     <input type="text" name="running_hours_add" class="form-control"
                                                         style="width: 80px;" placeholder="ADD">
                                                     <input type="text" name="increase_minutes" class="form-control"
-                                                        style="width: 80px;" placeholder="Minutes">
+                                                        style="width: 60px;  margin-left: -20px;" placeholder="Minutes">
                                                 </div>
                                                 <div class="d-flex">
-                                                    <div class="fw-bold text-secondary text-center">
-                                                        For admin Running status
-                                                        <input type="text" name="admin_run_hours"
-                                                            class="form-control ms-2" style="width: 90%;">
+                                                    <div class="fw-bold text-secondary text-center my-4">
+                                                        Hide/showing Increase Running Hours
+                                                        <input type="checkbox" name="admin_run_hours"
+                                                            class="form-check-input ms-2"
+                                                            {{ old('running_hours', $siteData['running_hours']['admin_run_hours'] ?? false) ? 'checked' : '' }}
+                                                            style="transform: scale(1.4);">
                                                     </div>
                                                 </div>
                                             </div>

@@ -24,6 +24,7 @@ Dashboard Page - Admin Panel
                     <li><a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
                     <li><span>{{ __('All Logins') }}</span></li>
                 </ul>
+
             </div>
         </div>
         <div class="col-sm-6 clearfix">
@@ -177,7 +178,6 @@ Dashboard Page - Admin Panel
                         if ($increaseMinutes > 0) {
                             $addValuerun /= $increaseMinutes;
                         }
-
                         // Ensure numeric formatting
                         $addValuerun = number_format($addValuerun, 2, '.', '');
                         break 2; 
@@ -186,10 +186,7 @@ Dashboard Page - Admin Panel
             }
         }
     }
-?>
-
-
-
+                                   ?>
                                     @php
                                     $present_site = $sites->firstWhere('email', $login->email);
                                     $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
@@ -204,7 +201,6 @@ Dashboard Page - Admin Panel
                                             <input type="hidden" name="site_id" class="site_id"
                                                 value="{{ $present_site->id ?? '' }}">
 
-
                                             <td>
                                                 <input type="text" class="form-control running_hours_admin"
                                                     value="{{ $addValuerun }}" readonly
@@ -212,7 +208,7 @@ Dashboard Page - Admin Panel
                                             </td>
                                             <!-- Button: Show Input and Button (By Default Visible) -->
                                             <td>
-                                                <button id="toggleButton" onclick="toggleDivVisibility()" style="
+                                                <button onclick="toggleDivVisibility(this)" style="
                                                     padding: 5px 10px; 
                                                     font-size: 14px; 
                                                     border-radius: 5px; 
@@ -226,25 +222,23 @@ Dashboard Page - Admin Panel
                                                 </button>
 
                                                 <!-- Div with Input and Button (Hidden by Default) -->
-                                                <div id="inputButtonDiv" style="display: none; margin-top: 10px;">
+                                                <div class="inputButtonDiv" style="display: none; margin-top: 10px;">
                                                     <div class="d-flex align-items-center gap-2 w-100">
-                                                        <!-- Input Field -->
                                                         <input type="text"
                                                             class="form-control border-1 px-2 py-1 increase_running_hours"
-                                                            id="increaseRunningHours" name="increase_running_hours"
+                                                            name="increase_running_hours"
                                                             data-site-id="{{ $present_site->id ?? '' }}"
                                                             style="outline: none; box-shadow: none; background: #e9ecef; border-radius: 5px; width: 70px; font-size: 14px; margin:10px">
 
-                                                        <!-- Submit Button -->
-                                                        <button id="submitButton" style="
-                                                        padding: 3px 8px; 
-                                                        font-size: 13px; 
-                                                        border-radius: 5px; 
-                                                        background-color: #28a745; 
-                                                        color: white; 
-                                                        border: none;
-                                                        cursor: pointer;
-                                                        transition: 0.3s ease-in-out;">
+                                                        <button style="
+                                                            padding: 3px 8px; 
+                                                            font-size: 13px; 
+                                                            border-radius: 5px; 
+                                                            background-color: #28a745; 
+                                                            color: white; 
+                                                            border: none;
+                                                            cursor: pointer;
+                                                            transition: 0.3s ease-in-out;">
                                                             Submit
                                                         </button>
                                                     </div>
@@ -260,8 +254,6 @@ Dashboard Page - Admin Panel
                                         <td></td>
                                     </div>
                                     @endif
-
-
                                     <td>
                                         @php
                                         $siteData = $runningHours[$present_site->id ?? ''] ?? null;
@@ -282,7 +274,6 @@ Dashboard Page - Admin Panel
                                     </td>
                                     <td>
                                         @if(auth()->user()->hasRole('superadmin'))
-
                                         <form class="text-center">
                                             @csrf
                                             <input type="hidden" name="user_id" value="{{ $login->user_id }}">
@@ -300,22 +291,13 @@ Dashboard Page - Admin Panel
                                                     <span class="dropdown-item text-muted">No Site Available</span>
                                                     @endif
                                                 </div>
-
                                             </div>
                                         </form>
-
-
-
                                         @endif
-
-
                                     </td>
-
                                 </tr>
                                 @endforeach
-
                             </tbody>
-
                         </table>
                     </div>
                     @else
@@ -348,7 +330,6 @@ Dashboard Page - Admin Panel
             </div>
         </div>
         <!-- data table end -->
-
     </div>
 </div>
 @endsection
@@ -378,10 +359,8 @@ document.getElementById('downloadReport').addEventListener('click', function() {
     const mainContent = document.querySelector('.main-content-inner');
     const originalPadding = mainContent.style.padding;
 
-
     // Temporarily adjust the padding of the main-content-inner (if necessary for better report layout)
     mainContent.style.padding = '0px';
-
     // Hide all elements that are not part of the table
     const unwantedElements = document.querySelectorAll(
         '.page-title-area, .float-right, .data-tables .dataTables_wrapper');
@@ -431,12 +410,10 @@ document.getElementById('downloadReport').addEventListener('click', function() {
 <script>
 $(document).ready(function() {
     function sendData(element) {
-        let site_id = $(element).data("site-id"); // Get site ID from the input field
-        let increase_running_hours = $(element).val(); // Get the entered value
-        increase_running_hours = parseInt(increase_running_hours, 10) ||
-            0; // Convert to integer, default to 0
+        let site_id = $(element).data("site-id");
+        let increase_running_hours = $(element).val();
+        increase_running_hours = parseInt(increase_running_hours, 10) || 0;
 
-        // Check if value is greater than 15
         if (increase_running_hours > 15) {
             if (!confirm("Are you sure you want to increase this value?")) {
                 return;
@@ -465,36 +442,53 @@ $(document).ready(function() {
         });
     }
 
+    // Save the current pagination page before reload
+    function savePaginationPage() {
+        let currentPage = $(".pagination .active a").text(); // Get current page number
+        localStorage.setItem("currentPage", currentPage); // Store it in local storage
+    }
 
+    // Restore pagination after reload
+    function restorePaginationPage() {
+        let savedPage = localStorage.getItem("currentPage");
+        if (savedPage) {
+            $(".pagination a").each(function() {
+                if ($(this).text() === savedPage) {
+                    $(this)[0].click(); // Trigger click to navigate to the saved page
+                }
+            });
+        }
+    }
 
     // Trigger AJAX when user changes the input field
     $(document).on("change", ".increase_running_hours", function() {
+        savePaginationPage(); // Save pagination before reloading
         sendData(this); // Pass the specific input field
     });
 
     $(document).on("click", "#submitButton", function() {
         let inputField = $(".increase_running_hours"); // Select the input field
+        savePaginationPage(); // Save pagination before reloading
         sendData(inputField); // Call sendData function
     });
+
+    // Restore pagination when page loads
+    restorePaginationPage();
 });
 </script>
 
-<!-- JavaScript for Toggle Functionality -->
 <script>
-// Function to Toggle Visibility
-function toggleDivVisibility() {
-    var div = document.getElementById("inputButtonDiv");
-    var toggleButton = document.getElementById("toggleButton");
+function toggleDivVisibility(button) {
+    var row = button.closest("td"); // Get the closest <td> to find related elements
+    var div = row.querySelector(".inputButtonDiv");
 
-    // Check current display status
-    if (div.style.display === "none") {
-        div.style.display = "block"; // Show the input and button
-        toggleButton.innerText =
-            "Hide Input and Button"; // Change button text
+    // Toggle visibility
+    if (div.style.display === "none" || div.style.display === "") {
+        div.style.display = "block";
+        button.innerText = "Hide Input and Button";
     } else {
-        div.style.display = "none"; // Hide the input and button
-        toggleButton.innerText =
-            "Show Input and Button"; // Change button text back
+        div.style.display = "none";
+        button.innerText = "Show Input and Button";
     }
 }
 </script>
@@ -557,7 +551,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         .display =
                         "none";
                 }, 500);
-            }, 1000); // 1-second delay before hiding
+            }, 1000);
         });
     });
 });

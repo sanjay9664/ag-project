@@ -385,9 +385,9 @@ input {
                                                     N/A
                                                 </div>
                                                 <div class="container d-flex">
-                                                    <input type="text" name="running_hours_md" class="form-control me-2"
+                                                    <input type="text" name="running_hours_md" class="form-control me-1"
                                                         value="{{ old('running_hours', $siteData['running_hours']['md'] ?? '') }}"
-                                                        style="width: 80px;" placeholder="MD">
+                                                        style="width: 60px; margin-left: -20px;" placeholder="MD">
                                                     <input type="text" name="running_hours_add" class="form-control"
                                                         value="{{ old('running_hours', $siteData['running_hours']['add'] ?? '') }}"
                                                         style="width: 80px;" placeholder="ADD">
@@ -395,14 +395,16 @@ input {
                                                         value="{{ old('running_hours', $siteData['running_hours']['increase_minutes'] ?? '') }}"
                                                         style="width: 80px;" placeholder="Minutes">
                                                 </div>
-                                                <div class="d-flex">
+                                                <div class="d-flex my-4">
                                                     <div class="fw-bold text-secondary text-center">
-                                                        For admin Running status
-                                                        <input type="text" name="admin_run_hours"
-                                                            class="form-control ms-2"
-                                                            value="{{ old('running_hours', $siteData['running_hours']['admin_run_hours'] ?? '') }}"
-                                                            style="width: 90%;margin-bottom:10px;">
+                                                        Hide/showing Increase Running Hours
+                                                        <input type="checkbox" name="admin_run_hours"
+                                                            class="form-check-input ms-2"
+                                                            {{ old('running_hours', $siteData['running_hours']['admin_run_hours'] ?? false) ? 'checked' : '' }}
+                                                            style="transform: scale(1.4);">
                                                     </div>
+
+
                                                 </div>
                                             </div>
                                         </div>

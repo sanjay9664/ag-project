@@ -37,7 +37,8 @@
                              @if ($usr->can('role.view'))
                              <li
                                  class="{{ Route::is('admin.roles.index')  || Route::is('admin.roles.edit') ? 'active' : '' }}">
-                                 <a href="{{ route('admin.roles.index') }}">All Roles</a></li>
+                                 <a href="{{ route('admin.roles.index') }}">All Roles</a>
+                             </li>
                              @endif
                              @if ($usr->can('role.create'))
                              <li class="{{ Route::is('admin.roles.create')  ? 'active' : '' }}"><a
@@ -60,7 +61,8 @@
                              @if ($usr->can('admin.view'))
                              <li
                                  class="{{ Route::is('admin.admins.index')  || Route::is('admin.admins.edit') ? 'active' : '' }}">
-                                 <a href="{{ route('admin.admins.index') }}">All Admins</a></li>
+                                 <a href="{{ route('admin.admins.index') }}">All Admins</a>
+                             </li>
                              @endif
 
                              @if ($usr->can('admin.create'))

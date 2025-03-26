@@ -36,7 +36,7 @@
 
 <div class="main-content-inner">
     <div class="row">
-        <!-- data table start -->
+        <!-- Data Table Start -->
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
@@ -49,16 +49,18 @@
                         @endif
                     </p>
                     <div class="clearfix"></div>
-                    <div class="data-tables">
+
+                    <!-- Table ko Responsive Banana -->
+                    <div class="table-responsive">
                         @include('backend.layouts.partials.messages')
-                        <table id="dataTable" class="text-center">
+                        <table id="dataTable" class="table table-striped table-bordered text-center w-100">
                             <thead class="bg-light text-capitalize">
                                 <tr>
-                                    <th width="5%">{{ __('Sl') }}</th>
-                                    <th width="10%">{{ __('Name') }}</th>
-                                    <th width="10%">{{ __('Email') }}</th>
-                                    <th width="40%">{{ __('Roles') }}</th>
-                                    <th width="15%">{{ __('Action') }}</th>
+                                    <th>{{ __('Sl') }}</th>
+                                    <th>{{ __('Name') }}</th>
+                                    <th>{{ __('Email') }}</th>
+                                    <th>{{ __('Roles') }}</th>
+                                    <th>{{ __('Action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -98,13 +100,27 @@
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
+                    </div> <!-- End Table Responsive -->
                 </div>
             </div>
         </div>
-        <!-- data table end -->
+        <!-- Data Table End -->
     </div>
 </div>
+
+<!-- DataTable Script -->
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('#dataTable').DataTable({
+        "autoWidth": false, // Auto Width Disable
+        "responsive": true, // Responsive Enable
+        "pageLength": 10 // Default Rows per Page
+    });
+});
+</script>
+@endpush
+
 @endsection
 
 @section('scripts')
