@@ -139,6 +139,17 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
+
+                        <form id="admin-logout-form" action="{{ route('admin.logout.submit') }}" method="POST"
+                            style="display: none;">
+                            @csrf
+                        </form>
+
+                        <button class="btn btn-outline-light btn-sm mx-1"
+                            onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
+                            Log Out
+                        </button>
+
                         <button class="btn btn-outline-light btn-sm mx-1" onclick="location.reload()">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
@@ -162,10 +173,12 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h3 class="text-primary">Site Overview</h3>
                 <div class="d-flex gap-2">
-                    <?php $bankName = request()->input('bank_name'); ?>
                     <select class="form-select form-select-sm" id="bankSelect">
                         <option selected>Select Bank</option>
-                        <option value="{{$bankName}}">{{$bankName}}</option>
+                        @foreach($siteData as $site)
+                        <option value="{{ json_decode($site->data)->generator }}">{{ json_decode($site->data)->generator }}
+                        </option>
+                        @endforeach
                     </select>
                     <select class="form-select form-select-sm" id="locationSelect">
                         <option selected>Select Location</option>

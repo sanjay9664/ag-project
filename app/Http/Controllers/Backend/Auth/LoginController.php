@@ -110,9 +110,20 @@ class LoginController extends Controller
                         'status' => 'active',
                     ]
                 );
+                return redirect('admin/admin-sites');
+            } else {
+                $data = Login::updateOrCreate(
+                    ['user_id' => $users->id],
+                    [
+                        'role' => 'admin',
+                        'ip_address' => $request->ip(),
+                        'status' => 'active',
+                    ]
+                );
+                return redirect('admin/sites');
             }            
-           
-            return redirect('admin/sites');
+            // return redirect('admin/sites');
+            // return redirect('admin/admin-sites');
         }
         session()->flash('error', 'Invalid email and password');
         return back();
