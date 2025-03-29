@@ -176,7 +176,8 @@
                     <select class="form-select form-select-sm" id="bankSelect">
                         <option selected>Select Bank</option>
                         @foreach($siteData as $site)
-                        <option value="{{ json_decode($site->data)->generator }}">{{ json_decode($site->data)->generator }}
+                        <option value="{{ json_decode($site->data)->generator }}">
+                            {{ json_decode($site->data)->generator }}
                         </option>
                         @endforeach
                     </select>
@@ -210,10 +211,23 @@
                         @php $i=1; @endphp
                         @foreach ($siteData as $site)
                         @php
-                        $sitejsonData = json_decode($site->data, true);
-                        $updatedAt = Carbon\Carbon::parse($latestCreatedAt);
-                        $now = Carbon\Carbon::now();
-                        $isRecent = $updatedAt->diffInHours($now) < 24; @endphp <tr data-site-id="{{ $site->id }}">
+                            $sitejsonData = json_decode($site->data, true);
+                            $updatedAt = null;
+                            $isRecent = false;
+
+                            if (!empty($site->updatedAt) && $site->updatedAt !== 'N/A') {
+                                try {
+                                    $updatedAt = Carbon\Carbon::parse($site->updatedAt);
+                                    $now = Carbon\Carbon::now();
+
+                                    $isRecent = $updatedAt->diffInHours($now) < 24;
+                                } catch (\Exception $e) {
+                                    \Log::error('Date Parsing Error: ' . $e->getMessage());
+                                }
+                            }
+                        @endphp
+
+                        <tr data-site-id="{{ $site->id }}">
                             <td>{{ $i }}</td>
                             <td style="color: {{ $isRecent ? 'green' : 'red' }};">
                                 <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
@@ -281,7 +295,9 @@
                                 {{ $inc_addValueFormatted }} Hrs
                             </td>
 
-                            <td class="last-updated">{{ $latestCreatedAt }}</td>
+                            <td class="last-updated">
+                                {{$site->updatedAt}}
+                            </td>
 
                             <td>
                                 @php

@@ -716,7 +716,6 @@ class SiteController extends Controller
         $eventData = [];
         $latestCreatedAt = null;
 
-        // Get the authenticated user
         $user = Auth::user();
         if (!$user) {
             return redirect()->route('login')->withErrors('You must be logged in.');
@@ -822,6 +821,24 @@ class SiteController extends Controller
 
             $sitejsonData = json_decode($siteData->first()->data, true);
 
+            foreach ($siteData as $site) {
+               
+                $matchingEvent = collect($eventData)->first(function ($event) use ($site) {
+                    return isset($event['device_id']) && isset($site->device_id) &&
+                           trim(strtolower($event['device_id'])) === trim(strtolower($site->device_id));
+                });
+            
+                $updatedAt = 'N/A';
+            
+                if ($matchingEvent && isset($matchingEvent['updatedAt'])) {
+                    $updatedAt = $matchingEvent['updatedAt']->toDateTime()
+                        ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+                        ->format('d-m-Y H:i:s');
+                }
+
+                $site->updatedAt = $updatedAt;
+            }
+            
             return view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'));
         }
     }
