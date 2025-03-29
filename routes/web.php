@@ -39,6 +39,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::resource('roles', RolesController::class);
     Route::resource('admins', AdminsController::class);
     Route::resource('sites', SiteController::class);
+    Route::get('/admin-sites', [SiteController::class, 'AdminSites'])->name('admin.sites');
     Route::get('/site-data/{slug}', [SiteController::class, 'fetchLatestData'])->name('site.fetchData');
 
     // Login Routes.

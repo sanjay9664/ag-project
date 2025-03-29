@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
 use MongoDB\BSON\UTCDateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
-use Auth;
+use Auth,DB;
 
 class SiteController extends Controller
 {
@@ -39,39 +39,6 @@ class SiteController extends Controller
         }
     }    
 
-
-// ********************************************************
-// public function create(Request $request)
-// {
-//     $type = $request->get('type');
-
-//     switch ($type) {
-//         case 'dg':
-//             // Logic for creating DG admin
-//             break;
-//         case 'energy':
-//             // Logic for creating Energy admin
-//             break;
-//         case 'meter':
-//             // Logic for creating Meter admin
-//             break;
-//         case 'tanks':
-//             // Logic for creating Tanks admin
-//             break;
-//         case 'pump':
-//             // Logic for creating Pump admin
-//             break;
-//         case 'lighting':
-//             // Logic for creating Lighting admin
-//             break;
-//         default:
-//             abort(404, 'Invalid Admin Type');
-//     }
-
-//     return view('backend.admins.create', compact('type'));
-// }
-
-// ********************************************************
     public function create(): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['site.create']);
@@ -552,7 +519,6 @@ class SiteController extends Controller
             }
         }
     
-        // Check if events are found
         if (empty($events)) {
             return redirect()->back()->withErrors('No data found for the specified module_id values.');
         }
@@ -627,6 +593,116 @@ class SiteController extends Controller
         }
     }
     
+    public function AdminSites(Request $request)
+    {
+        $role = $request->query('role'); 
+        $bankName = $request->query('bank_name');
+        $location = $request->query('location');
+
+        $siteData = collect();
+        $sitejsonData = null;
+        $eventData = [];
+        $latestCreatedAt = null;
+        
+        if (!empty($location)) {
+            $query = DB::table('sites');
+
+            if (!empty($bankName) && $bankName !== 'Select Bank') {
+                $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.generator')) = ?", [$bankName]);
+            }
+
+            if (!empty($location)) {
+                $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.group')) = ?", [$location]);
+            }
+
+            $siteData = $query->get();
+            $sitejsonData = $siteData->first() ? json_decode($siteData->first()->data, true) : null;
+
+            if (!empty($eventData)) {
+                usort($eventData, function ($a, $b) {
+                    return ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0);
+                });
+
+                $latestCreatedAt = $eventData[0]['createdAt']->toDateTime()
+                    ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+                    ->format('d-m-Y H:i:s');
+
+                foreach ($eventData as &$event) {
+                    $event['createdAt'] = $event['createdAt']->toDateTime()
+                        ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+                        ->format('d-m-Y H:i:s');
+                    $event['latestCreatedAt'] = $latestCreatedAt;
+                }
+            }
+
+            // if ($request->ajax()) {
+            //     return response()->json(view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'))->render());
+            // }
+            
+            if ($request->ajax()) {
+                return response()->json([
+                    'html' => view('backend.pages.sites.partials.site-table', compact('siteData', 'eventData', 'latestCreatedAt'))->render()
+                ]);
+            }
+
+            return view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'));
+        } else {
+            $siteData = Site::whereJsonContains('data->generator', $bankName)->get();
+
+            if ($siteData->isEmpty()) {
+                return redirect()->back()->withErrors('Site not found or module_id is missing.');
+            }
+
+            $decodedSiteData = $siteData->map(function ($site) {
+                return json_decode($site->data, true);
+            });
+
+            $mdValues = $this->extractMdFields($decodedSiteData->toArray());
+
+            $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+            $client = new MongoClient($mongoUri);
+            $database = $client->isa_qa;
+            $collection = $database->device_events;
+
+            if (!empty($mdValues)) {
+                $uniqueMdValues = array_unique(array_filter(array_map('intval', (array) $mdValues)));
+
+                foreach ($uniqueMdValues as $moduleId) {
+                    $event = $collection->findOne(
+                        ['module_id' => $moduleId],
+                        ['sort' => ['createdAt' => -1]]
+                    );
+
+                    if ($event) {
+                        $eventData[] = $event;
+                    }
+                }
+            }
+
+            if (empty($eventData)) {
+                return redirect()->back()->withErrors('No data found for the specified module_id values.');
+            }
+
+            usort($eventData, function ($a, $b) {
+                return ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0);
+            });
+
+            $latestCreatedAt = $eventData[0]['createdAt']->toDateTime()
+                ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+                ->format('d-m-Y H:i:s');
+
+            foreach ($eventData as &$event) {
+                $event['createdAt'] = $event['createdAt']->toDateTime()
+                    ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+                    ->format('d-m-Y H:i:s');
+                $event['latestCreatedAt'] = $latestCreatedAt;
+            }
+
+            $sitejsonData = json_decode($siteData->first()->data, true);
+
+            return view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'));
+        }
+    }
 
     public function fetchLatestData($slug)
     {

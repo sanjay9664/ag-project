@@ -91,7 +91,7 @@ Dashboard Page - Admin Panel
                                                             $fieldValue = $data->parameters->fuel->add;
 
                                                             if ($event['module_id'] == $moduleId && isset($event[$fieldValue])) {
-                                                                $addValuerun = (float) $event[$fieldValue]; // Ensure it's numeric
+                                                                $addValuerun = (float) $event[$fieldValue]; 
                                                                 break;
                                                             }
                                                         }
@@ -143,49 +143,44 @@ Dashboard Page - Admin Panel
                                     </td>
 
                                     <?php
-    $addValuerun = 0;
+                                        $addValuerun = 0;
 
-    foreach ($sites as $site) {
-        $data = json_decode($site->data);
+                                        foreach ($sites as $site) {
+                                            $data = json_decode($site->data);
 
-        if ($data && isset($data->running_hours)) {
-            $parameters = $data->running_hours;
+                                            if ($data && isset($data->running_hours)) {
+                                                $parameters = $data->running_hours;
 
-            if (isset($parameters->md, $parameters->add)) {
-                $moduleId = $parameters->md;
-                $fieldValue = $parameters->add;
+                                                if (isset($parameters->md, $parameters->add)) {
+                                                    $moduleId = $parameters->md;
+                                                    $fieldValue = $parameters->add;
 
-                // Ensure $increaseMinutes is numeric; set default to 1 if null or invalid
-                $increaseMinutes = isset($parameters->increase_minutes) && is_numeric($parameters->increase_minutes) && (float)$parameters->increase_minutes > 0 
-                    ? (float)$parameters->increase_minutes 
-                    : 1; 
+                                                    $increaseMinutes = isset($parameters->increase_minutes) && is_numeric($parameters->increase_minutes) && (float)$parameters->increase_minutes > 0 
+                                                        ? (float)$parameters->increase_minutes 
+                                                        : 1; 
 
-                foreach ($events as $event) {
-                    if (
-                        isset($event['admin_id'], $event['module_id']) && 
-                        $event['admin_id'] == $login->user_id && 
-                        $event['module_id'] == $moduleId
-                    ) {
-                        // Check if $fieldValue exists and is numeric before casting
-                        if (!isset($event[$fieldValue]) || !is_numeric($event[$fieldValue])) {
-                            continue;
-                        }
+                                                    foreach ($events as $event) {
+                                                        if (
+                                                            isset($event['admin_id'], $event['module_id']) && 
+                                                            $event['admin_id'] == $login->user_id && 
+                                                            $event['module_id'] == $moduleId
+                                                        ) {
+                                                            if (!isset($event[$fieldValue]) || !is_numeric($event[$fieldValue])) {
+                                                                continue;
+                                                            }
 
-                        // Explicitly cast to float to prevent non-numeric issues
-                        $addValuerun = (float) $event[$fieldValue];
+                                                            $addValuerun = (float) $event[$fieldValue];
 
-                        // Perform division only if increaseMinutes is valid
-                        if ($increaseMinutes > 0) {
-                            $addValuerun /= $increaseMinutes;
-                        }
-                        // Ensure numeric formatting
-                        $addValuerun = number_format($addValuerun, 2, '.', '');
-                        break 2; 
-                    }
-                }
-            }
-        }
-    }
+                                                            if ($increaseMinutes > 0) {
+                                                                $addValuerun /= $increaseMinutes;
+                                                            }
+                                                            $addValuerun = number_format($addValuerun, 2, '.', '');
+                                                            break 2; 
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                    ?>
                                     @php
                                     $present_site = $sites->firstWhere('email', $login->email);
@@ -206,7 +201,7 @@ Dashboard Page - Admin Panel
                                                     value="{{ $addValuerun }}" readonly
                                                     style="outline: none; box-shadow: none;">
                                             </td>
-                                            <!-- Button: Show Input and Button (By Default Visible) -->
+
                                             <td>
                                                 <button onclick="toggleDivVisibility(this)" style="
                                                     padding: 5px 10px; 
@@ -221,7 +216,6 @@ Dashboard Page - Admin Panel
                                                     Show Input and Button
                                                 </button>
 
-                                                <!-- Div with Input and Button (Hidden by Default) -->
                                                 <div class="inputButtonDiv" style="display: none; margin-top: 10px;">
                                                     <div class="d-flex align-items-center gap-2 w-100">
                                                         <input type="text"
@@ -262,7 +256,6 @@ Dashboard Page - Admin Panel
                                         @endphp
 
                                         <div>
-                                            <!-- <span class="fw-bold text-primary">Total Running Hours:</span> -->
                                             <span class="text-dark">{{ $totalAddrunValue }}</span>
                                         </div>
                                     </td>
@@ -282,9 +275,14 @@ Dashboard Page - Admin Panel
                                                 <button class="btn btn-primary viewUIButton">User UI</button>
                                                 <div class="dropdown-menu">
                                                     @if(isset($site) && $site->slug)
+                                                        @php
+                                                            $siteData = json_decode($site->data, true);
+                                                        @endphp
 
-                                                    <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
-                                                        target="_blank" class="dropdown-item">Admin View</a>
+                                                        @if(isset($siteData['generator']))
+                                                            <a href="{{ url('admin/admin-sites') . '?role=admin&bank_name=' . urlencode($siteData['generator']) }}" 
+                                                            target="_blank" class="dropdown-item">Admin View</a>
+                                                        @endif
                                                     <a href="{{ url('admin/sites/'.$site->slug . '?role=superadmin') }}"
                                                         target="_blank" class="dropdown-item">SuperAdmin View</a>
                                                     @else
