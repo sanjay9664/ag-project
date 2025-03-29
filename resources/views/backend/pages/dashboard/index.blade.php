@@ -275,14 +275,18 @@ Dashboard Page - Admin Panel
                                                 <button class="btn btn-primary viewUIButton">User UI</button>
                                                 <div class="dropdown-menu">
                                                     @if(isset($site) && $site->slug)
-                                                        @php
-                                                            $siteData = json_decode($site->data, true);
-                                                        @endphp
+                                                    @php
+                                                    $siteData = json_decode($site->data, true);
+                                                    @endphp
 
-                                                        @if(isset($siteData['generator']))
-                                                            <a href="{{ url('admin/admin-sites') . '?role=admin&bank_name=' . urlencode($siteData['generator']) }}" 
-                                                            target="_blank" class="dropdown-item">Admin View</a>
-                                                        @endif
+                                                    @if(isset($siteData['generator']))
+                                                    <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
+                                                        class="dropdown-item" target="_blank">
+                                                        Admin View
+                                                    </a>
+                                                    <!-- <a href="{{ url('admin/admin-sites') . '?role=admin&bank_name=' . urlencode($siteData['generator']) }}" 
+                                                            target="_blank" class="dropdown-item">Admin View</a> -->
+                                                    @endif
                                                     <a href="{{ url('admin/sites/'.$site->slug . '?role=superadmin') }}"
                                                         target="_blank" class="dropdown-item">SuperAdmin View</a>
                                                     @else
