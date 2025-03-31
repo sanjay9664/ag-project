@@ -88,21 +88,23 @@
         margin-right: 10px;
     }
 
+
     .fuel-indicator {
         height: 20px;
-        background: linear-gradient(to right, red, yellow, green);
         border-radius: 10px;
         position: relative;
         width: 100px;
     }
 
-    .fuel-level {
-        position: absolute;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.7);
-        right: 0;
-        border-radius: 0 10px 10px 0;
+    .fuel-indicator.normal-fuel {
+        background-color: green;
     }
+
+    .fuel-indicator.low-fuel {
+        background-color: red;
+    }
+
+
 
     .fuel-percentage {
         position: absolute;
@@ -110,6 +112,7 @@
         transform: translateX(-50%);
         font-size: 12px;
         font-weight: bold;
+        color: white;
     }
 
     .fuel-display {
@@ -242,9 +245,8 @@
                             <td>{{ $sitejsonData['group'] ?? 'N/A' }}</td>
                             <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
                             <td>
-                                @php
-                                $capacity = $sitejsonData[' capacity'] ?? 0;
-                            $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
+    @php
+    $capacity = $sitejsonData[' capacity'] ?? 0; $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
                             $fuelKey=$sitejsonData['parameters']['fuel']['add'] ?? null; $addValue='_' ; foreach
                             ($eventData as $event) { $eventArray=$event->getArrayCopy();
                             if ($fuelMd && isset($eventArray['module_id']) && $eventArray['module_id'] == $fuelMd) {
@@ -258,79 +260,79 @@
                             $percentage = is_numeric($addValue) ? $addValue : 0;
                             $percentageDecimal = $percentage / 100;
                             $totalFuelLiters = $capacity * $percentageDecimal;
-                            @endphp
-                            <div class="fuel-container">
-                                <div class="fuel-indicator">
+                            $fuelClass = $percentage <= 20 ? 'low-fuel' : 'normal-fuel' ; @endphp <div
+                                class="fuel-container">
+                                <div class="fuel-indicator {{ $fuelClass }}">
                                     <div class="fuel-level" style="width: {{ 100 - $percentage }}%;"></div>
                                     <span class="fuel-percentage">{{ $percentage }} %</span>
                                 </div>
-                            </div>
-                            </td>
-
-                            <td class="running-hours">
-                                @php
-                                $increased_running_hours = DB::table('running_hours')->where('site_id',
-                                $site->id)->first();
-                                $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
-                                $addValue = 0;
-                                $key = $sitejsonData['running_hours']['add'] ?? null;
-                                $md = $sitejsonData['running_hours']['md'] ?? null;
-
-                                if ($key && $md) {
-                                foreach ($eventData as $event) {
-                                $eventArray = $event->getArrayCopy();
-                                if (isset($eventArray['module_id']) && $eventArray['module_id'] == $md) {
-                                if (array_key_exists($key, $eventArray)) {
-                                $addValue = (float) $eventArray[$key];
-                                }
-                                break;
-                                }
-                                }
-                                }
-
-                                $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
-                                $inc_addValue = $increaseMinutes > 0 ? $addValue / $increaseMinutes : $addValue;
-                                $inc_addValueFormatted = number_format($inc_addValue, 2) + $increaseRunningHours;
-                                @endphp
-                                {{ $inc_addValueFormatted }} Hrs
-                            </td>
-
-                            <td class="last-updated">
-                                {{$site->updatedAt}}
-                            </td>
-
-                            <td>
-                                @php
-                                $addValuerunstatus = 0;
-                                if (isset($sitejsonData['electric_parameters']['voltage_l_l']['a'])) {
-                                $keya = $sitejsonData['electric_parameters']['voltage_l_l']['a']['add'] ?? null;
-                                $moduleId = $sitejsonData['electric_parameters']['voltage_l_l']['a']['md'] ?? null;
-
-                                foreach ($eventData as $event) {
-                                $eventArraya = $event->getArrayCopy();
-                                if ($moduleId && isset($eventArraya['module_id']) && $eventArraya['module_id'] ==
-                                $moduleId) {
-                                if ($keya && array_key_exists($keya, $eventArraya)) {
-                                $addValuerunstatus = $eventArraya[$keya];
-                                }
-                                break;
-                                }
-                                }
-                                }
-                                @endphp
-                                @if($addValuerunstatus > 0)
-                                <span class="status-running blinking">ON</span>
-                                @else
-                                <span class="status-stopped">OFF</span>
-                                @endif
-                            </td>
-                            </tr>
-                            @php $i=$i+1; @endphp
-                            @endforeach
-                    </tbody>
-                </table>
             </div>
+            </td>
+
+            <td class="running-hours">
+                @php
+                $increased_running_hours = DB::table('running_hours')->where('site_id',
+                $site->id)->first();
+                $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
+                $addValue = 0;
+                $key = $sitejsonData['running_hours']['add'] ?? null;
+                $md = $sitejsonData['running_hours']['md'] ?? null;
+
+                if ($key && $md) {
+                foreach ($eventData as $event) {
+                $eventArray = $event->getArrayCopy();
+                if (isset($eventArray['module_id']) && $eventArray['module_id'] == $md) {
+                if (array_key_exists($key, $eventArray)) {
+                $addValue = (float) $eventArray[$key];
+                }
+                break;
+                }
+                }
+                }
+
+                $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
+                $inc_addValue = $increaseMinutes > 0 ? $addValue / $increaseMinutes : $addValue;
+                $inc_addValueFormatted = number_format($inc_addValue, 2) + $increaseRunningHours;
+                @endphp
+                {{ $inc_addValueFormatted }} Hrs
+            </td>
+
+            <td class="last-updated">
+                {{$site->updatedAt}}
+            </td>
+
+            <td>
+                @php
+                $addValuerunstatus = 0;
+                if (isset($sitejsonData['electric_parameters']['voltage_l_l']['a'])) {
+                $keya = $sitejsonData['electric_parameters']['voltage_l_l']['a']['add'] ?? null;
+                $moduleId = $sitejsonData['electric_parameters']['voltage_l_l']['a']['md'] ?? null;
+
+                foreach ($eventData as $event) {
+                $eventArraya = $event->getArrayCopy();
+                if ($moduleId && isset($eventArraya['module_id']) && $eventArraya['module_id'] ==
+                $moduleId) {
+                if ($keya && array_key_exists($keya, $eventArraya)) {
+                $addValuerunstatus = $eventArraya[$keya];
+                }
+                break;
+                }
+                }
+                }
+                @endphp
+                @if($addValuerunstatus > 0)
+                <span class="status-running blinking">ON</span>
+                @else
+                <span class="status-stopped">OFF</span>
+                @endif
+            </td>
+            </tr>
+            @php $i=$i+1; @endphp
+            @endforeach
+            </tbody>
+            </table>
         </div>
+    </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
