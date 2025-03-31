@@ -66,8 +66,10 @@ Dashboard Page - Admin Panel
                             <tbody>
                                 @foreach ($logins as $login)
                                 <tr>
-
-                                    <td>{{ $loop->iteration }}</td>
+                                    <td>
+                                        {{$login->id}}
+                                        <!-- {{ $loop->iteration }} -->
+                                    </td>
                                     <td>
                                         @php
                                         $site = $sites->firstWhere('email', $login->email);
@@ -181,7 +183,7 @@ Dashboard Page - Admin Panel
                                                 }
                                             }
                                         }
-                                   ?>
+                                    ?>
                                     @php
                                     $present_site = $sites->firstWhere('email', $login->email);
                                     $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
@@ -202,6 +204,7 @@ Dashboard Page - Admin Panel
                                                     style="outline: none; box-shadow: none;">
                                             </td>
 
+                                            @if($site->increase_running_hours_status !== 0)
                                             <td>
                                                 <button onclick="toggleDivVisibility(this)" style="
                                                     padding: 5px 10px; 
@@ -238,6 +241,11 @@ Dashboard Page - Admin Panel
                                                     </div>
                                                 </div>
                                             </td>
+                                            @else 
+                                            <td>
+
+                                            </td>
+                                            @endif
 
                                         </form>
                                     </div>
