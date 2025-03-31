@@ -175,10 +175,14 @@
                 <div class="d-flex gap-2">
                     <select class="form-select form-select-sm" id="bankSelect">
                         <option selected>Select Bank</option>
-                        @foreach($siteData as $site)
-                        <option value="{{ json_decode($site->data)->generator }}">
-                            {{ json_decode($site->data)->generator }}
-                        </option>
+                        @php
+                        $uniqueGenerators = collect($siteData)
+                        ->map(fn($site) => json_decode($site->data)->generator)
+                        ->unique();
+                        @endphp
+
+                        @foreach($uniqueGenerators as $generator)
+                        <option value="{{ $generator }}">{{ $generator }}</option>
                         @endforeach
                     </select>
                     <select class="form-select form-select-sm" id="locationSelect">
@@ -211,18 +215,17 @@
                         @php $i=1; @endphp
                         @foreach ($siteData as $site)
                         @php
-                            $sitejsonData = json_decode($site->data, true);
-                            $updatedAt = null;
-                            $isRecent = false;
+                        $sitejsonData = json_decode($site->data, true);
+                        $updatedAt = null;
+                        $isRecent = false;
 
-                            if (!empty($site->updatedAt) && $site->updatedAt !== 'N/A') {
-                                try {
-                                    $updatedAt = Carbon\Carbon::parse($site->updatedAt);
-                                    $now = Carbon\Carbon::now();
+                        if (!empty($site->updatedAt) && $site->updatedAt !== 'N/A') {
+                        try {
+                        $updatedAt = Carbon\Carbon::parse($site->updatedAt);
+                        $now = Carbon\Carbon::now();
 
-                                    $isRecent = $updatedAt->diffInHours($now) < 24;
-                                } catch (\Exception $e) {
-                                    \Log::error('Date Parsing Error: ' . $e->getMessage());
+                        $isRecent = $updatedAt->diffInHours($now) < 24; } catch (\Exception $e) { \Log::error('Date
+                            Parsing Error: ' . $e->getMessage());
                                 }
                             }
                         @endphp
@@ -231,7 +234,7 @@
                             <td>{{ $i }}</td>
                             <td style="color: {{ $isRecent ? 'green' : 'red' }};">
                                 <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
-                                    style="text-decoration: none; color: inherit;" target="_blank">
+                                    style="text-decoration: none; color: inherit;font-weight: bold;" target="_blank">
                                     {{ $site->site_name }}
                                 </a>
                             </td>
@@ -240,31 +243,28 @@
                             <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
                             <td>
                                 @php
-                                $capacity = $sitejsonData['capacity'] ?? 0;
-                                $fuelMd = $sitejsonData['parameters']['fuel']['md'] ?? null;
-                                $fuelKey = $sitejsonData['parameters']['fuel']['add'] ?? null;
-                                $addValue = '_';
+                                $capacity = $sitejsonData[' capacity'] ?? 0;
+                            $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
+                            $fuelKey=$sitejsonData['parameters']['fuel']['add'] ?? null; $addValue='_' ; foreach
+                            ($eventData as $event) { $eventArray=$event->getArrayCopy();
+                            if ($fuelMd && isset($eventArray['module_id']) && $eventArray['module_id'] == $fuelMd) {
+                            if ($fuelKey && array_key_exists($fuelKey, $eventArray)) {
+                            $addValue = $eventArray[$fuelKey];
+                            }
+                            break;
+                            }
+                            }
 
-                                foreach ($eventData as $event) {
-                                $eventArray = $event->getArrayCopy();
-                                if ($fuelMd && isset($eventArray['module_id']) && $eventArray['module_id'] == $fuelMd) {
-                                if ($fuelKey && array_key_exists($fuelKey, $eventArray)) {
-                                $addValue = $eventArray[$fuelKey];
-                                }
-                                break;
-                                }
-                                }
-
-                                $percentage = is_numeric($addValue) ? $addValue : 0;
-                                $percentageDecimal = $percentage / 100;
-                                $totalFuelLiters = $capacity * $percentageDecimal;
-                                @endphp
-                                <div class="fuel-container">
-                                    <div class="fuel-indicator">
-                                        <div class="fuel-level" style="width: {{ 100 - $percentage }}%;"></div>
-                                        <span class="fuel-percentage">{{ $percentage }} %</span>
-                                    </div>
+                            $percentage = is_numeric($addValue) ? $addValue : 0;
+                            $percentageDecimal = $percentage / 100;
+                            $totalFuelLiters = $capacity * $percentageDecimal;
+                            @endphp
+                            <div class="fuel-container">
+                                <div class="fuel-indicator">
+                                    <div class="fuel-level" style="width: {{ 100 - $percentage }}%;"></div>
+                                    <span class="fuel-percentage">{{ $percentage }} %</span>
                                 </div>
+                            </div>
                             </td>
 
                             <td class="running-hours">

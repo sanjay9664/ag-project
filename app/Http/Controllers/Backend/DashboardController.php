@@ -25,10 +25,11 @@ class DashboardController extends Controller
         $total_sites = Site::where('email', $adminEmail)->count();
 
         $logins = DB::table('logins')
-            ->leftJoin('admins', 'logins.user_id', '=', 'admins.id')
+            ->join('admins', 'logins.user_id', '=', 'admins.id')
+            ->join('sites', 'admins.email', '=', 'sites.email')
             ->select('logins.*', 'admins.name', 'admins.email')
             ->get();
-
+    
         foreach ($logins as $login) {
             $login->created_at = Carbon::parse($login->created_at);
         }
@@ -78,6 +79,7 @@ class DashboardController extends Controller
             }
         }
         
+        // return $logins;
         return view(
             'backend.pages.dashboard.index',
             [

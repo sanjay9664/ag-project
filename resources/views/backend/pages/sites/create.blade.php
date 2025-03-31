@@ -372,10 +372,8 @@ input {
                                                 <div class="d-flex">
                                                     <div class="fw-bold text-secondary text-center my-4">
                                                         Hide/showing Increase Running Hours
-                                                        <input type="checkbox" name="admin_run_hours"
-                                                            class="form-check-input ms-2"
-                                                            {{ old('running_hours', $siteData['running_hours']['admin_run_hours'] ?? false) ? 'checked' : '' }}
-                                                            style="transform: scale(1.4);">
+                                                        <input type="checkbox" name="increase_running_hours_status"
+                                                            value="1">
                                                     </div>
                                                 </div>
                                             </div>

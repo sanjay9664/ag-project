@@ -398,13 +398,12 @@ input {
                                                 <div class="d-flex my-4">
                                                     <div class="fw-bold text-secondary text-center">
                                                         Hide/showing Increase Running Hours
-                                                        <input type="checkbox" name="admin_run_hours"
-                                                            class="form-check-input ms-2"
-                                                            {{ old('running_hours', $siteData['running_hours']['admin_run_hours'] ?? false) ? 'checked' : '' }}
-                                                            style="transform: scale(1.4);">
+                                                        <input type="hidden" name="increase_running_hours_status"
+                                                            value="0">
+                                                        <input type="checkbox" name="increase_running_hours_status"
+                                                            value="1"
+                                                            {{ $site['increase_running_hours_status'] == 1 ? "checked" : "" }}>
                                                     </div>
-
-
                                                 </div>
                                             </div>
                                         </div>
@@ -821,7 +820,7 @@ input {
                         </div>
 
                         <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
-                        <a href="{{ route('admin.admins.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
+                        <a href="{{ route('admin.sites.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
                     </form>
                 </div>
             </div>
