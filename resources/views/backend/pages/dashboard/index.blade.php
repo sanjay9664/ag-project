@@ -67,8 +67,7 @@ Dashboard Page - Admin Panel
                                 @foreach ($logins as $login)
                                 <tr>
                                     <td>
-                                        {{$login->id}}
-                                        <!-- {{ $loop->iteration }} -->
+                                        {{ $loop->iteration }}
                                     </td>
                                     <td>
                                         @php
@@ -204,7 +203,7 @@ Dashboard Page - Admin Panel
                                                     style="outline: none; box-shadow: none;">
                                             </td>
 
-                                            @if($site->increase_running_hours_status !== 0)
+                                            @if($site->increase_running_hours_status == 0)
                                             <td>
                                                 <button onclick="toggleDivVisibility(this)" style="
                                                     padding: 5px 10px; 
@@ -280,7 +279,7 @@ Dashboard Page - Admin Panel
                                             <input type="hidden" name="user_id" value="{{ $login->user_id }}">
 
                                             <div class="dropdown">
-                                                <button class="btn btn-primary viewUIButton">User UI</button>
+                                                <button type="button" class="btn btn-primary viewUIButton">User UI</button>
                                                 <div class="dropdown-menu">
                                                     @if(isset($site) && $site->slug)
                                                     @php
@@ -356,32 +355,32 @@ Dashboard Page - Admin Panel
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<script>
-if ($('#dataTable').length) {
-    $('#dataTable').DataTable({
-        responsive: true
-    });
-}
-</script>
+<!-- <script>
+$(document).ready(function() {
+    if ($('#dataTable').length) {
+        $('#dataTable').DataTable({
+            responsive: true,
+            // pageLength: 25,
+            // paging: true
+        });
+    }
+});
+</script> -->
+
 <script>
 document.getElementById('downloadReport').addEventListener('click', function() {
-    // Store the current padding of the main-content-inner for restoration
     const mainContent = document.querySelector('.main-content-inner');
     const originalPadding = mainContent.style.padding;
 
-    // Temporarily adjust the padding of the main-content-inner (if necessary for better report layout)
     mainContent.style.padding = '0px';
-    // Hide all elements that are not part of the table
     const unwantedElements = document.querySelectorAll(
         '.page-title-area, .float-right, .data-tables .dataTables_wrapper');
     unwantedElements.forEach(element => {
         element.style.display = 'none';
     });
 
-    // Select the table for the report
     const tableElement = document.querySelector('#dataTable');
 
-    // Define options for the PDF export
     const options = {
         margin: 0.1,
         filename: 'login_report.pdf',
@@ -401,22 +400,19 @@ document.getElementById('downloadReport').addEventListener('click', function() {
         }
     };
 
-    // Generate and download the PDF
     html2pdf().set(options).from(tableElement).save();
 
-    // Revert the layout and hidden elements back to their original state after the download
     setTimeout(() => {
         unwantedElements.forEach(element => {
             element.style.display = '';
         });
 
-        // Restore the original padding of the main-content-inner
         mainContent.style.padding = originalPadding;
-    }, 1000); // Ensure it happens after the PDF is generated
+    }, 1000);
 });
 </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 <script>
 $(document).ready(function() {
     function sendData(element) {
@@ -430,7 +426,6 @@ $(document).ready(function() {
             }
         }
 
-        // Show spinner before sending request
         $("#spinner").show();
 
         $.ajax({
@@ -443,56 +438,51 @@ $(document).ready(function() {
             },
             success: function(response) {
                 alert("Data saved successfully!");
-                location.reload(); // Refresh the page after successful save
+                location.reload();
             },
             error: function(xhr) {
                 console.error("Error:", xhr.responseText);
-                $("#spinner").hide(); // Hide spinner on error
+                $("#spinner").hide();
             }
         });
     }
 
-    // Save the current pagination page before reload
     function savePaginationPage() {
-        let currentPage = $(".pagination .active a").text(); // Get current page number
-        localStorage.setItem("currentPage", currentPage); // Store it in local storage
+        let currentPage = $(".pagination .active a").text();
+        localStorage.setItem("currentPage", currentPage); 
     }
 
-    // Restore pagination after reload
     function restorePaginationPage() {
         let savedPage = localStorage.getItem("currentPage");
         if (savedPage) {
             $(".pagination a").each(function() {
                 if ($(this).text() === savedPage) {
-                    $(this)[0].click(); // Trigger click to navigate to the saved page
+                    $(this)[0].click(); 
                 }
             });
         }
     }
 
-    // Trigger AJAX when user changes the input field
     $(document).on("change", ".increase_running_hours", function() {
-        savePaginationPage(); // Save pagination before reloading
-        sendData(this); // Pass the specific input field
+        savePaginationPage();
+        sendData(this);
     });
 
     $(document).on("click", "#submitButton", function() {
-        let inputField = $(".increase_running_hours"); // Select the input field
-        savePaginationPage(); // Save pagination before reloading
-        sendData(inputField); // Call sendData function
+        let inputField = $(".increase_running_hours");
+        savePaginationPage();
+        sendData(inputField);
     });
 
-    // Restore pagination when page loads
     restorePaginationPage();
 });
 </script>
 
 <script>
 function toggleDivVisibility(button) {
-    var row = button.closest("td"); // Get the closest <td> to find related elements
+    var row = button.closest("td");
     var div = row.querySelector(".inputButtonDiv");
 
-    // Toggle visibility
     if (div.style.display === "none" || div.style.display === "") {
         div.style.display = "block";
         button.innerText = "Hide Input and Button";
@@ -504,66 +494,67 @@ function toggleDivVisibility(button) {
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    let buttons = document.querySelectorAll(".viewUIButton");
-
-    buttons.forEach(button => {
-        let dropdownMenu = button.nextElementSibling;
-        let timeoutId;
-
-        // Show menu on button hover
-        button.addEventListener("mouseenter", function() {
-            clearTimeout(timeoutId);
-            dropdownMenu.style.display = "block";
-            setTimeout(() => {
-                dropdownMenu.style.opacity =
-                    "1";
-                dropdownMenu.style.visibility =
-                    "visible";
-            }, 100);
+$(document).ready(function() {
+    if ($('#dataTable').length) {
+        let table = $('#dataTable').DataTable({
+            responsive: true
         });
 
-        // Keep menu open when hovering inside it
-        dropdownMenu.addEventListener("mouseenter", function() {
-            clearTimeout(timeoutId);
-            dropdownMenu.style.display = "block";
-            dropdownMenu.style.opacity = "1";
-            dropdownMenu.style.visibility = "visible";
-        });
+        function initializeHoverListeners() {
+            let buttons = document.querySelectorAll(".viewUIButton");
 
-        // Hide menu when cursor leaves button or dropdown
-        button.addEventListener("mouseleave", function() {
-            timeoutId = setTimeout(() => {
-                if (!dropdownMenu.matches(
-                        ":hover")) {
-                    dropdownMenu.style.opacity =
-                        "0";
-                    dropdownMenu.style
-                        .visibility = "hidden";
+            buttons.forEach(button => {
+                let dropdownMenu = button.nextElementSibling;
+                let timeoutId;
+
+                button.addEventListener("mouseenter", function() {
+                    clearTimeout(timeoutId);
+                    dropdownMenu.style.display = "block";
                     setTimeout(() => {
-                        dropdownMenu
-                            .style
-                            .display =
-                            "none";
-                    }, 500);
-                }
-            }, 1000); // 1-second delay before hiding
-        });
+                        dropdownMenu.style.opacity = "1";
+                        dropdownMenu.style.visibility = "visible";
+                    }, 100);
+                });
 
-        dropdownMenu.addEventListener("mouseleave", function() {
-            timeoutId = setTimeout(() => {
-                dropdownMenu.style.opacity =
-                    "0";
-                dropdownMenu.style.visibility =
-                    "hidden";
-                setTimeout(() => {
-                    dropdownMenu.style
-                        .display =
-                        "none";
-                }, 500);
-            }, 1000);
+                dropdownMenu.addEventListener("mouseenter", function() {
+                    clearTimeout(timeoutId);
+                    dropdownMenu.style.display = "block";
+                    dropdownMenu.style.opacity = "1";
+                    dropdownMenu.style.visibility = "visible";
+                });
+
+                button.addEventListener("mouseleave", function() {
+                    timeoutId = setTimeout(() => {
+                        if (!dropdownMenu.matches(":hover")) {
+                            dropdownMenu.style.opacity = "0";
+                            dropdownMenu.style.visibility = "hidden";
+                            setTimeout(() => {
+                                dropdownMenu.style.display = "none";
+                            }, 500);
+                        }
+                    }, 1000);
+                });
+
+                dropdownMenu.addEventListener("mouseleave", function() {
+                    timeoutId = setTimeout(() => {
+                        dropdownMenu.style.opacity = "0";
+                        dropdownMenu.style.visibility = "hidden";
+                        setTimeout(() => {
+                            dropdownMenu.style.display = "none";
+                        }, 500);
+                    }, 1000);
+                });
+            });
+        }
+
+        // Initialize hover listeners after DataTable initializes
+        initializeHoverListeners();
+
+        // Reattach hover listeners after table is redrawn (pagination, search, etc.)
+        table.on('draw', function() {
+            initializeHoverListeners();
         });
-    });
+    }
 });
 </script>
 @endsection
