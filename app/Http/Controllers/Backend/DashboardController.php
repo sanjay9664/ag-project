@@ -17,90 +17,6 @@ use DB;
 
 class DashboardController extends Controller
 {
-    // public function index()
-    // {
-    //     $this->checkAuthorization(auth()->user(), ['dashboard.view']);
-        
-    //     $adminEmail = auth()->user()->email;
-    //     $total_sites = Site::where('email', $adminEmail)->count();
-
-    //     $logins = DB::table('logins')
-    //         ->join('admins', 'logins.user_id', '=', 'admins.id')
-    //         ->join('sites', 'admins.email', '=', 'sites.email')
-    //         ->select('logins.*', 'admins.name', 'admins.email')
-    //         ->get();
-    
-    //     foreach ($logins as $login) {
-    //         $login->created_at = Carbon::parse($login->created_at);
-    //     }
-
-    //     // $sites = DB::table('sites')
-    //     //     ->leftJoin('admins', 'sites.email', '=', 'admins.email')
-    //     //     ->select('sites.*', 'admins.id as admin_id', 'admins.name', 'admins.email')
-    //     //     ->distinct('sites.email')
-    //     //     ->get();    
-
-    //     $sites = DB::table('sites')
-    //         ->leftJoin('admins', 'sites.email', '=', 'admins.email')
-    //         ->selectRaw('MIN(sites.id) as id, sites.site_name, sites.email, admins.id as admin_id, admins.name as admin_name')
-    //         ->groupBy('sites.email', 'sites.site_name', 'admins.id', 'admins.name')
-    //         ->get();
-
-    //     $events = [];
-    //     foreach ($sites as $site) {
-    //         $data = json_decode($site->data, true);
-            
-    //         if ($data) {
-    //             $mdValues = $this->extractMdFields($data);
-
-    //             // MongoDB connection using MongoDB\Client
-    //             $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
-    //             $client = new \MongoDB\Client($mongoUri);
-    //             $database = $client->isa_qa;
-    //             $collection = $database->device_events;
-
-    //             if (!empty($mdValues)) {
-    //                 $uniqueMdValues = array_unique((array) $mdValues);
-    //                 $uniqueMdValues = array_filter($uniqueMdValues, function ($value) {
-    //                     return !empty($value);
-    //                 });
-    //                 $uniqueMdValues = array_map('intval', $uniqueMdValues);
-    //                 $uniqueMdValues = array_values($uniqueMdValues);
-                    
-    //                 if (is_array($uniqueMdValues) && count($uniqueMdValues) > 0) {
-    //                     foreach ($uniqueMdValues as $moduleId) {
-    //                         $event = $collection->findOne(
-    //                             ['module_id' => $moduleId],
-    //                             ['sort' => ['createdAt' => -1]]
-    //                         );
-    //                         if ($event) {
-    //                             $eventData = (array) $event;
-    //                             $eventData['admin_id'] = $site->admin_id;
-    //                             $events[] = $eventData;
-    //                         }
-    //                     }
-    //                 } else {
-    //                     return redirect()->back()->withErrors('Invalid or empty module_id values.');
-    //                 }
-    //             } 
-    //         }
-    //     }
-        
-    //     // return $logins;
-    //     return view(
-    //         'backend.pages.dashboard.index',
-    //         [
-    //             'total_admins' => Admin::count(),
-    //             'total_roles' => Role::count(),
-    //             'total_permissions' => Permission::count(),
-    //             'logins' => $logins,
-    //             'sites' => $sites,
-    //             'total_sites' => $total_sites,
-    //             'events' => $events
-    //         ]
-    //     );
-    // }
-    
     public function index()
     {
         $this->checkAuthorization(auth()->user(), ['dashboard.view']);
@@ -119,12 +35,6 @@ class DashboardController extends Controller
             $login->created_at = Carbon::parse($login->created_at);
         }
 
-        // Fetch unique sites per admin
-        // $sites = DB::table('sites')
-        //     ->leftJoin('admins', 'sites.email', '=', 'admins.email')
-        //     ->selectRaw('MIN(sites.id) as id, sites.site_name, sites.slug, sites.email, sites.data, sites.increase_running_hours_status, admins.id as admin_id, admins.name as admin_name')
-        //     ->groupBy('sites.email', 'sites.site_name', 'sites.slug', 'sites.data', 'sites.increase_running_hours_status', 'admins.email', 'admins.id', 'admins.name')
-        //     ->get();
         $sites = DB::table('sites')
             ->leftJoin('admins', 'sites.email', '=', 'admins.email')
             ->selectRaw('

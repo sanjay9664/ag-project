@@ -274,7 +274,7 @@ class SiteController extends Controller
 
     public function update(SiteRequest $request, int $id): RedirectResponse
     {
-        $this->checkAuthorization(auth()->user(), ['site.create']);
+        $this->checkAuthorization(auth()->user(), ['site.update']);
     
         $site = Site::findOrFail($id);
         $site->site_name = $request->site_name;
@@ -595,177 +595,10 @@ class SiteController extends Controller
         }
     }
 
-    // public function AdminSites(Request $request)
-    // {
-    //     $role = $request->query('role'); 
-    //     $bankName = $request->query('bank_name');
-    //     $location = $request->query('location');
-
-    //     $siteData = collect();
-    //     $sitejsonData = null;
-    //     $eventData = [];
-    //     $latestCreatedAt = null;
-
-    //     $user = Auth::user();
-    //     if (!$user) {
-    //         return redirect()->route('login')->withErrors('You must be logged in.');
-    //     }
-
-    //     $userEmail = $user->email; 
-
-    //     if (!empty($location)) {
-    //         $query = DB::table('sites')->where('email', $userEmail);
-        
-    //         if (!empty($bankName) && $bankName !== 'Select Bank' && (empty($location) || $location === 'Select Location')) {
-    //             $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.generator')) = ?", [$bankName]);
-    //         } elseif (!empty($location) && $location !== 'Select Location' && (empty($bankName) || $bankName === 'Select Bank')) {
-    //             $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.group')) = ?", [$location]);
-    //         }
-        
-    //         $siteData = $query->get();
-            
-    //         $decodedSiteData = $siteData->first() ? json_decode($siteData->first()->data, true) : [];
-    //         $mdValues = $decodedSiteData ? $this->extractMdFields($decodedSiteData) : [];
-        
-    //         $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
-    //         $client = new MongoClient($mongoUri);
-    //         $database = $client->isa_qa;
-    //         $collection = $database->device_events;
-            
-    //         $eventData = [];
-    //         if (!empty($mdValues)) {
-    //             $uniqueMdValues = array_unique(array_filter(array_map('intval', (array) $mdValues)));
-        
-    //             foreach ($uniqueMdValues as $moduleId) {
-    //                 $event = $collection->findOne(
-    //                     ['module_id' => $moduleId],
-    //                     ['sort' => ['createdAt' => -1]]
-    //                 );
-    //                 if ($event) {
-    //                     $eventData[] = $event;
-    //                 }
-    //             }
-    //         }
-        
-    //         usort($eventData, function ($a, $b) {
-    //             return ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0);
-    //         });
-        
-    //         $latestCreatedAt = !empty($eventData) ? $eventData[0]['createdAt']->toDateTime()
-    //             ->setTimezone(new DateTimeZone('Asia/Kolkata'))
-    //             ->format('d-m-Y H:i:s') : 'N/A';
-        
-    //         foreach ($eventData as &$event) {
-    //             $event['createdAt'] = $event['createdAt']->toDateTime()
-    //                 ->setTimezone(new DateTimeZone('Asia/Kolkata'))
-    //                 ->format('d-m-Y H:i:s');
-    //             $event['latestCreatedAt'] = $latestCreatedAt;
-    //         }
-        
-    //         foreach ($siteData as $site) {
-    //             $matchingEvent = collect($eventData)->first(function ($event) use ($site) {
-    //                 return isset($event['device_id'], $site->device_id) &&
-    //                     trim(strtolower($event['device_id'])) === trim(strtolower($site->device_id));
-    //             });
-        
-    //             $site->updatedAt = isset($matchingEvent['updatedAt']) ? $matchingEvent['updatedAt']->toDateTime()
-    //                 ->setTimezone(new DateTimeZone('Asia/Kolkata'))
-    //                 ->format('d-m-Y H:i:s') : 'N/A';
-    //         }
-        
-    //         if ($request->ajax()) {
-    //             return response()->json([
-    //                 'html' => view('backend.pages.sites.partials.site-table', compact('siteData', 'decodedSiteData', 'eventData', 'latestCreatedAt'))->render()
-    //             ]);
-    //         }
-        
-    //         return view('backend.pages.sites.admin-sites', compact('siteData', 'decodedSiteData', 'eventData', 'latestCreatedAt'));
-    //     }
-    //      else {
-
-    //         $user = Auth::guard('admin')->user();
-        
-    //         if (!$user->hasRole('superadmin')) {
-    //             $siteData = Site::where('email', $userEmail)->get();
-    //         }else {
-    //             $siteData = Site::get();
-    //         }
-
-    //         // if ($siteData->isEmpty()) {
-    //         //     return redirect()->back()->withErrors('Site not found or module_id is missing.');
-    //         // }
-
-    //         $decodedSiteData = $siteData->map(function ($site) {
-    //             return json_decode($site->data, true);
-    //         });
-
-    //         $mdValues = $this->extractMdFields($decodedSiteData->toArray());
-
-    //         $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
-    //         $client = new MongoClient($mongoUri);
-    //         $database = $client->isa_qa;
-    //         $collection = $database->device_events;
-
-    //         if (!empty($mdValues)) {
-    //             $uniqueMdValues = array_unique(array_filter(array_map('intval', (array) $mdValues)));
-
-    //             foreach ($uniqueMdValues as $moduleId) {
-    //                 $event = $collection->findOne(
-    //                     ['module_id' => $moduleId],
-    //                     ['sort' => ['createdAt' => -1]]
-    //                 );
-
-    //                 if ($event) {
-    //                     $eventData[] = $event;
-    //                 }
-    //             }
-    //         }
-
-    //         // if (empty($eventData)) {
-    //         //     return redirect()->back()->withErrors('No data found for the specified module_id values.');
-    //         // }
-
-    //         usort($eventData, function ($a, $b) {
-    //             return ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0);
-    //         });
-
-    //         $latestCreatedAt = $eventData[0]['createdAt']->toDateTime()
-    //             ->setTimezone(new DateTimeZone('Asia/Kolkata'))
-    //             ->format('d-m-Y H:i:s');
-
-    //         foreach ($eventData as &$event) {
-    //             $event['createdAt'] = $event['createdAt']->toDateTime()
-    //                 ->setTimezone(new DateTimeZone('Asia/Kolkata'))
-    //                 ->format('d-m-Y H:i:s');
-    //             $event['latestCreatedAt'] = $latestCreatedAt;
-    //         }
-
-    //         $sitejsonData = json_decode($siteData->first()->data, true);
-
-    //         foreach ($siteData as $site) {
-               
-    //             $matchingEvent = collect($eventData)->first(function ($event) use ($site) {
-    //                 return isset($event['device_id']) && isset($site->device_id) &&
-    //                        trim(strtolower($event['device_id'])) === trim(strtolower($site->device_id));
-    //             });
-            
-    //             $updatedAt = 'N/A';
-            
-    //             if ($matchingEvent && isset($matchingEvent['updatedAt'])) {
-    //                 $updatedAt = $matchingEvent['updatedAt']->toDateTime()
-    //                     ->setTimezone(new DateTimeZone('Asia/Kolkata'))
-    //                     ->format('d-m-Y H:i:s');
-    //             }
-
-    //             $site->updatedAt = $updatedAt;
-    //         }
-            
-    //         return view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'));
-    //     }
-    // }
-
     public function AdminSites(Request $request)
     {
+        $this->checkAuthorization(auth()->user(), ['admin.admin.sites']);
+
         $role = $request->query('role');
         $bankName = $request->query('bank_name');
         $location = $request->query('location');

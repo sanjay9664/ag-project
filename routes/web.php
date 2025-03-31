@@ -21,14 +21,14 @@ use App\Http\Controllers\Backend\SiteController;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
 Auth::routes();
 
 Route::get('/', 'HomeController@redirectAdmin')->name('index');
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/login', function () {
+    return redirect('/admin/login');
+});
 
 /**
  * Admin routes
