@@ -551,7 +551,6 @@ class SiteController extends Controller
         // return $siteData;
         $user = Auth::guard('admin')->user();
        
-        $user = Auth::guard('admin')->user();
         $role = $request->query('role');
     
         if ($role == 'superadmin') {
@@ -564,6 +563,7 @@ class SiteController extends Controller
         }
 
         if ($role == 'admin') {
+            // return $sitejsonData;
             return view('backend.pages.sites.site-details', [
                 'siteData' => $siteData,
                 'sitejsonData' => $sitejsonData,

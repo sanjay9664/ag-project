@@ -24,12 +24,19 @@ class DashboardController extends Controller
         $adminEmail = auth()->user()->email;
         $total_sites = Site::where('email', $adminEmail)->count();
 
-        $logins = DB::table('logins')
-            ->join('admins', 'logins.user_id', '=', 'admins.id')
-            ->join('sites', 'admins.email', '=', 'sites.email')
-            ->select('logins.*', 'admins.name', 'admins.email')
-            ->distinct('admins.user_id')
+        $logins = DB::table('sites')
+            ->leftJoin('admins', 'sites.email', '=', 'admins.email') 
+            ->leftJoin('logins', 'admins.id', '=', 'logins.user_id') 
+            ->select(
+                'sites.*', 
+                'admins.name', 
+                'admins.email', 
+                'logins.*',
+                'sites.id AS site_id'
+            )
+            ->distinct('sites.id')
             ->get();
+    
 
         foreach ($logins as $login) {
             $login->created_at = Carbon::parse($login->created_at);
@@ -48,6 +55,7 @@ class DashboardController extends Controller
                 admins.name as admin_name
             ')
             ->groupBy(
+                'sites.id', 
                 'sites.email', 
                 'sites.site_name', 
                 'sites.slug', 
@@ -85,14 +93,14 @@ class DashboardController extends Controller
 
                         if ($event) {
                             $eventData = (array) $event;
-                            $eventData['admin_id'] = $site->admin_id;
+                            $eventData['admin_id'] = $site->id;
                             $events[] = $eventData;
                         }
                     }
                 }
             }
         }
-
+        // return $events;
         return view('backend.pages.dashboard.index', [
             'total_admins' => Admin::count(),
             'total_roles' => Role::count(),
