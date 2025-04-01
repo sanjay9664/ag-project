@@ -70,9 +70,12 @@ Dashboard Page - Admin Panel
                                         {{ $loop->iteration }}
                                     </td>
                                     <td>
-                                        {{ $login->site_name }}
+                                        @php
+                                        $site = $sites->firstWhere('email', $login->email);
+                                        @endphp
+                                        {{ $site ? $site->site_name : '_' }}
                                     </td>
-
+                                    <!-- <td>{{ $login->name }}</td> -->
                                     <td>
                                         <?php
                                             $addValuerun = 0;
@@ -82,14 +85,14 @@ Dashboard Page - Admin Panel
                                                 if ($data && isset($data->parameters)) {
                                                     $parameters = $data->parameters->fuel;
                                                     $capacity = $data->capacity;
-                                                    
+
                                                     foreach ($events as $event) {
-                                                        if (isset($data->parameters->fuel->md) && $event['admin_id'] == $login->site_id) {
+                                                        if (isset($data->parameters->fuel->md) && $event['admin_id'] == $login->user_id) {
                                                             $moduleId = $data->parameters->fuel->md;
                                                             $fieldValue = $data->parameters->fuel->add;
-                                                            
+
                                                             if ($event['module_id'] == $moduleId && isset($event[$fieldValue])) {
-                                                                $addValuerun = (float) $event[$fieldValue];
+                                                                $addValuerun = (float) $event[$fieldValue]; 
                                                                 break;
                                                             }
                                                         }
@@ -101,7 +104,6 @@ Dashboard Page - Admin Panel
                                         <b>{{ $addValuerun }} % /
                                             {{ $addValuerun * $capacity / 100 }} L</b>
                                     </td>
-
                                     <td>
                                         <?php
                                             $isRunning = false;
@@ -119,7 +121,7 @@ Dashboard Page - Admin Panel
                                                             $addValue = $value->add;
 
                                                             foreach ($events as $event) {
-                                                                if ($event['admin_id'] == $login->site_id) {
+                                                                if ($event['admin_id'] == $login->user_id) {
 
                                                                     $eventModuleIds = (array) $event['module_id']; 
 
@@ -161,7 +163,7 @@ Dashboard Page - Admin Panel
                                                     foreach ($events as $event) {
                                                         if (
                                                             isset($event['admin_id'], $event['module_id']) && 
-                                                            $event['admin_id'] == $login->site_id && 
+                                                            $event['admin_id'] == $login->user_id && 
                                                             $event['module_id'] == $moduleId
                                                         ) {
                                                             if (!isset($event[$fieldValue]) || !is_numeric($event[$fieldValue])) {
@@ -182,7 +184,7 @@ Dashboard Page - Admin Panel
                                         }
                                     ?>
                                     @php
-                                    $present_site = $sites->firstWhere('id', $login->site_id);
+                                    $present_site = $sites->firstWhere('email', $login->email);
                                     $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
                                     @endphp
 
@@ -238,7 +240,7 @@ Dashboard Page - Admin Panel
                                                     </div>
                                                 </div>
                                             </td>
-                                            @else
+                                            @else 
                                             <td>
 
                                             </td>
@@ -274,11 +276,10 @@ Dashboard Page - Admin Panel
                                         @if(auth()->user()->hasRole('superadmin'))
                                         <form class="text-center">
                                             @csrf
-                                            <input type="hidden" name="user_id" value="{{ $login->site_id }}">
+                                            <input type="hidden" name="user_id" value="{{ $login->user_id }}">
 
                                             <div class="dropdown">
-                                                <button type="button" class="btn btn-primary viewUIButton">User
-                                                    UI</button>
+                                                <button type="button" class="btn btn-primary viewUIButton">User UI</button>
                                                 <div class="dropdown-menu">
                                                     @if(isset($site) && $site->slug)
                                                     @php
@@ -290,6 +291,8 @@ Dashboard Page - Admin Panel
                                                         class="dropdown-item" target="_blank">
                                                         Admin View
                                                     </a>
+                                                    <!-- <a href="{{ url('admin/admin-sites') . '?role=admin&bank_name=' . urlencode($siteData['generator']) }}" 
+                                                            target="_blank" class="dropdown-item">Admin View</a> -->
                                                     @endif
                                                     <a href="{{ url('admin/sites/'.$site->slug . '?role=superadmin') }}"
                                                         target="_blank" class="dropdown-item">SuperAdmin View</a>
@@ -446,7 +449,7 @@ $(document).ready(function() {
 
     function savePaginationPage() {
         let currentPage = $(".pagination .active a").text();
-        localStorage.setItem("currentPage", currentPage);
+        localStorage.setItem("currentPage", currentPage); 
     }
 
     function restorePaginationPage() {
@@ -454,7 +457,7 @@ $(document).ready(function() {
         if (savedPage) {
             $(".pagination a").each(function() {
                 if ($(this).text() === savedPage) {
-                    $(this)[0].click();
+                    $(this)[0].click(); 
                 }
             });
         }
@@ -494,7 +497,7 @@ function toggleDivVisibility(button) {
 $(document).ready(function() {
     if ($('#dataTable').length) {
         let table = $('#dataTable').DataTable({
-            responsive: true,
+            responsive: true
         });
 
         function initializeHoverListeners() {
