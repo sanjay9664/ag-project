@@ -597,8 +597,6 @@ class SiteController extends Controller
 
     public function AdminSites(Request $request)
     {
-        $this->checkAuthorization(auth()->user(), ['admin.admin.sites']);
-
         $role = $request->query('role');
         $bankName = $request->query('bank_name');
         $location = $request->query('location');
@@ -751,7 +749,7 @@ class SiteController extends Controller
 
                 $site->updatedAt = $updatedAt;
             }
-
+// return $eventData;
             return view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'));
         }
     }
