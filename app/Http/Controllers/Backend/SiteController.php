@@ -563,7 +563,6 @@ class SiteController extends Controller
         }
 
         if ($role == 'admin') {
-            // return $sitejsonData;
             return view('backend.pages.sites.site-details', [
                 'siteData' => $siteData,
                 'sitejsonData' => $sitejsonData,

@@ -226,7 +226,6 @@
                                 }
 
                                 $increaseMinutes = $sitejsonData->running_hours->increase_minutes ?? null;
-                                // echo $increaseMinutes;
 
                                 $inc_addValue = $addValue;
 
@@ -235,8 +234,8 @@
                                 }
 
                                 $tempvariable = number_format($inc_addValue, 2);
-                                // echo $increaseMinutes;
                                 $inc_addValueFormatted = $tempvariable + $increaseRunningHours;
+                                
                                 ?>
 
 
