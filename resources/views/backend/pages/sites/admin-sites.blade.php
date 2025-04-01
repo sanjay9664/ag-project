@@ -101,7 +101,7 @@
     }
 
     .fuel-indicator.low-fuel {
-        background-color: red;
+        background-color: #FFA500;
     }
 
 
@@ -123,6 +123,20 @@
 
     .fuel-text {
         font-weight: bold;
+    }
+
+    @keyframes blink {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
     }
     </style>
 </head>
@@ -246,7 +260,7 @@
                             <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
                             <td>
     @php
-    $capacity = $sitejsonData[' capacity'] ?? 0; $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
+        $capacity = $sitejsonData[' capacity'] ?? 0; $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
                             $fuelKey=$sitejsonData['parameters']['fuel']['add'] ?? null; $addValue='_' ; foreach
                             ($eventData as $event) { $eventArray=$event->getArrayCopy();
                             if ($fuelMd && isset($eventArray['module_id']) && $eventArray['module_id'] == $fuelMd) {
@@ -260,20 +274,42 @@
                             $percentage = is_numeric($addValue) ? $addValue : 0;
                             $percentageDecimal = $percentage / 100;
                             $totalFuelLiters = $capacity * $percentageDecimal;
-                            $fuelClass = $percentage <= 20 ? 'low-fuel' : 'normal-fuel' ; @endphp <div
-                                class="fuel-container">
-                                <div class="fuel-indicator {{ $fuelClass }}">
-                                    <div class="fuel-level" style="width: {{ 100 - $percentage }}%;"></div>
-                                    <span class="fuel-percentage">{{ $percentage }} %</span>
+                            $fuelClass = $percentage <= 20 ? 'low-fuel' : 'normal-fuel' ; $lowFuelText=$percentage <=20
+                                ? 'Low Fuel' : '' ; @endphp <div class="fuel-container"
+                                style="position: relative; width: 100%;">
+                                <div class="fuel-indicator {{ $fuelClass }}"
+                                    style="display: flex; align-items: center;">
+                                    <div class="fuel-level">
+                                    </div>
+                                    <span class="fuel-percentage">{{ $percentage }}%</span>
                                 </div>
+
+                                @if($lowFuelText)
+                                <span style="
+                                    color: red;
+                                    font-weight: bold;
+                                    animation: blink 1s infinite;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    width: 100%;
+                                             ">
+                                    {{ $lowFuelText }}
+                                </span>
+                                @endif
             </div>
+
+
             </td>
+
+
 
             <td class="running-hours">
                 @php
                 $increased_running_hours = DB::table('running_hours')->where('site_id',
                 $site->id)->first();
-                $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
+                $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ??
+                0);
                 $addValue = 0;
                 $key = $sitejsonData['running_hours']['add'] ?? null;
                 $md = $sitejsonData['running_hours']['md'] ?? null;
