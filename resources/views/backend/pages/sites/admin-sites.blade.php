@@ -5,140 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DG SET MONITORING SYSTEM</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <style>
-    body {
-        background-color: #e3f2fd;
-    }
-
-    .dashboard-container {
-        background: white;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
-            rgba(0, 0, 0, 0.12) 0px -12px 30px,
-            rgba(0, 0, 0, 0.12) 0px 4px 6px,
-            rgba(0, 0, 0, 0.17) 0px 12px 13px,
-            rgba(0, 0, 0, 0.09) 0px -3px 5px;
-        margin-top: 20px;
-        border: 2px solid #007bff;
-    }
-
-    @keyframes blink {
-        0% {
-            opacity: 1;
-        }
-
-        50% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-
-    .blinking {
-        animation: blink 1s infinite;
-    }
-
-    .status-running {
-        color: green;
-        font-weight: bold;
-    }
-
-    .status-stopped {
-        color: red;
-        font-weight: bold;
-    }
-
-    .table tbody tr {
-        cursor: pointer;
-    }
-
-    .table tbody tr:hover {
-        background-color: rgba(0, 123, 255, 0.1);
-    }
-
-    .navbar-brand {
-        font-weight: bold;
-    }
-
-    .card-header {
-        background-color: #002E6E !important;
-        color: white !important;
-    }
-
-    .parameter-card {
-        border-left: 4px solid #007bff;
-        margin-bottom: 15px;
-    }
-
-    .parameter-value {
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-
-    .parameter-icon {
-        font-size: 2rem;
-        margin-right: 10px;
-    }
-
-
-    .fuel-indicator {
-        height: 20px;
-        border-radius: 10px;
-        position: relative;
-        width: 100px;
-    }
-
-    .fuel-indicator.normal-fuel {
-        background-color: green;
-    }
-
-    .fuel-indicator.low-fuel {
-        background-color: #FFA500;
-    }
-
-
-
-    .fuel-percentage {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 12px;
-        font-weight: bold;
-        color: white;
-    }
-
-    .fuel-display {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .fuel-text {
-        font-weight: bold;
-    }
-
-    @keyframes blink {
-        0% {
-            opacity: 1;
-        }
-
-        50% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-    </style>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+    <link rel="stylesheet" href="{{url('backend/assets/css/admin.css')}}">
+    <link rel="stylesheet" href="{{url('backend/assets/css/admin-all-min.css')}}">
+    <link rel="stylesheet" href="{{url('backend/assets/css/admin-bootstrap-min.css')}}">
+    <!-- <link rel="stylesheet" href=""> -->
+    <script src="{{url('backend/assets/js/admin-bootstrap.bundle.js')}}"></script>
+    <script src="{{url('backend/assets/js/adminCDN.js')}}"></script>
 </head>
 
 <body>
@@ -259,8 +135,9 @@
                             <td>{{ $sitejsonData['group'] ?? 'N/A' }}</td>
                             <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
                             <td>
-    @php
-        $capacity = $sitejsonData[' capacity'] ?? 0; $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
+                      @php
+                                $capacity = $sitejsonData[' capacity'] ?? 0;
+                            $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
                             $fuelKey=$sitejsonData['parameters']['fuel']['add'] ?? null; $addValue='_' ; foreach
                             ($eventData as $event) { $eventArray=$event->getArrayCopy();
                             if ($fuelMd && isset($eventArray['module_id']) && $eventArray['module_id'] == $fuelMd) {
@@ -285,17 +162,7 @@
                                 </div>
 
                                 @if($lowFuelText)
-                                <span style="
-                                    color: red;
-                                    font-weight: bold;
-                                    animation: blink 1s infinite;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    width: 100%;
-                                             ">
-                                    {{ $lowFuelText }}
-                                </span>
+                                <span class="fueldata">{{ $lowFuelText }}</span>
                                 @endif
             </div>
 
@@ -371,7 +238,9 @@
     </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+    <script src="{{url('backend/assets/js/admin-jquery-3.6.0.min.js')}}"></script>
+
     <script>
     $(document).ready(function() {
         $('#bankSelect, #locationSelect').change(function() {

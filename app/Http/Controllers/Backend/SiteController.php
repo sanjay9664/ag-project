@@ -606,7 +606,7 @@ class SiteController extends Controller
 
         $user = Auth::user();
         if (!$user) {
-            return redirect()->route('login')->withErrors('You must be logged in.');
+            return redirect()->route('admin.login')->withErrors('You must be logged in.');
         }
 
         $userEmail = $user->email;
