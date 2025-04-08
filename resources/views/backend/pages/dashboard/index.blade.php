@@ -281,18 +281,12 @@ Dashboard Page - Admin Panel
                                                 <button type="button" class="btn btn-primary viewUIButton">User
                                                     UI</button>
                                                 <div class="dropdown-menu">
-                                                    @if(isset($site) && $site->slug)
-                                                    @php
-                                                    $siteData = json_decode($site->data, true);
-                                                    @endphp
-
-                                                    @if(isset($siteData['generator']))
-                                                    <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
+                                                    @if(isset($login) && $login->slug)
+                                                    <a href="{{ url('admin/sites/'.$login->slug . '?role=admin') }}"
                                                         class="dropdown-item" target="_blank">
                                                         Admin View
                                                     </a>
-                                                    @endif
-                                                    <a href="{{ url('admin/sites/'.$site->slug . '?role=superadmin') }}"
+                                                    <a href="{{ url('admin/sites/'.$login->slug . '?role=superadmin') }}"
                                                         target="_blank" class="dropdown-item">SuperAdmin View</a>
                                                     @else
                                                     <span class="dropdown-item text-muted">No Site Available</span>

@@ -195,15 +195,7 @@ class DashboardController extends Controller
             }
         }
 
-        // Debug missing data
-        \Log::info('Fetched Data:', [
-            'total_admins' => Admin::count(),
-            'total_roles' => Role::count(),
-            'total_permissions' => Permission::count(),
-            'logins_count' => count($logins),
-            'sites_count' => count($sites),
-            'events_count' => count($events)
-        ]);
+    //    return $sites;
 
         return view('backend.pages.dashboard.index', [
             'total_admins' => Admin::count(),
