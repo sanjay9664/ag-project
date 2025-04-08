@@ -179,8 +179,8 @@ Dashboard Page - Admin Panel
                                     ?>
 
                                     @php
-                                        $present_site = $sites->firstWhere('id', $login->site_id);
-                                        $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
+                                    $present_site = $sites->firstWhere('id', $login->site_id);
+                                    $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
                                     @endphp
 
 
@@ -252,12 +252,12 @@ Dashboard Page - Admin Panel
                                     @endif
                                     <td>
                                         @php
-                                            $siteData = $runningHours[$present_site->id ?? ''] ?? null;
-                                            $totalAddrunValue = $addValuerun +
-                                            ($siteData->increase_running_hours ?? 0);
+                                        $siteData = $runningHours[$present_site->id ?? ''] ?? null;
+                                        $totalAddrunValue = $addValuerun +
+                                        ($siteData->increase_running_hours ?? 0);
 
-                                            $hours = floor($totalAddrunValue); // Get whole hours
-                                            $minutes = round(($totalAddrunValue - $hours) * 60);
+                                        $hours = floor($totalAddrunValue); // Get whole hours
+                                        $minutes = round(($totalAddrunValue - $hours) * 60);
                                         @endphp
 
                                         <div>
@@ -491,6 +491,69 @@ function toggleDivVisibility(button) {
 </script>
 
 <script>
+// $(document).ready(function() {
+//     if ($('#dataTable').length) {
+//         let table = $('#dataTable').DataTable({
+//             responsive: true,
+//         });
+
+//         function initializeHoverListeners() {
+//             let buttons = document.querySelectorAll(".viewUIButton");
+
+//             buttons.forEach(button => {
+//                 let dropdownMenu = button.nextElementSibling;
+//                 let timeoutId;
+
+//                 button.addEventListener("mouseenter", function() {
+//                     clearTimeout(timeoutId);
+//                     dropdownMenu.style.display = "block";
+//                     setTimeout(() => {
+//                         dropdownMenu.style.opacity = "1";
+//                         dropdownMenu.style.visibility = "visible";
+//                     }, 100);
+//                 });
+
+//                 dropdownMenu.addEventListener("mouseenter", function() {
+//                     clearTimeout(timeoutId);
+//                     dropdownMenu.style.display = "block";
+//                     dropdownMenu.style.opacity = "1";
+//                     dropdownMenu.style.visibility = "visible";
+//                 });
+
+//                 button.addEventListener("mouseleave", function() {
+//                     timeoutId = setTimeout(() => {
+//                         if (!dropdownMenu.matches(":hover")) {
+//                             dropdownMenu.style.opacity = "0";
+//                             dropdownMenu.style.visibility = "hidden";
+//                             setTimeout(() => {
+//                                 dropdownMenu.style.display = "none";
+//                             }, 500);
+//                         }
+//                     }, 1000);
+//                 });
+
+//                 dropdownMenu.addEventListener("mouseleave", function() {
+//                     timeoutId = setTimeout(() => {
+//                         dropdownMenu.style.opacity = "0";
+//                         dropdownMenu.style.visibility = "hidden";
+//                         setTimeout(() => {
+//                             dropdownMenu.style.display = "none";
+//                         }, 500);
+//                     }, 1000);
+//                 });
+//             });
+//         }
+
+//         // Initialize hover listeners after DataTable initializes
+//         initializeHoverListeners();
+
+//         // Reattach hover listeners after table is redrawn (pagination, search, etc.)
+//         table.on('draw', function() {
+//             initializeHoverListeners();
+//         });
+//     }
+// });
+
 $(document).ready(function() {
     if ($('#dataTable').length) {
         let table = $('#dataTable').DataTable({
@@ -498,58 +561,75 @@ $(document).ready(function() {
         });
 
         function initializeHoverListeners() {
-            let buttons = document.querySelectorAll(".viewUIButton");
+            // Remove previous event handlers to avoid duplicates
+            $(document).off('mouseenter mouseleave', '.viewUIButton, .dropdown-menu');
 
-            buttons.forEach(button => {
-                let dropdownMenu = button.nextElementSibling;
-                let timeoutId;
-
-                button.addEventListener("mouseenter", function() {
-                    clearTimeout(timeoutId);
-                    dropdownMenu.style.display = "block";
-                    setTimeout(() => {
-                        dropdownMenu.style.opacity = "1";
-                        dropdownMenu.style.visibility = "visible";
-                    }, 100);
+            $(document).on('mouseenter', '.viewUIButton', function() {
+                const $dropdown = $(this).siblings('.dropdown-menu');
+                $dropdown.stop(true, true).css({
+                    display: 'block',
+                    opacity: 1,
+                    visibility: 'visible'
                 });
+            });
 
-                dropdownMenu.addEventListener("mouseenter", function() {
-                    clearTimeout(timeoutId);
-                    dropdownMenu.style.display = "block";
-                    dropdownMenu.style.opacity = "1";
-                    dropdownMenu.style.visibility = "visible";
-                });
+            $(document).on('mouseleave', '.viewUIButton', function() {
+                const $dropdown = $(this).siblings('.dropdown-menu');
+                setTimeout(() => {
+                    if (!$dropdown.is(':hover')) {
+                        $dropdown.stop(true, true).css({
+                            opacity: 0,
+                            visibility: 'hidden'
+                        }).delay(300).fadeOut(200);
+                    }
+                }, 500);
+            });
 
-                button.addEventListener("mouseleave", function() {
-                    timeoutId = setTimeout(() => {
-                        if (!dropdownMenu.matches(":hover")) {
-                            dropdownMenu.style.opacity = "0";
-                            dropdownMenu.style.visibility = "hidden";
-                            setTimeout(() => {
-                                dropdownMenu.style.display = "none";
-                            }, 500);
-                        }
-                    }, 1000);
-                });
+            $(document).on('mouseleave', '.dropdown-menu', function() {
+                const $dropdown = $(this);
+                setTimeout(() => {
+                    $dropdown.stop(true, true).css({
+                        opacity: 0,
+                        visibility: 'hidden'
+                    }).delay(300).fadeOut(200);
+                }, 500);
+            });
 
-                dropdownMenu.addEventListener("mouseleave", function() {
-                    timeoutId = setTimeout(() => {
-                        dropdownMenu.style.opacity = "0";
-                        dropdownMenu.style.visibility = "hidden";
-                        setTimeout(() => {
-                            dropdownMenu.style.display = "none";
-                        }, 500);
-                    }, 1000);
+            $(document).on('mouseenter', '.dropdown-menu', function() {
+                $(this).stop(true, true).css({
+                    display: 'block',
+                    opacity: 1,
+                    visibility: 'visible'
                 });
             });
         }
 
-        // Initialize hover listeners after DataTable initializes
+
+        // Initial call
         initializeHoverListeners();
 
-        // Reattach hover listeners after table is redrawn (pagination, search, etc.)
+        // Redraw pagination/search
         table.on('draw', function() {
             initializeHoverListeners();
+        });
+
+        // Monitor clicks on + to show child rows
+        $('#dataTable tbody').on('click', 'td.details-control', function() {
+            let tr = $(this).closest('tr');
+            let row = table.row(tr);
+
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('shown');
+            } else {
+                row.child(format(row.data())).show(); // format() renders the child row content
+                tr.addClass('shown');
+
+                // Delay slightly to ensure DOM is ready before initializing
+                setTimeout(() => {
+                    initializeHoverListeners();
+                }, 200);
+            }
         });
     }
 });
