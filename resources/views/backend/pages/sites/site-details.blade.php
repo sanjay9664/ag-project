@@ -235,10 +235,12 @@
 
                                 $tempvariable = number_format($inc_addValue, 2);
                                 $inc_addValueFormatted = $tempvariable + $increaseRunningHours;
-                                
-                                ?>
+                            ?>
 
-
+                            <?php
+                                $hours = floor($inc_addValueFormatted);
+                                $minutes = round(($inc_addValueFormatted - $hours) * 60);
+                            ?>
                             <?php
                                 $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
                                 $addValuerunstatus = '_';
@@ -269,9 +271,9 @@
                                         <i class="fas fa-running text-primary"></i>
                                         <p><strong>Running Hours:</strong></p>
                                         @if(auth()->user()->hasRole('superadmin'))
-                                        <h4 class="text-dark">{{ $inc_addValueFormatted }} Hrs</h4>
+                                        <h4 class="text-dark">{{ $hours }} hrs {{ $minutes }} mins</h4>
                                         @else
-                                        <h4 class="text-dark">{{ $inc_addValueFormatted }} Hrs
+                                        <h4 class="text-dark">{{ $hours }} hrs {{ $minutes }} mins
                                         </h4>
                                         @endif
                                     </div>
@@ -514,7 +516,10 @@
                                 $inc_addValueFormatted = $tempvariable + $increaseRunningHours;
                                 ?>
 
-
+                                <?php
+                                    $hours = floor($inc_addValueFormatted);
+                                    $minutes = round(($inc_addValueFormatted - $hours) * 60);
+                                ?>
                             <?php
                                 $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
                                 $addValuerunstatus = '_';
@@ -545,10 +550,9 @@
                                                                             <i class="fas fa-running text-primary"></i>
                                                                             <p><strong>Running Hours:</strong></p>
                                                                             @if(auth()->user()->hasRole('superadmin'))
-                                                                            <h4 class="text-dark">{{ $inc_addValueFormatted }} Hrs</h4>
+                                                                            <h4 class="text-dark">{{ $hours }} hrs {{ $minutes }} mins</h4>
                                                                             @else
-                                                                            <h4 class="text-dark">{{ $inc_addValueFormatted; }} Hrs
-                                                                            </h4>
+                                                                           <h4 class="text-dark">{{ $hours }} hrs {{ $minutes }} mins</h4>
                                                                             @endif
                                                                         </div>
                                                                         <div class="text-center" style="vertical-align: middle;">

@@ -175,7 +175,10 @@
                         }
                         ?>
 
-
+                        <?php
+                            $hours = floor($addValue);
+                            $minutes = round(($addValue - $hours) * 60);
+                        ?>
                         <div class="card mb-1 shadow-sm border-0">
                             <div class="card-body text-center">
                                 <div class="d-flex align-items-center gap-4 mb-1">
@@ -187,8 +190,9 @@
                                     <div>
                                         <div style="font-weight: bold; font-size: 16px; color: #333;">
                                             Running Hours: <span
-                                                style="font-weight: normal; font-size: 14px; font-weight: bold;">{{ $addValue }}
-                                                Hrs</span>
+                                                style="font-weight: normal; font-size: 14px; font-weight: bold;">{{ $hours }}
+                                                hrs {{ $minutes }} mins
+                                            </span>
                                         </div>
 
                                     </div>
@@ -1552,6 +1556,10 @@
                     }
                     ?>
 
+                        <?php
+                            $hours = floor($addValue);
+                            $minutes = round(($addValue - $hours) * 60);
+                        ?>
 
                         <div class="card mb-1 shadow-sm border-0">
                             <div class="card-body text-center">
@@ -1563,8 +1571,8 @@
                                     <div>
                                     <div style="font-weight: bold; font-size: 16px; color: #333;">
                                                                     Running Hours: <span
-                                                                        style="font-weight: normal; font-size: 14px; font-weight: bold;">{{ $addValue }}
-                                                                        Hrs</span>
+                                                                        style="font-weight: normal; font-size: 14px; font-weight: bold;">{{ $hours }} hrs {{ $minutes }} mins
+                                                                        </span>
                                                                 </div>
                                     </div>
                                 </div>
