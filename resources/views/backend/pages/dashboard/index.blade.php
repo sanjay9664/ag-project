@@ -143,17 +143,13 @@ Dashboard Page - Admin Panel
 
                                     <?php
                                         $addValuerun = 0;
-
                                         foreach ($sites as $site) {
                                             $data = json_decode($site->data);
-
                                             if ($data && isset($data->running_hours)) {
                                                 $parameters = $data->running_hours;
-
                                                 if (isset($parameters->md, $parameters->add)) {
                                                     $moduleId = $parameters->md;
                                                     $fieldValue = $parameters->add;
-
                                                     $increaseMinutes = isset($parameters->increase_minutes) && is_numeric($parameters->increase_minutes) && (float)$parameters->increase_minutes > 0 
                                                         ? (float)$parameters->increase_minutes 
                                                         : 1; 
@@ -181,9 +177,10 @@ Dashboard Page - Admin Panel
                                             }
                                         }
                                     ?>
+
                                     @php
-                                    $present_site = $sites->firstWhere('id', $login->site_id);
-                                    $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
+                                        $present_site = $sites->firstWhere('id', $login->site_id);
+                                        $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
                                     @endphp
 
 
@@ -255,15 +252,19 @@ Dashboard Page - Admin Panel
                                     @endif
                                     <td>
                                         @php
-                                        $siteData = $runningHours[$present_site->id ?? ''] ?? null;
-                                        $totalAddrunValue = $addValuerun +
-                                        ($siteData->increase_running_hours ?? 0);
+                                            $siteData = $runningHours[$present_site->id ?? ''] ?? null;
+                                            $totalAddrunValue = $addValuerun +
+                                            ($siteData->increase_running_hours ?? 0);
+
+                                            $hours = floor($totalAddrunValue); // Get whole hours
+                                            $minutes = round(($totalAddrunValue - $hours) * 60);
                                         @endphp
 
                                         <div>
-                                            <span class="text-dark">{{ $totalAddrunValue }}</span>
+                                            <span class="text-dark">{{ $hours }} hrs {{ $minutes }} mins</span>
                                         </div>
                                     </td>
+
                                     <td>
                                         {{ \Carbon\Carbon::parse($login->created_at)->timezone('Asia/Kolkata')->format('d M\' Y h:i A') }}
                                     </td>

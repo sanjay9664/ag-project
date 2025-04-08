@@ -42,8 +42,9 @@
                 <td>{{ $sitejsonData['group'] ?? 'N/A' }}</td>
                 <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
                 <td>
-    @php
-    $capacity = $sitejsonData[' capacity'] ?? 0; $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
+                      @php
+                                $capacity = $sitejsonData[' capacity'] ?? 0;
+                $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
                 $fuelKey=$sitejsonData['parameters']['fuel']['add'] ?? null; $addValue='_' ; foreach ($eventData as
                 $event) { $eventArray=$event->getArrayCopy();
                 if ($fuelMd && isset($eventArray['module_id']) && $eventArray['module_id'] == $fuelMd) {
@@ -57,13 +58,20 @@
                 $percentage = is_numeric($addValue) ? $addValue : 0;
                 $percentageDecimal = $percentage / 100;
                 $totalFuelLiters = $capacity * $percentageDecimal;
-                $fuelClass = $percentage <= 20 ? 'low-fuel' : 'normal-fuel' ; @endphp <div class="fuel-container">
-                    <div class="fuel-indicator {{ $fuelClass }}">
-                        <div class="fuel-level" style="width: {{ 100 - $percentage }}%;"></div>
-                        <span class="fuel-percentage">{{ $percentage }} %</span>
+                $fuelClass = $percentage <= 20 ? 'low-fuel' : 'normal-fuel' ; $lowFuelText=$percentage <=20 ? 'Low Fuel'
+                    : '' ; @endphp <div class="fuel-container" style="position: relative; width: 100%;">
+                    <div class="fuel-indicator {{ $fuelClass }}" style="display: flex; align-items: center;">
+                        <div class="fuel-level">
+                        </div>
+                        <span class="fuel-percentage">{{ $percentage }}%</span>
                     </div>
+
+                    @if($lowFuelText)
+                    <span class="fueldata">{{ $lowFuelText }}</span>
+                    @endif
 </div>
 </td>
+
 <td class="running-hours">
     @php
     $increased_running_hours = DB::table('running_hours')->where('site_id', $site->id)->first();
@@ -87,8 +95,10 @@
     $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
     $inc_addValue = $increaseMinutes > 0 ? $addValue / $increaseMinutes : $addValue;
     $inc_addValueFormatted = number_format($inc_addValue, 2) + $increaseRunningHours;
+    $hours = floor($inc_addValueFormatted);
+    $minutes = round(($inc_addValueFormatted - $hours) * 60);
     @endphp
-    {{ $inc_addValueFormatted }} Hrs
+    {{ $hours }} hrs {{ $minutes}} mins
 </td>
 <td class="last-updated">{{$site->updatedAt}}</td>
 <td>
