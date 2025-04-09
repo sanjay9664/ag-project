@@ -5,14 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DG SET MONITORING SYSTEM</title>
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
-    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
-    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
     <link rel="stylesheet" href="{{url('backend/assets/css/admin.css')}}">
     <link rel="stylesheet" href="{{url('backend/assets/css/admin-all-min.css')}}">
     <link rel="stylesheet" href="{{url('backend/assets/css/admin-bootstrap-min.css')}}">
-    <!-- <link rel="stylesheet" href=""> -->
     <script src="{{url('backend/assets/js/admin-bootstrap.bundle.js')}}"></script>
     <script src="{{url('backend/assets/js/adminCDN.js')}}"></script>
 </head>
@@ -80,8 +75,13 @@
                     </select>
                     <select class="form-select form-select-sm" id="locationSelect">
                         <option selected>Select Location</option>
-                        @foreach($siteData as $site)
-                        <option value="{{ json_decode($site->data)->group }}">{{ json_decode($site->data)->group }}
+                        @php
+                        $uniqueGroups = collect($siteData)
+                        ->map(fn($site) => json_decode($site->data)->group)
+                        ->unique();
+                        @endphp
+                        @foreach($uniqueGroups as $group)
+                        <option value="{{$group}}">{{$group}}
                         </option>
                         @endforeach
                     </select>
@@ -107,7 +107,7 @@
                     <tbody>
                         @php $i=1; @endphp
                         @foreach ($siteData as $site)
-                        @php
+                        <!-- @php
                         $sitejsonData = json_decode($site->data, true);
                         $updatedAt = null;
                         $isRecent = false;
@@ -121,59 +121,77 @@
                             Parsing Error: ' . $e->getMessage());
                                 }
                             }
-                        @endphp
+                        @endphp -->
+                        @php
+                        $sitejsonData = json_decode($site->data, true);
+                        $updatedAt = null;
+                        $isRecent = false;
+                        $formattedUpdatedAt = 'N/A';
 
-                        <tr data-site-id="{{ $site->id }}">
-                            <td>{{ $i }}</td>
-                            <td style="color: {{ $isRecent ? 'green' : 'red' }};">
-                                <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
-                                    style="text-decoration: none; color: inherit;font-weight: bold;" target="_blank">
-                                    {{ $site->site_name }}
-                                </a>
-                            </td>
-                            <td>{{ $sitejsonData['generator'] ?? 'N/A' }}</td>
-                            <td>{{ $sitejsonData['group'] ?? 'N/A' }}</td>
-                            <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
-                            <td>
-                      @php
-                                $capacity = $sitejsonData[' capacity'] ?? 0;
-                            $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
-                            $fuelKey=$sitejsonData['parameters']['fuel']['add'] ?? null; $addValue='_' ; foreach
-                            ($eventData as $event) { $eventArray=$event->getArrayCopy();
-                            if ($fuelMd && isset($eventArray['module_id']) && $eventArray['module_id'] == $fuelMd) {
-                            if ($fuelKey && array_key_exists($fuelKey, $eventArray)) {
-                            $addValue = $eventArray[$fuelKey];
-                            }
-                            break;
+                        if (!empty($site->updatedAt) && $site->updatedAt !== 'N/A') {
+                        try {
+                        $updatedAt = Carbon\Carbon::parse($site->updatedAt)->timezone('Asia/Kolkata');
+                        $now = Carbon\Carbon::now('Asia/Kolkata');
+
+                        $isRecent = $updatedAt->diffInHours($now) < 24; $formattedUpdatedAt=$updatedAt->format("d M Y
+                            h:i A");
+                            } catch (\Exception $e) {
+                            \Log::error('Date Parsing Error: ' . $e->getMessage());
                             }
                             }
+                            @endphp
 
-                            $percentage = is_numeric($addValue) ? $addValue : 0;
-                            $percentageDecimal = $percentage / 100;
-                            $totalFuelLiters = $capacity * $percentageDecimal;
-                            $fuelClass = $percentage <= 20 ? 'low-fuel' : 'normal-fuel' ; 
-                            $lowFuelText=$percentage <=20 ? 'Low Fuel' : '' ; @endphp 
-                                <div class="fuel-container"
-                                style="position: relative; width: 100%;">
-                                <div class="fuel-indicator {{ $fuelClass }}"
-                                    style="display: flex; align-items: center;">
-                                    <div class="fuel-level">
-                                    </div>
-                                    <span class="fuel-percentage">{{ $percentage }}%</span>
-                                </div>
+                            <tr data-site-id="{{ $site->id }}">
+                                <td>{{ $i }}</td>
+                                <td style="color: {{ $isRecent ? 'green' : 'red' }};">
+                                    <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
+                                        style="text-decoration: none; color: inherit; font-weight: bold;"
+                                        target="_blank">
+                                        {{ $site->site_name }}
+                                    </a>
+                                </td>
+                                <td>{{ $sitejsonData['generator'] ?? 'N/A' }}</td>
+                                <td>{{ $sitejsonData['group'] ?? 'N/A' }}</td>
+                                <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
+                                <td>
+                                    @php
+                                    $capacity = $sitejsonData[' capacity'] ?? 0;
+                                    $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
+                                    $fuelKey=$sitejsonData['parameters']['fuel']['add'] ?? null; $addValue='_' ; foreach
+                                    ($eventData as $event) { $eventArray=$event->getArrayCopy();
+                                    if ($fuelMd && isset($eventArray['module_id']) && $eventArray['module_id'] ==
+                                    $fuelMd) {
+                                    if ($fuelKey && array_key_exists($fuelKey, $eventArray)) {
+                                    $addValue = $eventArray[$fuelKey];
+                                    }
+                                    break;
+                                    }
+                                    }
 
-                                @if($lowFuelText)
-                                <span class="fueldata">{{ $lowFuelText }}</span>
-                                @endif
+                                    $percentage = is_numeric($addValue) ? $addValue : 0;
+                                    $percentageDecimal = $percentage / 100;
+                                    $totalFuelLiters = $capacity * $percentageDecimal;
+                                    $fuelClass = $percentage <= 20 ? 'low-fuel' : 'normal-fuel' ;
+                                        $lowFuelText=$percentage <=20 ? 'Low Fuel' : '' ; @endphp <div
+                                        class="fuel-container" style="position: relative; width: 100%;">
+                                        <div class="fuel-indicator {{ $fuelClass }}"
+                                            style="display: flex; align-items: center;">
+                                            <div class="fuel-level">
+                                            </div>
+                                            <span class="fuel-percentage">{{ $percentage }}%</span>
+                                        </div>
+
+                                        @if($lowFuelText)
+                                        <span class="fueldata">{{ $lowFuelText }}</span>
+                                        @endif
             </div>
             </td>
 
             <td class="running-hours">
                 @php
-                $increased_running_hours = DB::table('running_hours')->where('site_id',
-                $site->id)->first();
-                $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ??
-                0);
+                $increased_running_hours = DB::table('running_hours')->where('site_id', $site->id)->first();
+                $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
+
                 $addValue = 0;
                 $key = $sitejsonData['running_hours']['add'] ?? null;
                 $md = $sitejsonData['running_hours']['md'] ?? null;
@@ -192,12 +210,13 @@
 
                 $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
                 $inc_addValue = $increaseMinutes > 0 ? $addValue / $increaseMinutes : $addValue;
-                $inc_addValueFormatted = number_format($inc_addValue, 2) + $increaseRunningHours;
-
+                $inc_addValueFormatted = round($inc_addValue + $increaseRunningHours, 2);
                 $hours = floor($inc_addValueFormatted);
                 $minutes = round(($inc_addValueFormatted - $hours) * 60);
                 @endphp
-                {{ $hours }} hrs {{ $minutes}} mins
+
+                {{ $hours }} hrs {{ $minutes }} mins
+
             </td>
 
             <td class="last-updated">
@@ -238,7 +257,6 @@
     </div>
     </div>
 
-    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
     <script src="{{url('backend/assets/js/admin-jquery-3.6.0.min.js')}}"></script>
 
     <script>

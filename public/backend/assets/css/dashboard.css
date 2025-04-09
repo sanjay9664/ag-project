@@ -157,6 +157,7 @@ td {
 
 .site-form-container {
     gap: 10px;
+    display: none !important;
 }
 
 .card {
