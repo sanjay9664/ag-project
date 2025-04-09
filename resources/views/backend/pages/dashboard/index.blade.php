@@ -59,7 +59,6 @@ Dashboard Page - Admin Panel
                                     <th width="15%">Total Running Hours</th>
                                     <!-- <th width="10%">{{ __('Login Time') }}</th>
                                     <th width="10%">Login Status</th> -->
-                                  
                                     <th width="10%">{{ __('Login as User') }}</th>
                                 </tr>
                             </thead>
