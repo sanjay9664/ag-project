@@ -239,12 +239,6 @@ input {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="d-flex">
-                                                <input type="text" name="total_kwh_md" class="form-control ms-2"
-                                                    style="width: 50%;" placeholder="MD">
-                                                <input type="text" name="total_kwh_add" class="form-control ms-2"
-                                                    style="width: 50%;" placeholder="ADD">
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

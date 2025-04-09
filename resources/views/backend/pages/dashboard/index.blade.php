@@ -52,14 +52,14 @@ Dashboard Page - Admin Panel
                                 <tr>
                                     <th width="5%">{{ __('Sl') }}</th>
                                     <th width="15%">Site Name</th>
-                                    <!-- <th width="15%">{{ __('User Name') }}</th> -->
                                     <th width="15%">Fuel Indicator</th>
-                                    <th width="15%">DG Running Status</th>
-                                    <th width="15%">Actual hours from controller</th>
-                                    <th width="15%">Increase Running Hours</th>
+                                    <th width="10%">DG Running Status</th>
+                                    <th width="10%">Actual hours from controller</th>
+                                    <th width="10%">Increase Running Hours</th>
                                     <th width="15%">Total Running Hours</th>
-                                    <th width="10%">{{ __('Login Time') }}</th>
-                                    <th width="10%">Login Status</th>
+                                    <!-- <th width="10%">{{ __('Login Time') }}</th>
+                                    <th width="10%">Login Status</th> -->
+                                  
                                     <th width="10%">{{ __('Login as User') }}</th>
                                 </tr>
                             </thead>
@@ -179,10 +179,9 @@ Dashboard Page - Admin Panel
                                     ?>
 
                                     @php
-                                    $present_site = $sites->firstWhere('id', $login->site_id);
-                                    $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
+                                        $present_site = $sites->firstWhere('id', $login->site_id);
+                                        $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
                                     @endphp
-
 
                                     @if($present_site == true)
                                     <div class="site-form-container d-flex align-items-center gap-3 mb-2">
@@ -265,12 +264,12 @@ Dashboard Page - Admin Panel
                                         </div>
                                     </td>
 
-                                    <td>
+                                    <!-- <td>
                                         {{ \Carbon\Carbon::parse($login->created_at)->timezone('Asia/Kolkata')->format('d M\' Y h:i A') }}
-                                    </td>
-                                    <td>
+                                    </td> -->
+                                    <!-- <td>
                                         <span class="dot-{{ $login->status === 'active' ? 'red' : 'green' }}"></span>
-                                    </td>
+                                    </td> -->
                                     <td>
                                         @if(auth()->user()->hasRole('superadmin'))
                                         <form class="text-center">
@@ -346,18 +345,6 @@ Dashboard Page - Admin Panel
 <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<!-- <script>
-$(document).ready(function() {
-    if ($('#dataTable').length) {
-        $('#dataTable').DataTable({
-            responsive: true,
-            // pageLength: 25,
-            // paging: true
-        });
-    }
-});
-</script> -->
 
 <script>
 document.getElementById('downloadReport').addEventListener('click', function() {
@@ -485,69 +472,6 @@ function toggleDivVisibility(button) {
 </script>
 
 <script>
-// $(document).ready(function() {
-//     if ($('#dataTable').length) {
-//         let table = $('#dataTable').DataTable({
-//             responsive: true,
-//         });
-
-//         function initializeHoverListeners() {
-//             let buttons = document.querySelectorAll(".viewUIButton");
-
-//             buttons.forEach(button => {
-//                 let dropdownMenu = button.nextElementSibling;
-//                 let timeoutId;
-
-//                 button.addEventListener("mouseenter", function() {
-//                     clearTimeout(timeoutId);
-//                     dropdownMenu.style.display = "block";
-//                     setTimeout(() => {
-//                         dropdownMenu.style.opacity = "1";
-//                         dropdownMenu.style.visibility = "visible";
-//                     }, 100);
-//                 });
-
-//                 dropdownMenu.addEventListener("mouseenter", function() {
-//                     clearTimeout(timeoutId);
-//                     dropdownMenu.style.display = "block";
-//                     dropdownMenu.style.opacity = "1";
-//                     dropdownMenu.style.visibility = "visible";
-//                 });
-
-//                 button.addEventListener("mouseleave", function() {
-//                     timeoutId = setTimeout(() => {
-//                         if (!dropdownMenu.matches(":hover")) {
-//                             dropdownMenu.style.opacity = "0";
-//                             dropdownMenu.style.visibility = "hidden";
-//                             setTimeout(() => {
-//                                 dropdownMenu.style.display = "none";
-//                             }, 500);
-//                         }
-//                     }, 1000);
-//                 });
-
-//                 dropdownMenu.addEventListener("mouseleave", function() {
-//                     timeoutId = setTimeout(() => {
-//                         dropdownMenu.style.opacity = "0";
-//                         dropdownMenu.style.visibility = "hidden";
-//                         setTimeout(() => {
-//                             dropdownMenu.style.display = "none";
-//                         }, 500);
-//                     }, 1000);
-//                 });
-//             });
-//         }
-
-//         // Initialize hover listeners after DataTable initializes
-//         initializeHoverListeners();
-
-//         // Reattach hover listeners after table is redrawn (pagination, search, etc.)
-//         table.on('draw', function() {
-//             initializeHoverListeners();
-//         });
-//     }
-// });
-
 $(document).ready(function() {
     if ($('#dataTable').length) {
         let table = $('#dataTable').DataTable({
@@ -555,7 +479,6 @@ $(document).ready(function() {
         });
 
         function initializeHoverListeners() {
-            // Remove previous event handlers to avoid duplicates
             $(document).off('mouseenter mouseleave', '.viewUIButton, .dropdown-menu');
 
             $(document).on('mouseenter', '.viewUIButton', function() {
@@ -598,16 +521,12 @@ $(document).ready(function() {
             });
         }
 
-
-        // Initial call
         initializeHoverListeners();
 
-        // Redraw pagination/search
         table.on('draw', function() {
             initializeHoverListeners();
         });
 
-        // Monitor clicks on + to show child rows
         $('#dataTable tbody').on('click', 'td.details-control', function() {
             let tr = $(this).closest('tr');
             let row = table.row(tr);
@@ -616,10 +535,8 @@ $(document).ready(function() {
                 row.child.hide();
                 tr.removeClass('shown');
             } else {
-                row.child(format(row.data())).show(); // format() renders the child row content
+                row.child(format(row.data())).show();
                 tr.addClass('shown');
-
-                // Delay slightly to ensure DOM is ready before initializing
                 setTimeout(() => {
                     initializeHoverListeners();
                 }, 200);

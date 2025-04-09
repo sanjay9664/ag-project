@@ -152,30 +152,30 @@
 
 
                         <?php
-                        $key = $sitejsonData->running_hours->add;
-                        $addValue = '_';
-                        $increaseMinutes = isset($sitejsonData->running_hours->increase_minutes) 
-                            ? $sitejsonData->running_hours->increase_minutes 
-                            : null;
+                            $key = $sitejsonData->running_hours->add;
+                            $addValue = 0; // Changed from '_' to 0 for numeric safety
+                            $increaseMinutes = isset($sitejsonData->running_hours->increase_minutes)
+                                ? $sitejsonData->running_hours->increase_minutes
+                                : null;
 
-                        foreach ($eventData as $event) {
-                            $eventArray = $event->getArrayCopy();
-                            if ($eventArray['module_id'] == $sitejsonData->running_hours->md) {
-                                if (array_key_exists($key, $eventArray)) {
-                                    $addValue = (float)$eventArray[$key];
+                            foreach ($eventData as $event) {
+                                $eventArray = $event->getArrayCopy();
+                                if ($eventArray['module_id'] == $sitejsonData->running_hours->md) {
+                                    if (array_key_exists($key, $eventArray)) {
+                                        $addValue = (float) $eventArray[$key];
 
-                                    if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
-                                        $addValue = $addValue / (float)$increaseMinutes;
+                                        if (is_numeric($increaseMinutes) && (float) $increaseMinutes > 0) {
+                                            $addValue = $addValue / (float) $increaseMinutes;
+                                        }
+
+                                        // Don't format here if using in math below
+                                        $addValue = round($addValue, 2);
                                     }
-
-                                    $addValue = number_format($addValue, 2);
+                                    break;
                                 }
-                                break;
                             }
-                        }
-                        ?>
 
-                        <?php
+                            // Safe conversion to hours and minutes
                             $hours = floor($addValue);
                             $minutes = round(($addValue - $hours) * 60);
                         ?>
@@ -1532,34 +1532,33 @@
 </div>
 @endif
 
-                        <?php
-                    $key = $sitejsonData->running_hours->add;
-                    $addValue = '_';
-                    $increaseMinutes = isset($sitejsonData->running_hours->increase_minutes) 
-                        ? $sitejsonData->running_hours->increase_minutes 
-                        : null;
+                    <?php
+                        $key = $sitejsonData->running_hours->add;
+                        $addValue = 0;
+                        $increaseMinutes = isset($sitejsonData->running_hours->increase_minutes)
+                            ? $sitejsonData->running_hours->increase_minutes
+                            : null;
 
-                    foreach ($eventData as $event) {
-                        $eventArray = $event->getArrayCopy();
-                        if ($eventArray['module_id'] == $sitejsonData->running_hours->md) {
-                            if (array_key_exists($key, $eventArray)) {
-                                $addValue = (float)$eventArray[$key];
+                        foreach ($eventData as $event) {
+                            $eventArray = $event->getArrayCopy();
+                            if ($eventArray['module_id'] == $sitejsonData->running_hours->md) {
+                                if (array_key_exists($key, $eventArray)) {
+                                    $addValue = (float) $eventArray[$key];
 
-                                if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
-                                    $addValue = $addValue / (float)$increaseMinutes;
+                                    if (is_numeric($increaseMinutes) && (float) $increaseMinutes > 0) {
+                                        $addValue = $addValue / (float) $increaseMinutes;
+                                    }
+
+                                    $addValue = round($addValue, 2);
                                 }
-
-                                $addValue = number_format($addValue, 2);
+                                break;
                             }
-                            break;
                         }
-                    }
+
+                        $hours = floor($addValue);
+                        $minutes = round(($addValue - $hours) * 60);
                     ?>
 
-                        <?php
-                            $hours = floor($addValue);
-                            $minutes = round(($addValue - $hours) * 60);
-                        ?>
 
                         <div class="card mb-1 shadow-sm border-0">
                             <div class="card-body text-center">
