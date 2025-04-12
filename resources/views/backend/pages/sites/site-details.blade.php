@@ -8,9 +8,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/react-circular-progressbar/2.0.3/styles.css" rel="stylesheet">
-
 </head>
+
 <style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
 .navbar {
     background-color: #007bff;
     padding: 10px 20px;
@@ -53,7 +58,6 @@
     font-size: 0.9rem;
 }
 
-
 .card-header {
     font-size: 1.2rem;
     font-weight: bold;
@@ -74,7 +78,6 @@
     padding: 10px;
     font-size: 15px;
     word-wrap: break-word;
-    white-space: nowrap;
 }
 
 .table th {
@@ -87,6 +90,11 @@
     background-color: #f9f9f9;
 }
 
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive table styles */
 @media (max-width: 768px) {
     .table {
         display: block;
@@ -117,6 +125,7 @@
         font-size: 0.9rem;
         white-space: normal;
         border-bottom: 1px solid #ddd;
+        width: 100%;
     }
 
     .table td:last-child {
@@ -130,289 +139,469 @@
         display: block;
         margin-bottom: 5px;
     }
+}
 
-    .table img {
-        max-width: 80px;
-        height: auto;
+/* Engine parameters specific styles */
+.parameter-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    height: 100%;
+}
+
+.parameter-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.parameter-label {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.parameter-value {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Three-phase value styles */
+.phase-values {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.phase-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.phase-label {
+    font-size: 0.7rem;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.phase-number {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Header styles */
+.header-container {
+    background: #002E6E;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.header-title {
+    margin: 0;
+    padding: 10px 0;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.logo-img {
+    width: 120px;
+    height: 40px;
+    background: white;
+    border-radius: 50px;
+}
+
+/* Run status section */
+.run-status-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 8px;
+}
+
+.status-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px;
+    min-width: 120px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .parameter-box {
         margin-bottom: 10px;
-        border-radius: 5px;
     }
 }
 
-.table-hover tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-title {
+        padding-right: 0;
+        margin-top: 10px;
+    }
+
+    .run-status-container {
+        flex-direction: column;
+    }
+
+    .status-box {
+        margin-bottom: 15px;
+    }
+
+    .phase-values {
+        flex-direction: column;
+    }
+
+    .phase-value {
+        margin-bottom: 5px;
+    }
 }
 </style>
 
-<body class="font-family:Arial, sans-serif ">
-    <div class=" text-center text-white py-1 m-1 rounded d-flex justify-content-between align-items-center"
-        style="background:#002E6E; flex-wrap: wrap;">
+<body>
+    <div class="header-container">
         <a class="navbar-brand" href="#">
-            <img src="https://genset.innovatorautomation.co.in/assets/logo.svg" alt="sochiot_Logo" style="width: 120px; height: 40px; background: white;
-  border-radius: 50px ;  margin-left:40px; " />
+            <img src="https://genset.innovatorautomation.co.in/assets/logo.svg" alt="sochiot_Logo" class="logo-img" />
         </a>
-        <h5 class="my-3" style="padding-right: 117px;">DG SET MONITORING SYSTEM</h5>
+        <h5 class="header-title">DG SET MONITORING SYSTEM</h5>
     </div>
 
-    <div class="row mt-3" id="event-data">
-        <!-- First Table for Asset Information -->
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header bg-primary text-center text-white fw-bold fs-4 p-3"
-                    style="background: #002E6E;">
-                    ASSET INFORMATION
+    <div class="container-fluid">
+        <div class="row mt-3" id="event-data">
+            <!-- First Table for Asset Information -->
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header text-center text-white fw-bold fs-4 p-1" style="background: #002E6E;">
+                        ASSET INFORMATION
+                    </div>
+                    <table class="table table-bordered table-striped table-hover">
+                        <tbody>
+                            <tr>
+                                <th style="font-size: 1.2rem; padding: 15px; color:#fff; background: #002E6E;">
+                                    Asset Name: {{ $sitejsonData->asset_name }}
+                                </th>
+                                <td data-label="Group">
+                                    <strong>Group:</strong> {{ $sitejsonData->group }}
+                                </td>
+                                <td data-label="Generator">
+                                    <strong>Generator:</strong> {{ $sitejsonData->group }}
+                                </td>
+                                <td data-label="S/N">
+                                    <strong>S/N:</strong> {{ $sitejsonData->serial_number }}
+                                </td>
+                                <td data-label="Model">
+                                    <strong>Model:</strong> {{ $sitejsonData->model }}
+                                </td>
+                                <td data-label="Brand">
+                                    <strong>Brand:</strong> {{ $sitejsonData->brand }}
+                                </td>
+                                <td data-label="Capacity">
+                                    <strong>Capacity:</strong> {{ $sitejsonData->capacity }}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <?php
+                                    $increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
+                                    $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
+                                    $siteId = $sitejsonData->id ?? null;
+                                    $addValue = 0;
+                                    $key = $sitejsonData->running_hours->add ?? null;
+
+                                    foreach ($eventData as $event) {
+                                        $eventArray = $event->getArrayCopy();
+                                        if (isset($eventArray['module_id']) && $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)) {
+                                            if ($key && array_key_exists($key, $eventArray)) {
+                                                $addValue = (float) $eventArray[$key];
+                                            }
+                                            break;
+                                        }
+                                    }
+
+                                    $increaseMinutes = $sitejsonData->running_hours->increase_minutes ?? null;
+                                    $inc_addValue = $addValue;
+
+                                    if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
+                                        $inc_addValue /= (float)$increaseMinutes;
+                                    }
+
+                                    $tempvariable = number_format($inc_addValue, 2);
+                                    $inc_addValueFormatted = $tempvariable + $increaseRunningHours;
+                                ?>
+                                <?php
+                                    $hours = floor($inc_addValueFormatted);
+                                    $minutes = round(($inc_addValueFormatted - $hours) * 60);
+                                ?>
+                                <?php
+                                    $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
+                                    $addValuerunstatus = '_';
+
+                                    foreach ($eventData as $event) {
+                                        $eventArraya = $event->getArrayCopy();
+                                        if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->voltage_l_l->a->md) {
+                                            if (array_key_exists($keya, $eventArraya)) {
+                                                $addValuerunstatus = $eventArraya[$keya];
+                                            }
+                                            break;
+                                        }
+                                    }
+                                ?>
+                                <td colspan="7">
+                                    <div class="run-status-container">
+                                        <div class="status-box">
+                                            <i class="fas fa-cogs" style="color: teal; font-size: 24px;"></i>
+                                            <p class="fw-bold">Run Status</p>
+                                            @if($addValuerunstatus > 0)
+                                            <span class="badge bg-success px-2 py-1">Running</span>
+                                            @else
+                                            <span class="badge bg-danger px-2 py-1">Stop</span>
+                                            @endif
+                                        </div>
+                                        <div class="status-box">
+                                            <i class="fas fa-running text-primary" style="font-size: 24px;"></i>
+                                            <p><strong>Running Hours:</strong></p>
+                                            <h5 class="text-dark">{{ $hours }} hrs {{ $minutes }} mins</h5>
+                                        </div>
+                                        <div class="status-box">
+                                            <i class="fas fa-clock text-info" style="font-size: 24px;"></i>
+                                            <p><strong>Updated At:</strong></p>
+                                            <h5 class="text-muted">{{ $latestCreatedAt }}</h5>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <table class="table table-bordered table-striped table-hover text-white"
-                    style="box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;">
-                    <tbody>
-                        <tr>
-                            <th style="font-size: 1.2rem; padding: 15px; color:#fff ">
-                                Asset Name: {{ $sitejsonData->asset_name }}
-                            </th>
-                            <td>
-                                <p><strong>Group:</strong></p>
-                                {{ $sitejsonData->group }}
-                            </td>
-                            <td>
-                                <p><strong>Generator:</strong></p>
-                                {{ $sitejsonData->group }}
-                            </td>
-                            <td>
-                                <p><strong>S/N:</strong></p>
-                                {{ $sitejsonData->serial_number }}
-                            </td>
-                            <td>
-                                <p><strong>Model:</strong></p>
-                                {{ $sitejsonData->model }}
-                            </td>
-                            <td>
-                                <p><strong>Brand:</strong></p>
-                                {{ $sitejsonData->brand }}
-                            </td>
-                            <td>
-                                <p><strong>Capacity:</strong></p>
-                                {{ $sitejsonData->capacity }}
-                            </td>
+            </div>
 
-
-                        </tr>
-
-                        <tr>
-                            <?php
-                                // Fetch `increase_running_hours` from running_hours table based on site_id
-                                $increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
-
-                                $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
-
-                                // Ensure `$siteId` is properly used
-                                $siteId = $sitejsonData->id ?? null;
-
-                                // Initialize $addValue
-                                $addValue = 0;
-                                $key = $sitejsonData->running_hours->add ?? null;
-
-                                foreach ($eventData as $event) {
-                                    $eventArray = $event->getArrayCopy();
-
-                                    if (
-                                        isset($eventArray['module_id']) && 
-                                        $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)
-                                    ) {
-                                        if ($key && array_key_exists($key, $eventArray)) {
-                                            $addValue = (float) $eventArray[$key];
-                                        }
-                                        break;
-                                    }
-                                }
-
-                                $increaseMinutes = $sitejsonData->running_hours->increase_minutes ?? null;
-
-                                $inc_addValue = $addValue;
-
-                                if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
-                                    $inc_addValue /= (float)$increaseMinutes;
-                                }
-
-                                $tempvariable = number_format($inc_addValue, 2);
-                                $inc_addValueFormatted = $tempvariable + $increaseRunningHours;
-                            ?>
-
-                            <?php
-                                $hours = floor($inc_addValueFormatted);
-                                $minutes = round(($inc_addValueFormatted - $hours) * 60);
-                            ?>
-                            <?php
-                                $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
-                                $addValuerunstatus = '_';
-
-                                foreach ($eventData as $event) {
-                                    $eventArraya = $event->getArrayCopy();
-                                    if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->voltage_l_l->a->md) {
-                                        if (array_key_exists($keya, $eventArraya)) {
-                                            $addValuerunstatus = $eventArraya[$keya];
-                                        }
-                                        break;
-                                    }
-                                }
-                            ?>
-                            <td colspan="3">
-                                <div class="d-flex justify-content-around align-items-center text-black">
-                                    <div class="text-center" style="vertical-align: middle;">
-                                        <i class="fas fa-cogs"
-                                            style="color: teal; font-size: 24px; margin-bottom: 8px;"></i>
-                                        <p class="fw-bold">Run Status</p>
-                                        @if($addValuerunstatus > 0)
-                                        <span class="badge bg-success px-2 py-1">Running</span>
-                                        @else
-                                        <span class="badge bg-danger px-2 py-1">Stop</span>
-                                        @endif
-                                    </div>
-                                    <div class="text-center" style="vertical-align: middle;">
-                                        <i class="fas fa-running text-primary"></i>
-                                        <p><strong>Running Hours:</strong></p>
-                                        @if(auth()->user()->hasRole('superadmin'))
-                                        <h4 class="text-dark">{{ $hours }} hrs {{ $minutes }} mins</h4>
-                                        @else
-                                        <h4 class="text-dark">{{ $hours }} hrs {{ $minutes }} mins
-                                        </h4>
-                                        @endif
-                                    </div>
-                                    <div class="text-center text-white" style="vertical-align: middle;">
-                                        <i class="fas fa-clock text-info"></i>
-                                        <p><strong>Updated At:</strong></p>
-                                        <h5 class="text-muted">{{ $latestCreatedAt }}</h5>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Second Table for Engine Parameters -->
+            <div class="col-md-12 mt-4">
+                <div class="card">
+                    <div class="card-header text-center text-white fw-bold fs-5 p-3" style="background:#002E6E;">
+                        ENGINE PARAMETERS
+                    </div>
+                    <div class=" card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover m-0">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="parameter-box">
+                                                <i class="fas fa-thermometer-half parameter-icon text-primary"></i>
+                                                <span class="parameter-label">Coolant Temp</span>
+                                                <?php
+                                                    $key = $sitejsonData->parameters->coolant_temperature->add;
+                                                    $addValue = '_';
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
+                                                        if ($eventArray['module_id'] == $sitejsonData->parameters->coolant_temperature->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $addValue = number_format($eventArray[$key], 2);
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                <span class="parameter-value">{{ $addValue }} °C</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="parameter-box">
+                                                <i class="fas fa-oil-can parameter-icon text-warning"></i>
+                                                <span class="parameter-label">Oil Temp</span>
+                                                <?php
+                                                    $key = $sitejsonData->parameters->oil_temperature->add;
+                                                    $addValue = '_';
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
+                                                        if ($eventArray['module_id'] == $sitejsonData->parameters->oil_temperature->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $addValue = number_format($eventArray[$key], 2);
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                <span class="parameter-value">{{ $addValue }} °C</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="parameter-box">
+                                                <i class="fas fa-gas-pump parameter-icon text-danger"></i>
+                                                <span class="parameter-label">Oil Pressure</span>
+                                                <?php
+                                                    $key = $sitejsonData->parameters->oil_pressure->add;
+                                                    $addValue = '_';
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
+                                                        if ($eventArray['module_id'] == $sitejsonData->parameters->oil_pressure->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $addValue = number_format($eventArray[$key], 2);
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                <span class="parameter-value">{{ $addValue }} psi</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="parameter-box">
+                                                <i class="fas fa-tachometer-alt parameter-icon text-danger"></i>
+                                                <span class="parameter-label">RPM</span>
+                                                <?php
+                                                    $key = $sitejsonData->parameters->rpm->add;
+                                                    $addValue = '_';
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
+                                                        if ($eventArray['module_id'] == $sitejsonData->parameters->rpm->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $addValue = number_format($eventArray[$key], 2);
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                <span class="parameter-value">{{ $addValue }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="parameter-box">
+                                                <i class="fas fa-tint parameter-icon text-info"></i>
+                                                <span class="parameter-label">DEF</span>
+                                                <span class="parameter-value">-</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="parameter-box">
+                                                <i class="fas fa-battery-half parameter-icon text-info"></i>
+                                                <span class="parameter-label">Battery Voltage</span>
+                                                <?php
+                                                    $key = $sitejsonData->parameters->battery_voltage->add;
+                                                    $addValue = '_';
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
+                                                        if ($eventArray['module_id'] == $sitejsonData->parameters->battery_voltage->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $addValue = number_format((float)$eventArray[$key], 2);
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                <span class="parameter-value">{{ $addValue }} V</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="parameter-box">
+                                                <i class="fas fa-bolt parameter-icon text-warning"></i>
+                                                <span class="parameter-label">Voltage (L-L)</span>
+                                                <div class="phase-values">
+                                                    <?php
+                                                        $keys = [
+                                                            'a' => $sitejsonData->electric_parameters->voltage_l_l->a->add,
+                                                            'b' => $sitejsonData->electric_parameters->voltage_l_l->b->add,
+                                                            'c' => $sitejsonData->electric_parameters->voltage_l_l->c->add
+                                                        ];
+                                                        $values = ['R' => '_', 'Y' => '_', 'B' => '_'];
+                                                        
+                                                        foreach ($eventData as $event) {
+                                                            $eventArray = $event->getArrayCopy();
+                                                            if ($eventArray['module_id'] == $sitejsonData->electric_parameters->voltage_l_l->a->md) {
+                                                                foreach (['a' => 'R', 'b' => 'Y', 'c' => 'B'] as $phase => $label) {
+                                                                    if (array_key_exists($keys[$phase], $eventArray)) {
+                                                                        $values[$label] = number_format((float)$eventArray[$keys[$phase]], 2);
+                                                                    }
+                                                                }
+                                                                break;
+                                                            }
+                                                        }
+                                                    ?>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">R-Y</span>
+                                                        <span class="phase-number">{{ $values['R'] }} V</span>
+                                                    </div>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">Y-B</span>
+                                                        <span class="phase-number">{{ $values['Y'] }} V</span>
+                                                    </div>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">B-R</span>
+                                                        <span class="phase-number">{{ $values['B'] }} V</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td colspan="3">
+                                            <div class="parameter-box">
+                                                <i class="fas fa-bolt parameter-icon text-success"></i>
+                                                <span class="parameter-label">Current</span>
+                                                <div class="phase-values">
+                                                    <?php
+                                                        $keys = [
+                                                            'a' => $sitejsonData->electric_parameters->current->a->add,
+                                                            'b' => $sitejsonData->electric_parameters->current->b->add,
+                                                            'c' => $sitejsonData->electric_parameters->current->c->add
+                                                        ];
+                                                        $values = ['R' => '_', 'Y' => '_', 'B' => '_'];
+                                                        
+                                                        foreach ($eventData as $event) {
+                                                            $eventArray = $event->getArrayCopy();
+                                                            if ($eventArray['module_id'] == $sitejsonData->electric_parameters->current->a->md) {
+                                                                foreach (['a' => 'R', 'b' => 'Y', 'c' => 'B'] as $phase => $label) {
+                                                                    if (array_key_exists($keys[$phase], $eventArray)) {
+                                                                        $values[$label] = number_format((float)$eventArray[$keys[$phase]], 2);
+                                                                    }
+                                                                }
+                                                                break;
+                                                            }
+                                                        }
+                                                    ?>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">Phase R</span>
+                                                        <span class="phase-number">{{ $values['R'] }} A</span>
+                                                    </div>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">Phase Y</span>
+                                                        <span class="phase-number">{{ $values['Y'] }} A</span>
+                                                    </div>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">Phase B</span>
+                                                        <span class="phase-number">{{ $values['B'] }} A</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-
-
-
-        <!-- Second Table for Engine Parameters -->
-        <div class="col-md-12">
-            <div>
-                <div class="card-header bg-primary text-center text-white fw-bold fs-5 p-3"
-                    style="background:#002E6E; ">
-                    ENGINE PARAMETERS
-                </div>
-                <table class="table table-bordered table-striped table-hover"
-                    style="box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; height:150px">
-                    <tbody>
-                        <tr>
-                            <th class="table-column-title" style="color:#fff">ENGINE PARAMETERS</th>
-                            <?php
-                            $key = $sitejsonData->parameters->coolant_temperature->add;
-                            $addValue = '_';
-                            foreach ($eventData as $event) {
-                                $eventArray = $event->getArrayCopy();
-                                if ($eventArray['module_id'] == $sitejsonData->parameters->coolant_temperature->md) {
-                                    if (array_key_exists($key, $eventArray)) {
-                                        $addValue = number_format($eventArray[$key], 2);  // Limiting decimal to 2
-                                    }
-                                    break;
-                                }
-                            }
-                        ?>
-                            <td class="table-column-data">
-                                <i class="fas fa-thermometer-half text-primary" style="font-size: 2rem;"></i>
-
-                                Coolant Temperature:{{ $addValue }} °C
-                            </td>
-
-                            <?php
-                            $key = $sitejsonData->parameters->oil_temperature->add;
-                            $addValue = '_';
-                            foreach ($eventData as $event) {
-                                $eventArray = $event->getArrayCopy();
-                                if ($eventArray['module_id'] == $sitejsonData->parameters->oil_temperature->md) {
-                                    if (array_key_exists($key, $eventArray)) {
-                                        $addValue = number_format($eventArray[$key], 2);  // Limiting decimal to 2
-                                    }
-                                    break;
-                                }
-                            }
-                        ?>
-                            <td class="table-column-data">
-                                <i class="fas fa-oil-can text-warning" style="font-size: 2rem;"></i>
-                                Oil Temperature:{{ $addValue }} °C
-                            </td>
-
-                            <?php
-                            $key = $sitejsonData->parameters->oil_pressure->add;
-                            $addValue = '_';
-                            foreach ($eventData as $event) {
-                                $eventArray = $event->getArrayCopy();
-                                if ($eventArray['module_id'] == $sitejsonData->parameters->oil_pressure->md) {
-                                    if (array_key_exists($key, $eventArray)) {
-                                        $addValue = number_format($eventArray[$key], 2);  // Limiting decimal to 2
-                                    }
-                                    break;
-                                }
-                            }
-                        ?>
-                            <td class="table-column-data">
-                                <i class="fas fa-gas-pump text-danger" style="font-size: 2rem;"></i>
-                                Oil Pressure:{{ $addValue }}
-                            </td>
-
-                            <?php
-                            $key = $sitejsonData->parameters->rpm->add;
-                            $addValue = '_';
-                            foreach ($eventData as $event) {
-                                $eventArray = $event->getArrayCopy();
-                                if ($eventArray['module_id'] == $sitejsonData->parameters->rpm->md) {
-                                    if (array_key_exists($key, $eventArray)) {
-                                        $addValue = number_format($eventArray[$key], 2);  // Limiting decimal to 2
-                                    }
-                                    break;
-                                }
-                            }
-                        ?>
-                            <td class="table-column-data"> <i class="fas fa-tachometer-alt text-danger"
-                                    style="font-size: 2rem;"></i>
-                                RPM:{{ $addValue }}
-                            </td>
-
-                            <td class="table-column-data">
-                                <i class='fas fa-book-dead' style="font-size: 2rem;"></i>
-                                DEF:-
-                            </td>
-
-                            <?php
-                            $key = $sitejsonData->parameters->battery_voltage->add;
-                            $addValue = '_';
-                            foreach ($eventData as $event) {
-                                $eventArray = $event->getArrayCopy();
-                                if ($eventArray['module_id'] == $sitejsonData->parameters->battery_voltage->md) {
-                                    if (array_key_exists($key, $eventArray)) {
-                                        $addValue = number_format((float)$eventArray[$key], 2);  // Limiting decimal to 2
-                                    }
-                                    break;
-                                }
-                            }
-                        ?>
-                            <td class="table-column-data">
-                                <i class="fas fa-battery-half text-info" style="font-size: 2rem;"></i>
-                                Battery Voltage:<b> {{ $addValue }} V </b>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 
-    </div>
-    </div>
-    </div>
-
-    </div>
-    </div>
     <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -432,133 +621,161 @@
                         console.log(response.eventData);
                         const event = response.eventData;
                         eventList = `
-                         <div class="container ml-5">
-                         
-                                    <div class="row mt-3" id="event-data">
-                                            <!-- First Table for Asset Information -->
-                                                   <div class="col-md-12">
-                                                <div class="card">
-                                                    <div class="card-header bg-primary text-center text-white fw-bold fs-4 p-3"
-                                                        style="background: #002E6E;">
-                                                        ASSET INFORMATION
-                                                    </div>
-                                                    <table class="table table-bordered table-striped table-hover"
-                                                        style="box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;">
+                            <div class="container-fluid">
+                                <div class="row mt-3" id="event-data">
+                                    <!-- First Table for Asset Information -->
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-header text-center text-white fw-bold fs-4 p-1" style="background: #002E6E;">
+                                                ASSET INFORMATION
+                                            </div>
+                                            <table class="table table-bordered table-striped table-hover">
+                                                <tbody>
+                                                    <tr>
+                                                        <th style="font-size: 1.2rem; padding: 15px; color:#fff; background: #002E6E;">
+                                                            Asset Name: {{ $sitejsonData->asset_name }}
+                                                        </th>
+                                                        <td data-label="Group">
+                                                            <strong>Group:</strong> {{ $sitejsonData->group }}
+                                                        </td>
+                                                        <td data-label="Generator">
+                                                            <strong>Generator:</strong> {{ $sitejsonData->group }}
+                                                        </td>
+                                                        <td data-label="S/N">
+                                                            <strong>S/N:</strong> {{ $sitejsonData->serial_number }}
+                                                        </td>
+                                                        <td data-label="Model">
+                                                            <strong>Model:</strong> {{ $sitejsonData->model }}
+                                                        </td>
+                                                        <td data-label="Brand">
+                                                            <strong>Brand:</strong> {{ $sitejsonData->brand }}
+                                                        </td>
+                                                        <td data-label="Capacity">
+                                                            <strong>Capacity:</strong> {{ $sitejsonData->capacity }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="7">
+                                                            <div class="run-status-container">
+                                                                <div class="status-box">
+                                                                    <i class="fas fa-cogs" style="color: teal; font-size: 24px;"></i>
+                                                                    <p class="fw-bold">Run Status</p>
+                                                                    @if($addValuerunstatus > 0)
+                                                                    <span class="badge bg-success px-2 py-1">Running</span>
+                                                                    @else
+                                                                    <span class="badge bg-danger px-2 py-1">Stop</span>
+                                                                    @endif
+                                                                </div>
+                                                                <div class="status-box">
+                                                                    <i class="fas fa-running text-primary" style="font-size: 24px;"></i>
+                                                                    <p><strong>Running Hours:</strong></p>
+                                                                    <h5 class="text-dark">{{ $hours }} hrs {{ $minutes }} mins</h5>
+                                                                </div>
+                                                                <div class="status-box">
+                                                                    <i class="fas fa-clock text-info" style="font-size: 24px;"></i>
+                                                                    <p><strong>Updated At:</strong></p>
+                                                                    <h5 class="text-muted">{{ $latestCreatedAt }}</h5>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!-- Second Table for Engine Parameters -->
+                                    <div class="col-md-12 mt-4">
+                                        <div class="card">
+                                            <div class="card-header text-center text-white fw-bold fs-5 p-3" style="background:#002E6E;">
+                                                ENGINE PARAMETERS
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped table-hover m-0">
                                                         <tbody>
                                                             <tr>
-                                                                <th style="font-size: 1.2rem; padding: 15px; color:#fff">
-                                                                    Asset Name: {{ $sitejsonData->asset_name }}
-                                                                </th>
                                                                 <td>
-                                                                    <p><strong>Group:</strong></p>
-                                                                    {{ $sitejsonData->group }}
+                                                                    <div class="parameter-box">
+                                                                        <i class="fas fa-thermometer-half parameter-icon text-primary"></i>
+                                                                        <span class="parameter-label">Coolant Temp</span>
+                                                                        <span class="parameter-value">{{ $addValue }} °C</span>
+                                                                    </div>
                                                                 </td>
                                                                 <td>
-                                                                    <p><strong>Generator:</strong></p>
-                                                                    {{ $sitejsonData->group }}
+                                                                    <div class="parameter-box">
+                                                                        <i class="fas fa-oil-can parameter-icon text-warning"></i>
+                                                                        <span class="parameter-label">Oil Temp</span>
+                                                                        <span class="parameter-value">{{ $addValue }} °C</span>
+                                                                    </div>
                                                                 </td>
                                                                 <td>
-                                                                    <p><strong>S/N:</strong></p>
-                                                                    {{ $sitejsonData->serial_number }}
+                                                                    <div class="parameter-box">
+                                                                        <i class="fas fa-gas-pump parameter-icon text-danger"></i>
+                                                                        <span class="parameter-label">Oil Pressure</span>
+                                                                        <span class="parameter-value">{{ $addValue }} psi</span>
+                                                                    </div>
                                                                 </td>
                                                                 <td>
-                                                                    <p><strong>Model:</strong></p>
-                                                                    {{ $sitejsonData->model }}
+                                                                    <div class="parameter-box">
+                                                                        <i class="fas fa-tachometer-alt parameter-icon text-danger"></i>
+                                                                        <span class="parameter-label">RPM</span>
+                                                                        <span class="parameter-value">{{ $addValue }}</span>
+                                                                    </div>
                                                                 </td>
                                                                 <td>
-                                                                    <p><strong>Brand:</strong></p>
-                                                                    {{ $sitejsonData->brand }}
+                                                                    <div class="parameter-box">
+                                                                        <i class="fas fa-tint parameter-icon text-info"></i>
+                                                                        <span class="parameter-label">DEF</span>
+                                                                        <span class="parameter-value">-</span>
+                                                                    </div>
                                                                 </td>
                                                                 <td>
-                                                                    <p><strong>Capacity:</strong></p>
-                                                                    {{ $sitejsonData->capacity }}
+                                                                    <div class="parameter-box">
+                                                                        <i class="fas fa-battery-half parameter-icon text-info"></i>
+                                                                        <span class="parameter-label">Battery Voltage</span>
+                                                                        <span class="parameter-value">{{ $addValue }} V</span>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                          <?php
-                                // Fetch `increase_running_hours` from running_hours table based on site_id
-                                $increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
-
-                                $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
-
-                                // Ensure `$siteId` is properly used
-                                $siteId = $sitejsonData->id ?? null;
-
-                                // Initialize $addValue
-                                $addValue = 0;
-                                $key = $sitejsonData->running_hours->add ?? null;
-
-                                foreach ($eventData as $event) {
-                                    $eventArray = $event->getArrayCopy();
-
-                                    if (
-                                        isset($eventArray['module_id']) && 
-                                        $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)
-                                    ) {
-                                        if ($key && array_key_exists($key, $eventArray)) {
-                                            $addValue = (float) $eventArray[$key];
-                                        }
-                                        break;
-                                    }
-                                }
-
-                                $increaseMinutes = $sitejsonData->running_hours->increase_minutes ?? null;
-                                // echo $increaseMinutes;
-
-                                $inc_addValue = $addValue;
-
-                                if (is_numeric($increaseMinutes) && (float)$increaseMinutes > 0) {
-                                    $inc_addValue /= (float)$increaseMinutes;
-                                }
-
-                                $tempvariable = number_format($inc_addValue, 2);
-                                // echo $increaseMinutes;
-                                $inc_addValueFormatted = $tempvariable + $increaseRunningHours;
-                                ?>
-
-                                <?php
-                                    $hours = floor($inc_addValueFormatted);
-                                    $minutes = round(($inc_addValueFormatted - $hours) * 60);
-                                ?>
-                            <?php
-                                $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
-                                $addValuerunstatus = '_';
-
-                                foreach ($eventData as $event) {
-                                    $eventArraya = $event->getArrayCopy();
-                                    if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->voltage_l_l->a->md) {
-                                        if (array_key_exists($keya, $eventArraya)) {
-                                            $addValuerunstatus = $eventArraya[$keya];
-                                        }
-                                        break;
-                                    }
-                                }
-                            ?>
-                            <td colspan="3">
-                                <div class="d-flex justify-content-around align-items-center text-black">
-                                    <div class="text-center" style="vertical-align: middle;">
-                                        <i class="fas fa-cogs"
-                                            style="color: teal; font-size: 24px; margin-bottom: 8px;"></i>
-                                        <p class="fw-bold ">Run Status</p>
-                                        @if($addValuerunstatus > 0)
-                                        <span class="badge bg-success px-2 py-1">Running</span>
-                                        @else
-                                        <span class="badge bg-danger px-2 py-1">Stop</span>
-                                        @endif
-                                    </div>
-                                                                        <div class="text-center" style="vertical-align: middle;">
-                                                                            <i class="fas fa-running text-primary"></i>
-                                                                            <p><strong>Running Hours:</strong></p>
-                                                                            @if(auth()->user()->hasRole('superadmin'))
-                                                                            <h4 class="text-dark">{{ $hours }} hrs {{ $minutes }} mins</h4>
-                                                                            @else
-                                                                           <h4 class="text-dark">{{ $hours }} hrs {{ $minutes }} mins</h4>
-                                                                            @endif
+                                                                <td colspan="3">
+                                                                    <div class="parameter-box">
+                                                                        <i class="fas fa-bolt parameter-icon text-warning"></i>
+                                                                        <span class="parameter-label">Voltage (L-L)</span>
+                                                                        <div class="phase-values">
+                                                                            <div class="phase-value">
+                                                                                <span class="phase-label">R-Y</span>
+                                                                                <span class="phase-number">{{ $values['R'] }} V</span>
+                                                                            </div>
+                                                                            <div class="phase-value">
+                                                                                <span class="phase-label">Y-B</span>
+                                                                                <span class="phase-number">{{ $values['Y'] }} V</span>
+                                                                            </div>
+                                                                            <div class="phase-value">
+                                                                                <span class="phase-label">B-R</span>
+                                                                                <span class="phase-number">{{ $values['B'] }} V</span>
+                                                                            </div>
                                                                         </div>
-                                                                        <div class="text-center" style="vertical-align: middle;">
-                                                                            <i class="fas fa-clock text-info"></i>
-                                                                            <p><strong>Updated At:</strong></p>
-                                                                            <h5 class="text-muted">{{ $latestCreatedAt }}</h5>
+                                                                    </div>
+                                                                </td>
+                                                                <td colspan="3">
+                                                                    <div class="parameter-box">
+                                                                        <i class="fas fa-bolt parameter-icon text-success"></i>
+                                                                        <span class="parameter-label">Current</span>
+                                                                        <div class="phase-values">
+                                                                            <div class="phase-value">
+                                                                                <span class="phase-label">Phase R</span>
+                                                                                <span class="phase-number">{{ $values['R'] }} A</span>
+                                                                            </div>
+                                                                            <div class="phase-value">
+                                                                                <span class="phase-label">Phase Y</span>
+                                                                                <span class="phase-number">{{ $values['Y'] }} A</span>
+                                                                            </div>
+                                                                            <div class="phase-value">
+                                                                                <span class="phase-label">Phase B</span>
+                                                                                <span class="phase-number">{{ $values['B'] }} A</span>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </td>
@@ -567,125 +784,12 @@
                                                     </table>
                                                 </div>
                                             </div>
-
-                                            <!-- Second Table for Engine Parameters -->
-                                            <div class="col-md-12">
-                                                <div>
-                                                    <div class="card-header bg-primary text-center text-white fw-bold fs-5 p-3" style="background:#002E6E; color:#fff">
-                                                        ENGINE PARAMETERS
-                                                    </div>
-                                                    <table class="table table-bordered table-striped table-hover"
-                                                        style="box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; height:150px">
-                                                        <tbody>
-                                                            <tr>
-                                                                <th class="table-column-title"  style="color:#fff">ENGINE PARAMETERS</th>
-                                                                <?php
-                                                                $key = $sitejsonData->parameters->coolant_temperature->add;
-                                                                $addValue = '_';
-                                                                foreach ($eventData as $event) {
-                                                                    $eventArray = $event->getArrayCopy();
-                                                                    if ($eventArray['module_id'] == $sitejsonData->parameters->coolant_temperature->md) {
-                                                                        if (array_key_exists($key, $eventArray)) {
-                                                                            $addValue = number_format($eventArray[$key], 2);  // Limiting decimal to 2
-                                                                        }
-                                                                        break;
-                                                                    }
-                                                                }
-                                                            ?>
-                                                                <td class="table-column-data">
-                                                                    <i class="fas fa-thermometer-half text-primary" style="font-size: 2rem;"></i>
-
-                                                                    Coolant Temperature:{{ $addValue }} °C
-                                                                </td>
-
-                                                                <?php
-                                                                $key = $sitejsonData->parameters->oil_temperature->add;
-                                                                $addValue = '_';
-                                                                foreach ($eventData as $event) {
-                                                                    $eventArray = $event->getArrayCopy();
-                                                                    if ($eventArray['module_id'] == $sitejsonData->parameters->oil_temperature->md) {
-                                                                        if (array_key_exists($key, $eventArray)) {
-                                                                            $addValue = number_format($eventArray[$key], 2);  // Limiting decimal to 2
-                                                                        }
-                                                                        break;
-                                                                    }
-                                                                }
-                                                            ?>
-                                                                <td class="table-column-data">
-                                                                    <i class="fas fa-oil-can text-warning" style="font-size: 2rem;"></i>
-                                                                    Oil Temperature:{{ $addValue }} °C
-                                                                </td>
-
-                                                                <?php
-                                                                $key = $sitejsonData->parameters->oil_pressure->add;
-                                                                $addValue = '_';
-                                                                foreach ($eventData as $event) {
-                                                                    $eventArray = $event->getArrayCopy();
-                                                                    if ($eventArray['module_id'] == $sitejsonData->parameters->oil_pressure->md) {
-                                                                        if (array_key_exists($key, $eventArray)) {
-                                                                            $addValue = number_format($eventArray[$key], 2);  // Limiting decimal to 2
-                                                                        }
-                                                                        break;
-                                                                    }
-                                                                }
-                                                            ?>
-                                                                <td class="table-column-data">
-                                                                    <i class="fas fa-gas-pump text-danger" style="font-size: 2rem;"></i>
-                                                                    Oil Pressure:{{ $addValue }}
-                                                                </td>
-
-                                                                <?php
-                                                                $key = $sitejsonData->parameters->rpm->add;
-                                                                $addValue = '_';
-                                                                foreach ($eventData as $event) {
-                                                                    $eventArray = $event->getArrayCopy();
-                                                                    if ($eventArray['module_id'] == $sitejsonData->parameters->rpm->md) {
-                                                                        if (array_key_exists($key, $eventArray)) {
-                                                                            $addValue = number_format($eventArray[$key], 2);  // Limiting decimal to 2
-                                                                        }
-                                                                        break;
-                                                                    }
-                                                                }
-                                                            ?>
-                                                                <td class="table-column-data"> <i class="fas fa-tachometer-alt text-danger"
-                                                                        style="font-size: 2rem;"></i>
-                                                                    RPM:{{ $addValue }}
-                                                                </td>
-
-                                                                <td class="table-column-data">
-                                                                    <i class='fas fa-book-dead' style="font-size: 2rem;"></i>
-                                                                    DEF:-
-                                                                </td>
-
-                                                                <?php
-                                                                $key = $sitejsonData->parameters->battery_voltage->add;
-                                                                $addValue = '_';
-                                                                foreach ($eventData as $event) {
-                                                                    $eventArray = $event->getArrayCopy();
-                                                                    if ($eventArray['module_id'] == $sitejsonData->parameters->battery_voltage->md) {
-                                                                        if (array_key_exists($key, $eventArray)) {
-                                                                            $addValue = number_format((float)$eventArray[$key], 2);  // Limiting decimal to 2
-                                                                        }
-                                                                        break;
-                                                                    }
-                                                                }
-                                                            ?>
-                                                                <td class="table-column-data ">
-                                                                    <i class="fas fa-battery-half text-info" style="font-size: 2rem;"></i>
-                                                                    Battery Voltage:<b> {{ $addValue }} V</b>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>   
-                                                    
-
-                        </div>`;
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
                     }
 
-                    // Insert the populated event card into the eventlist container
                     $('#event-data').html(eventList);
                 }
             },
@@ -699,9 +803,6 @@
     fetchSiteData();
     setInterval(fetchSiteData, 10000);
     </script>
-
-
-
 </body>
 
 </html>
