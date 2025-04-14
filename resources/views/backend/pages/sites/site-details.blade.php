@@ -697,31 +697,83 @@ body {
                                                             <tr>
                                                                 <td>
                                                                     <div class="parameter-box">
-                                                                        <i class="fas fa-thermometer-half parameter-icon text-primary"></i>
-                                                                        <span class="parameter-label">Coolant Temp</span>
-                                                                        <span class="parameter-value">{{ $addValue }} °C</span>
-                                                                    </div>
+                                                <i class="fas fa-thermometer-half parameter-icon text-primary"></i>
+                                                <span class="parameter-label">Coolant Temp</span>
+                                                <?php
+                                                    $key = $sitejsonData->parameters->coolant_temperature->add;
+                                                    $addValue = '_';
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
+                                                        if ($eventArray['module_id'] == $sitejsonData->parameters->coolant_temperature->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $addValue = number_format($eventArray[$key], 2);
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                <span class="parameter-value">{{ $addValue }} °C</span>
+                                            </div>
                                                                 </td>
                                                                 <td>
                                                                     <div class="parameter-box">
-                                                                        <i class="fas fa-oil-can parameter-icon text-warning"></i>
-                                                                        <span class="parameter-label">Oil Temp</span>
-                                                                        <span class="parameter-value">{{ $addValue }} °C</span>
-                                                                    </div>
+                                                <i class="fas fa-oil-can parameter-icon text-warning"></i>
+                                                <span class="parameter-label">Oil Temp</span>
+                                                <?php
+                                                    $key = $sitejsonData->parameters->oil_temperature->add;
+                                                    $addValue = '_';
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
+                                                        if ($eventArray['module_id'] == $sitejsonData->parameters->oil_temperature->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $addValue = number_format($eventArray[$key], 2);
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                <span class="parameter-value">{{ $addValue }} °C</span>
+                                            </div>
                                                                 </td>
                                                                 <td>
-                                                                    <div class="parameter-box">
-                                                                        <i class="fas fa-gas-pump parameter-icon text-danger"></i>
-                                                                        <span class="parameter-label">Oil Pressure</span>
-                                                                        <span class="parameter-value">{{ $addValue }} psi</span>
-                                                                    </div>
+                                                                   <div class="parameter-box">
+                                                <i class="fas fa-gas-pump parameter-icon text-danger"></i>
+                                                <span class="parameter-label">Oil Pressure</span>
+                                                <?php
+                                                    $key = $sitejsonData->parameters->oil_pressure->add;
+                                                    $addValue = '_';
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
+                                                        if ($eventArray['module_id'] == $sitejsonData->parameters->oil_pressure->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $addValue = number_format($eventArray[$key], 2);
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                <span class="parameter-value">{{ $addValue }} psi</span>
+                                            </div>
                                                                 </td>
                                                                 <td>
-                                                                    <div class="parameter-box">
-                                                                        <i class="fas fa-tachometer-alt parameter-icon text-danger"></i>
-                                                                        <span class="parameter-label">RPM</span>
-                                                                        <span class="parameter-value">{{ $addValue }}</span>
-                                                                    </div>
+                                                                   <div class="parameter-box">
+                                                <i class="fas fa-tachometer-alt parameter-icon text-danger"></i>
+                                                <span class="parameter-label">RPM</span>
+                                                <?php
+                                                    $key = $sitejsonData->parameters->rpm->add;
+                                                    $addValue = '_';
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
+                                                        if ($eventArray['module_id'] == $sitejsonData->parameters->rpm->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $addValue = number_format($eventArray[$key], 2);
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                <span class="parameter-value">{{ $addValue }}</span>
+                                            </div>
                                                                 </td>
                                                                 <td>
                                                                     <div class="parameter-box">
@@ -731,11 +783,24 @@ body {
                                                                     </div>
                                                                 </td>
                                                                 <td>
-                                                                    <div class="parameter-box">
-                                                                        <i class="fas fa-battery-half parameter-icon text-info"></i>
-                                                                        <span class="parameter-label">Battery Voltage</span>
-                                                                        <span class="parameter-value">{{ $addValue }} V</span>
-                                                                    </div>
+                                                                   <div class="parameter-box">
+                                                <i class="fas fa-battery-half parameter-icon text-info"></i>
+                                                <span class="parameter-label">Battery Voltage</span>
+                                                <?php
+                                                    $key = $sitejsonData->parameters->battery_voltage->add;
+                                                    $addValue = '_';
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
+                                                        if ($eventArray['module_id'] == $sitejsonData->parameters->battery_voltage->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $addValue = number_format((float)$eventArray[$key], 2);
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                ?>
+                                                <span class="parameter-value">{{ $addValue }} V</span>
+                                            </div>
                                                                 </td>
                                                             </tr>
                                                             <tr>
