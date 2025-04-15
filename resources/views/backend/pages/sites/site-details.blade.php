@@ -804,6 +804,26 @@ body {
                                                                 </td>
                                                             </tr>
                                                             <tr>
+                                                            <?php
+                                                                $keys = [
+                                                                    'a' => $sitejsonData->electric_parameters->voltage_l_l->a->add,
+                                                                    'b' => $sitejsonData->electric_parameters->voltage_l_l->b->add,
+                                                                    'c' => $sitejsonData->electric_parameters->voltage_l_l->c->add
+                                                                ];
+                                                                $values = ['R' => '_', 'Y' => '_', 'B' => '_'];
+                                                                
+                                                                foreach ($eventData as $event) {
+                                                                    $eventArray = $event->getArrayCopy();
+                                                                    if ($eventArray['module_id'] == $sitejsonData->electric_parameters->voltage_l_l->a->md) {
+                                                                        foreach (['a' => 'R', 'b' => 'Y', 'c' => 'B'] as $phase => $label) {
+                                                                            if (array_key_exists($keys[$phase], $eventArray)) {
+                                                                                $values[$label] = number_format((float)$eventArray[$keys[$phase]], 2);
+                                                                            }
+                                                                        }
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            ?>
                                                                 <td colspan="3">
                                                                     <div class="parameter-box">
                                                                         <i class="fas fa-bolt parameter-icon text-warning"></i>
@@ -824,11 +844,31 @@ body {
                                                                         </div>
                                                                     </div>
                                                                 </td>
+                                                                <?php
+                                                                    $keys = [
+                                                                        'a' => $sitejsonData->electric_parameters->current->a->add,
+                                                                        'b' => $sitejsonData->electric_parameters->current->b->add,
+                                                                        'c' => $sitejsonData->electric_parameters->current->c->add
+                                                                    ];
+                                                                    $values = ['R' => '_', 'Y' => '_', 'B' => '_'];
+                                                                    
+                                                                    foreach ($eventData as $event) {
+                                                                        $eventArray = $event->getArrayCopy();
+                                                                        if ($eventArray['module_id'] == $sitejsonData->electric_parameters->current->a->md) {
+                                                                            foreach (['a' => 'R', 'b' => 'Y', 'c' => 'B'] as $phase => $label) {
+                                                                                if (array_key_exists($keys[$phase], $eventArray)) {
+                                                                                    $values[$label] = number_format((float)$eventArray[$keys[$phase]], 2);
+                                                                                }
+                                                                            }
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                ?>
                                                                 <td colspan="3">
                                                                     <div class="parameter-box">
                                                                         <i class="fas fa-bolt parameter-icon text-success"></i>
                                                                         <span class="parameter-label">Current</span>
-                                                                        <div class="phase-values">
+                                                                            <div class="phase-values">
                                                                             <div class="phase-value">
                                                                                 <span class="phase-label">Phase R</span>
                                                                                 <span class="phase-number">{{ $values['R'] }} A</span>
