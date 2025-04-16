@@ -74,7 +74,8 @@
                         <div
                             style="text-align: left; font-size: 16px; color: #333; font-weight: bold; line-height: 1.5; padding: 10px; width: 100%; max-width: 400px;">
                             <div style="display: flex; justify-content: space-between;">
-                                <span>Group</span> <span style="font-weight: normal;"> {{ $sitejsonData->group }}</span>
+                                <span>Location</span> <span style="font-weight: normal;">
+                                    {{ $sitejsonData->group }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Generator</span> <span
@@ -1460,7 +1461,7 @@
                         </div>
   <div style="text-align: left; font-size: 16px; color: #333; font-weight: bold; line-height: 1.5; padding: 10px; width: 100%; max-width: 400px;">
     <div style="display: flex; justify-content: space-between;">
-        <span>Group</span> <span style="font-weight: normal;"> {{ $sitejsonData->group }}</span>
+        <span>Location</span> <span style="font-weight: normal;"> {{ $sitejsonData->group }}</span>
     </div>
     <div style="display: flex; justify-content: space-between;">
         <span>Generator</span> <span style="font-weight: normal;">{{ $sitejsonData->generator }}</span>

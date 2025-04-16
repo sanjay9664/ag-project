@@ -298,7 +298,7 @@ body {
                                     Asset Name: {{ $sitejsonData->asset_name }}
                                 </th>
                                 <td data-label="Group">
-                                    <strong>Group:</strong> {{ $sitejsonData->group }}
+                                    <strong>Location:</strong> {{ $sitejsonData->group }}
                                 </td>
                                 <td data-label="Generator">
                                     <strong>Generator:</strong> {{ $sitejsonData->group }}
@@ -636,7 +636,7 @@ body {
                                                             Asset Name: {{ $sitejsonData->asset_name }}
                                                         </th>
                                                         <td data-label="Group">
-                                                            <strong>Group:</strong> {{ $sitejsonData->group }}
+                                                            <strong>Location:</strong> {{ $sitejsonData->group }}
                                                         </td>
                                                         <td data-label="Generator">
                                                             <strong>Generator:</strong> {{ $sitejsonData->group }}
@@ -804,45 +804,85 @@ body {
                                                                 </td>
                                                             </tr>
                                                             <tr>
+                                                             <td colspan="3">
+                                            <div class="parameter-box">
+                                                <i class="fas fa-bolt parameter-icon text-warning"></i>
+                                                <span class="parameter-label">Voltage (L-L)</span>
+                                                <div class="phase-values">
+                                                    <?php
+                                                        $keys = [
+                                                            'a' => $sitejsonData->electric_parameters->voltage_l_l->a->add,
+                                                            'b' => $sitejsonData->electric_parameters->voltage_l_l->b->add,
+                                                            'c' => $sitejsonData->electric_parameters->voltage_l_l->c->add
+                                                        ];
+                                                        $values = ['R' => '_', 'Y' => '_', 'B' => '_'];
+                                                        
+                                                        foreach ($eventData as $event) {
+                                                            $eventArray = $event->getArrayCopy();
+                                                            if ($eventArray['module_id'] == $sitejsonData->electric_parameters->voltage_l_l->a->md) {
+                                                                foreach (['a' => 'R', 'b' => 'Y', 'c' => 'B'] as $phase => $label) {
+                                                                    if (array_key_exists($keys[$phase], $eventArray)) {
+                                                                        $values[$label] = number_format((float)$eventArray[$keys[$phase]], 2);
+                                                                    }
+                                                                }
+                                                                break;
+                                                            }
+                                                        }
+                                                    ?>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">R-Y</span>
+                                                        <span class="phase-number">{{ $values['R'] }} V</span>
+                                                    </div>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">Y-B</span>
+                                                        <span class="phase-number">{{ $values['Y'] }} V</span>
+                                                    </div>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">B-R</span>
+                                                        <span class="phase-number">{{ $values['B'] }} V</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
                                                                 <td colspan="3">
-                                                                    <div class="parameter-box">
-                                                                        <i class="fas fa-bolt parameter-icon text-warning"></i>
-                                                                        <span class="parameter-label">Voltage (L-L)</span>
-                                                                        <div class="phase-values">
-                                                                            <div class="phase-value">
-                                                                                <span class="phase-label">R-Y</span>
-                                                                                <span class="phase-number">{{ $values['R'] }} V</span>
-                                                                            </div>
-                                                                            <div class="phase-value">
-                                                                                <span class="phase-label">Y-B</span>
-                                                                                <span class="phase-number">{{ $values['Y'] }} V</span>
-                                                                            </div>
-                                                                            <div class="phase-value">
-                                                                                <span class="phase-label">B-R</span>
-                                                                                <span class="phase-number">{{ $values['B'] }} V</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td colspan="3">
-                                                                    <div class="parameter-box">
-                                                                        <i class="fas fa-bolt parameter-icon text-success"></i>
-                                                                        <span class="parameter-label">Current</span>
-                                                                        <div class="phase-values">
-                                                                            <div class="phase-value">
-                                                                                <span class="phase-label">Phase R</span>
-                                                                                <span class="phase-number">{{ $values['R'] }} A</span>
-                                                                            </div>
-                                                                            <div class="phase-value">
-                                                                                <span class="phase-label">Phase Y</span>
-                                                                                <span class="phase-number">{{ $values['Y'] }} A</span>
-                                                                            </div>
-                                                                            <div class="phase-value">
-                                                                                <span class="phase-label">Phase B</span>
-                                                                                <span class="phase-number">{{ $values['B'] }} A</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                     <div class="parameter-box">
+                                                <i class="fas fa-bolt parameter-icon text-success"></i>
+                                                <span class="parameter-label">Current</span>
+                                                <div class="phase-values">
+                                                    <?php
+                                                        $keys = [
+                                                            'a' => $sitejsonData->electric_parameters->current->a->add,
+                                                            'b' => $sitejsonData->electric_parameters->current->b->add,
+                                                            'c' => $sitejsonData->electric_parameters->current->c->add
+                                                        ];
+                                                        $values = ['R' => '_', 'Y' => '_', 'B' => '_'];
+                                                        
+                                                        foreach ($eventData as $event) {
+                                                            $eventArray = $event->getArrayCopy();
+                                                            if ($eventArray['module_id'] == $sitejsonData->electric_parameters->current->a->md) {
+                                                                foreach (['a' => 'R', 'b' => 'Y', 'c' => 'B'] as $phase => $label) {
+                                                                    if (array_key_exists($keys[$phase], $eventArray)) {
+                                                                        $values[$label] = number_format((float)$eventArray[$keys[$phase]], 2);
+                                                                    }
+                                                                }
+                                                                break;
+                                                            }
+                                                        }
+                                                    ?>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">Phase R</span>
+                                                        <span class="phase-number">{{ $values['R'] }} A</span>
+                                                    </div>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">Phase Y</span>
+                                                        <span class="phase-number">{{ $values['Y'] }} A</span>
+                                                    </div>
+                                                    <div class="phase-value">
+                                                        <span class="phase-label">Phase B</span>
+                                                        <span class="phase-number">{{ $values['B'] }} A</span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                                                 </td>
                                                             </tr>
                                                         </tbody>

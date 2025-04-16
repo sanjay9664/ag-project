@@ -12,40 +12,142 @@
     <script src="{{url('backend/assets/js/adminCDN.js')}}"></script>
 </head>
 
+<style>
+/* Custom Navbar Styles */
+.custom-navbar {
+    background: linear-gradient(135deg, #002E6E 0%, #004a8f 100%) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+}
+
+.navbar-brand img {
+    margin-right: 12px;
+}
+
+.refresh-time-box {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-right: 10px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.nav-buttons .btn {
+    margin-left: 8px;
+    font-size: 0.85rem;
+    padding: 5px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.nav-buttons .btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-refresh {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-logout {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 991.98px) {
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .refresh-time-box {
+        margin-right: 5px;
+        padding: 3px 6px;
+        font-size: 0.75rem;
+    }
+
+    .nav-buttons .btn {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+    }
+}
+
+/* Make logo white */
+.logo-white {
+    filter: brightness(0) invert(1);
+
+}
+
+/* If you need to change the hover state too */
+.logo-white:hover {
+    opacity: 0.8;
+}
+</style>
+
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #002E6E;">
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
         <div class="container-fluid">
+            <!-- Logo on the left -->
             <a class="navbar-brand" href="#">
                 <img src="https://genset.innovatorautomation.co.in/assets/logo.svg" alt="Logo" width="120" height="40"
-                    class="d-inline-block align-top">
-                DG SET MONITORING SYSTEM
+                    class="logo-white">
             </a>
+
+            <!-- Centered title -->
+            <div class="navbar-brand mx-auto">
+                <span class="d-none d-md-inline">DG SET MONITORING SYSTEM</span>
+                <span class="d-md-none">DGMS</span> <!-- Shorter version for mobile -->
+            </div>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
+                        <div class="nav-buttons">
+                            <div class="refresh-time-box text-light">
+                                <i class="fas fa-clock me-1"></i>
+                                <span id="lastRefreshTime">
+                                    {{ now()->timezone('Asia/Kolkata')->format('d M Y, h:i A') }}
+                                </span>
+                            </div>
 
-                        <form id="admin-logout-form" action="{{ route('admin.logout.submit') }}" method="POST"
-                            style="display: none;">
-                            @csrf
-                        </form>
+                            <form id="admin-logout-form" action="{{ route('admin.logout.submit') }}" method="POST"
+                                style="display: none;">
+                                @csrf
+                            </form>
 
-                        <button class="btn btn-outline-light btn-sm mx-1"
-                            onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
-                            Log Out
-                        </button>
+                            <button class="btn btn-outline-light btn-logout"
+                                onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </button>
 
-                        <button class="btn btn-outline-light btn-sm mx-1" onclick="location.reload()">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
+                            <button class="btn btn-outline-light btn-refresh" onclick="handleRefresh()">
+                                <i class="fas fa-sync-alt me-1"></i> Refresh
+                            </button>
+                        </div>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <!-- Loader (Initially Hidden) -->
     <div id="loader" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -107,21 +209,6 @@
                     <tbody>
                         @php $i=1; @endphp
                         @foreach ($siteData as $site)
-                        <!-- @php
-                        $sitejsonData = json_decode($site->data, true);
-                        $updatedAt = null;
-                        $isRecent = false;
-
-                        if (!empty($site->updatedAt) && $site->updatedAt !== 'N/A') {
-                        try {
-                        $updatedAt = Carbon\Carbon::parse($site->updatedAt);
-                        $now = Carbon\Carbon::now();
-
-                        $isRecent = $updatedAt->diffInHours($now) < 24; } catch (\Exception $e) { \Log::error('Date
-                            Parsing Error: ' . $e->getMessage());
-                                }
-                            }
-                        @endphp -->
                         @php
                         $sitejsonData = json_decode($site->data, true);
                         $updatedAt = null;
@@ -260,6 +347,33 @@
     <script src="{{url('backend/assets/js/admin-jquery-3.6.0.min.js')}}"></script>
 
     <script>
+    function updateRefreshTime() {
+        const now = new Date();
+        const options = {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        };
+        const formattedTime = now.toLocaleString('en-IN', options);
+        document.getElementById('lastRefreshTime').textContent = `Last refreshed: ${formattedTime}`;
+    }
+
+    function handleRefresh() {
+        // Show loading spinner
+        $('#loader').show();
+
+        // Update the refresh time immediately
+        updateRefreshTime();
+
+        // Reload the page after a short delay to allow the spinner to show
+        setTimeout(() => {
+            location.reload();
+        }, 500);
+    }
+
     $(document).ready(function() {
         $('#bankSelect, #locationSelect').change(function() {
             let bankName = $('#bankSelect').val();
@@ -276,8 +390,9 @@
                     $('#loader').show();
                 },
                 success: function(response) {
-                    // $('#siteTable').html(response);
                     $('#siteTable').html(response.html);
+                    // Update refresh time after successful filter
+                    updateRefreshTime();
                 },
                 complete: function() {
                     $('#loader').hide();
