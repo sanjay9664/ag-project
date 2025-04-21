@@ -98,6 +98,8 @@ body {
 @media (max-width: 768px) {
     .table {
         display: block;
+        /* margin-left: 48px; */
+        padding: 11px 45px;
     }
 
     .table thead {
@@ -121,8 +123,8 @@ body {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 10px;
-        font-size: 0.9rem;
+        padding: 10px 16px;
+        56px 56 font-size: 0.9rem;
         white-space: normal;
         border-bottom: 1px solid #ddd;
         width: 100%;
@@ -146,7 +148,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 5px;
+    padding: 34px 56px;
     border-radius: 8px;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -906,7 +908,7 @@ body {
 
     // Fetch data immediately when the page loads
     fetchSiteData();
-    setInterval(fetchSiteData, 10000);
+    // setInterval(fetchSiteData, 10000);
     </script>
 </body>
 
