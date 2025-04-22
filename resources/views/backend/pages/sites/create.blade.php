@@ -119,6 +119,13 @@ input {
                                     <div class="card shadow-lg g-5"
                                         style="width: 100%; height: 900px; overflow: hidden;">
                                         <div class="card-header bg-light text-start text-center">
+                                            <!-- site Name -->
+                                            <div class="d-flex justify-content-between align-items-center mb-2"
+                                                style="font-size: 12px; margin-top: 10px;">
+                                                <span>Site name:</span>
+                                                <input type="text" name="site_name" class="form-control ms-2"
+                                                    style="width: 70%;">
+                                            </div>
                                             <!-- Asset Name -->
                                             <div class="d-flex justify-content-between align-items-center mb-2"
                                                 style="font-size: 12px; margin-top: 10px;">

@@ -16,8 +16,15 @@ body {
     background-color: #f8f9fa;
 }
 
+.asset {
+    font-size: 1.2rem;
+    padding: 15px;
+    color: #fff;
+    background: #002E6E;
+}
+
 .navbar {
-    background-color: #007bff;
+    background-color: #002E6E;
     padding: 10px 20px;
 }
 
@@ -81,9 +88,10 @@ body {
 }
 
 .table th {
-    background-color: #007bff;
-    color: white;
+    background-color: #002E6E;
+    color: white !important;
     font-weight: bold;
+
 }
 
 .table td {
@@ -98,48 +106,48 @@ body {
 @media (max-width: 768px) {
     .table {
         display: block;
-        /* margin-left: 48px; */
-        padding: 11px 45px;
-    }
+        padding: 11px 15px;
 
-    .table thead {
-        display: none;
     }
 
     .table tr {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 10px;
+        display: block;
+        margin-bottom: 15px;
         background-color: #fff;
         border: 1px solid #ddd;
         border-radius: 8px;
         overflow: hidden;
-        align-items: center;
-        text-align: center;
     }
 
     .table td {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 10px 16px;
-        56px 56 font-size: 0.9rem;
-        white-space: normal;
-        border-bottom: 1px solid #ddd;
-        width: 100%;
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+        text-align: center;
+        font-size: 20px;
     }
 
     .table td:last-child {
         border-bottom: none;
     }
 
-    .table td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        color: #333;
-        display: block;
-        margin-bottom: 5px;
+    .table th {
+
+        padding: 17px 88px;
+    }
+
+    .table td span.original-content {
+        font-size: 0.9rem;
+        word-break: break-word;
+    }
+
+    .table td[data-label="SN"]::before {
+        content: "Serial No.";
+    }
+
+    .table td[data-label="Asset Name"]::before {
+        content: "Asset";
     }
 }
 
@@ -148,7 +156,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 34px 56px;
+    padding: 5px 20px;
     border-radius: 8px;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -164,11 +172,13 @@ body {
     font-weight: bold;
     font-size: 0.9rem;
     margin-bottom: 5px;
+
 }
 
 .parameter-value {
     font-size: 1rem;
     font-weight: 500;
+
 }
 
 /* Three-phase value styles */
@@ -195,6 +205,7 @@ body {
 .phase-number {
     font-weight: bold;
     font-size: 0.9rem;
+
 }
 
 /* Header styles */
@@ -249,30 +260,33 @@ body {
 }
 
 @media (max-width: 768px) {
-    .header-container {
-        flex-direction: column;
-        text-align: center;
+
+    .parameter-box {
+        padding: 17px 81px;
+        height: 70%;
+        width: 100%;
+        font-size: 0.9rem;
     }
 
-    .header-title {
-        padding-right: 0;
-        margin-top: 10px;
+    .asset {
+        font-size: 1.2rem;
+        padding: 15px 81px;
+
     }
 
-    .run-status-container {
-        flex-direction: column;
+    .parameter-label {
+
+        font-size: 25px;
     }
 
-    .status-box {
-        margin-bottom: 15px;
+    .parameter-value {
+
+        font-size: 26px;
     }
 
-    .phase-values {
-        flex-direction: column;
-    }
+    .phase-number {
 
-    .phase-value {
-        margin-bottom: 5px;
+        font-size: 17px;
     }
 }
 </style>
@@ -296,14 +310,17 @@ body {
                     <table class="table table-bordered table-striped table-hover">
                         <tbody>
                             <tr>
-                                <th style="font-size: 1.2rem; padding: 15px; color:#fff; background: #002E6E;">
+                                <th class="asset">
                                     Asset Name: {{ $sitejsonData->asset_name }}
                                 </th>
+                                <td data-label="site_name">
+                                    <strong>Site_Name:</strong> {{ $sitejsonData->site_name }}
+                                </td>
                                 <td data-label="Group">
                                     <strong>Location:</strong> {{ $sitejsonData->group }}
                                 </td>
                                 <td data-label="Generator">
-                                    <strong>Generator:</strong> {{ $sitejsonData->group }}
+                                    <strong>Bank_Name:</strong> {{ $sitejsonData->generator }}
                                 </td>
                                 <td data-label="S/N">
                                     <strong>S/N:</strong> {{ $sitejsonData->serial_number }}
@@ -634,14 +651,17 @@ body {
                                             <table class="table table-bordered table-striped table-hover">
                                                 <tbody>
                                                     <tr>
-                                                        <th style="font-size: 1.2rem; padding: 15px; color:#fff; background: #002E6E;">
+                                                        <th class="asset">
                                                             Asset Name: {{ $sitejsonData->asset_name }}
                                                         </th>
+                                                        <td data-label="site_name">
+                                    <strong>Site_Name:</strong> {{ $sitejsonData->site_name }}
+                                </td>
                                                         <td data-label="Group">
                                                             <strong>Location:</strong> {{ $sitejsonData->group }}
                                                         </td>
                                                         <td data-label="Generator">
-                                                            <strong>Generator:</strong> {{ $sitejsonData->group }}
+                                                            <strong>Bank_Name :</strong> {{ $sitejsonData->generator }}
                                                         </td>
                                                         <td data-label="S/N">
                                                             <strong>S/N:</strong> {{ $sitejsonData->serial_number }}
@@ -908,7 +928,7 @@ body {
 
     // Fetch data immediately when the page loads
     fetchSiteData();
-    // setInterval(fetchSiteData, 10000);
+    setInterval(fetchSiteData, 10000);
     </script>
 </body>
 

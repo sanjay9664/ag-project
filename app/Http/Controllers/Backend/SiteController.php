@@ -73,6 +73,7 @@ class SiteController extends Controller
         $site->increase_running_hours_status = $request->has('increase_running_hours_status') ? 1 : 0;
     
         $additionalData = [
+            'site_name' => $request->input('site_name'),
             'asset_name' => $request->input('asset_name'),
             'group' => $request->input('group'),
             'generator' => $request->input('generator'),
@@ -284,6 +285,7 @@ class SiteController extends Controller
         $site->increase_running_hours_status = $request->input('increase_running_hours_status', 0);
 
         $additionalData = [
+            'site_name' => $request->input('site_name'),
             'asset_name' => $request->input('asset_name'),
             'group' => $request->input('group'),
             'generator' => $request->input('generator'),
