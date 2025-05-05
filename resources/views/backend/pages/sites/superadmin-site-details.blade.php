@@ -177,9 +177,11 @@
                         ?>
 
                         <?php
-                            $hours = floor($addValue);
-                            $minutes = round(($addValue - $hours) * 60);
-                        ?>
+    $numericValue = floatval($addValue); // Convert string to float
+    $hours = floor($numericValue);
+    $minutes = round(($numericValue - $hours) * 60);
+?>
+
                         <div class="card mb-1 shadow-sm border-0">
                             <div class="card-body text-center">
                                 <div class="d-flex align-items-center gap-4 mb-1">
@@ -1557,10 +1559,12 @@
                     }
                     ?>
 
-                        <?php
-                            $hours = floor($addValue);
-                            $minutes = round(($addValue - $hours) * 60);
-                        ?>
+<?php
+    $numericValue = floatval($addValue); // Convert string to float
+    $hours = floor($numericValue);
+    $minutes = round(($numericValue - $hours) * 60);
+?>
+
 
                         <div class="card mb-1 shadow-sm border-0">
                             <div class="card-body text-center">

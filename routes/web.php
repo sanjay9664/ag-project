@@ -53,3 +53,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('/password/reset/submit', [ForgotPasswordController::class, 'reset'])->name('password.update');
 })->middleware('auth:admin');
+
+Route::get('/',function(){
+    return view ("welcom");
+});
+Route::get('/send-whatsapp',[WhatsAppController::class, 'sendWhatsAppMessage']);
