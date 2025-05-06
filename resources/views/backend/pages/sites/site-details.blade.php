@@ -338,22 +338,31 @@ body {
 
                             <tr>
                                 <?php
+                                    // Get increased running hours from DB
                                     $increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
                                     $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
-                                    $siteId = $sitejsonData->id ?? null;
+
                                     $addValue = 0;
                                     $key = $sitejsonData->running_hours->add ?? null;
 
+                                    // Extract addValue from eventData
                                     foreach ($eventData as $event) {
                                         $eventArray = $event->getArrayCopy();
-                                        if (isset($eventArray['module_id']) && $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)) {
+                                        if (
+                                            isset($eventArray['module_id']) &&
+                                            $eventArray['module_id'] == ($sitejsonData->running_hours->md ?? null)
+                                        ) {
                                             if ($key && array_key_exists($key, $eventArray)) {
-                                                $addValue = (float) $eventArray[$key];
+                                                $rawValue = $eventArray[$key];
+                                                if (is_numeric($rawValue)) {
+                                                    $addValue = (float) $rawValue;
+                                                }
                                             }
                                             break;
                                         }
                                     }
 
+                                    // Calculate increased value per minute
                                     $increaseMinutes = $sitejsonData->running_hours->increase_minutes ?? null;
                                     $inc_addValue = $addValue;
 
@@ -361,27 +370,35 @@ body {
                                         $inc_addValue /= (float)$increaseMinutes;
                                     }
 
-                                    $tempvariable = number_format($inc_addValue, 2);
-                                    $inc_addValueFormatted = $tempvariable + $increaseRunningHours;
-                                ?>
-                                <?php
+                                    // Final total running hours
+                                    $inc_addValueFormatted = $inc_addValue + $increaseRunningHours;
+
+                                    // Convert to hours and minutes
                                     $hours = floor($inc_addValueFormatted);
                                     $minutes = round(($inc_addValueFormatted - $hours) * 60);
                                 ?>
+
                                 <?php
-                                    $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add;
-                                    $addValuerunstatus = '_';
+                                    $keya = $sitejsonData->electric_parameters->voltage_l_l->a->add ?? null;
+                                    $addValuerunstatus = 0.0;
 
                                     foreach ($eventData as $event) {
                                         $eventArraya = $event->getArrayCopy();
-                                        if ($eventArraya['module_id'] == $sitejsonData->electric_parameters->voltage_l_l->a->md) {
-                                            if (array_key_exists($keya, $eventArraya)) {
-                                                $addValuerunstatus = $eventArraya[$keya];
+                                        if (
+                                            isset($eventArraya['module_id']) &&
+                                            $eventArraya['module_id'] == ($sitejsonData->electric_parameters->voltage_l_l->a->md ?? null)
+                                        ) {
+                                            if ($keya && array_key_exists($keya, $eventArraya)) {
+                                                $value = $eventArraya[$keya];
+                                                if (is_numeric($value)) {
+                                                    $addValuerunstatus = (float) $value;
+                                                }
                                             }
                                             break;
                                         }
                                     }
                                 ?>
+
                                 <td colspan="7">
                                     <div class="run-status-container">
                                         <div class="status-box">

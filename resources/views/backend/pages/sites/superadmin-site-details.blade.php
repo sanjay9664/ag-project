@@ -1560,7 +1560,7 @@
                     ?>
 
                         <?php
-                            $addValue = (float) $addValue; // Cast string to float
+                            $addValue = (float) $addValue;
                             $hours = floor($addValue);
                             $minutes = round(($addValue - $hours) * 60);
                         ?>
