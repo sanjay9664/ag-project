@@ -19,7 +19,7 @@ use Illuminate\Support\Str;
 use MongoDB\BSON\UTCDateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
-use Auth,DB;
+use Auth,DB,Validator;
 
 class SiteController extends Controller
 {
@@ -849,7 +849,15 @@ class SiteController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Insert into database
+        $exists = DB::table('device_events')
+            ->where('deviceName', $request->deviceName)
+            ->where('deviceId', $request->deviceId)
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['message' => 'Device with this name and ID already exists for this site.'], 409);
+        }
+
         DB::table('device_events')->insert([
             'deviceName'     => $request->deviceName,
             'deviceId'       => $request->deviceId,
@@ -864,6 +872,13 @@ class SiteController extends Controller
         ]);
 
         return response()->json(['message' => 'Device event saved successfully'], 201);
+    }
+
+    public function apiFetchDevice(Request $request)
+    {
+        $data = DB::table('device_events')->get();
+
+        return response()->json(['data' => $data], 200);
     }
 
     public function apiUpdateDevice(Request $request, $deviceId)
