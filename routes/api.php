@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\DashboardController;
+use App\Http\Controllers\Backend\SiteController;
+use App\Http\Controllers\Backend\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,5 +25,13 @@ use App\Http\Controllers\Backend\DashboardController;
  * Admin routes
  */
 
-Route::get('/dashboard-data', [DashboardController::class, 'apiIndex'])->name('dashboard');
-    
+Route::post('/login/submit', [LoginController::class, 'Apilogin'])->name('login.submit');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [LoginController::class, 'Apilogout']);
+    Route::get('/sites', [SiteController::class, 'apiSites']);
+    Route::get('/dashboard-data', [DashboardController::class, 'apiIndex'])->name('dashboard');
+    Route::post('/store-device-events', [SiteController::class, 'apiStoreDevice']);
+    Route::put('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);
+
+});

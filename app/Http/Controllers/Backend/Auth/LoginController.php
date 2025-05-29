@@ -128,7 +128,7 @@ class LoginController extends Controller
         session()->flash('error', 'Invalid email and password');
         return back();
     }
-    
+
     /**
      * logout admin guard
      *
@@ -148,4 +148,39 @@ class LoginController extends Controller
     
         return redirect()->route('admin.login');
     }     
+
+    // For Api Use
+    public function Apilogin(Request $request)
+    {
+        $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        ]);
+
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        $user = Auth::user();
+
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Logged in successfully',
+            'user' => $user,
+            'token' => $token,
+        ]);
+    }
+
+    public function Apilogout(Request $request)
+    {
+        // Revoke all tokens for the user
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Logged out'
+        ]);
+    }
 }

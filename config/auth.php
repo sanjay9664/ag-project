@@ -53,7 +53,7 @@ return [
         ],
 
         'admin_api' => [
-            'driver' => 'token',
+            'driver' => 'sanctum',
             'provider' => 'admins',
             'hash' => false,
         ],
