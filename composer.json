@@ -12,6 +12,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "jenssegers/mongodb": "^5.1",
         "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.1",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
         "mongodb/mongodb": "^1.20",
