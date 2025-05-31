@@ -796,19 +796,7 @@ class SiteController extends Controller
        
         return response()->json(['eventData' => $events]);
     }    
-
-    private function extractMdFields($data)
-    {
-        $mdFields = [];
-        array_walk_recursive($data, function($value, $key) use (&$mdFields) {
-            if ($key === 'md' && !is_null($value)) {
-                $mdFields[] = $value;
-            }
-        });
-
-        return $mdFields;
-    }
-
+    
     // For Api
     public function apiSites()
     {

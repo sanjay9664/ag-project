@@ -43,6 +43,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/site-data/{slug}', [SiteController::class, 'fetchLatestData'])->name('site.fetchData');
 
     // For Mobile Application
+    Route::get('/devices', [SiteController::class, 'apiFetchDevice']);
     Route::post('/store-device-events', [SiteController::class, 'apiStoreDevice']);
     Route::put('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);
 
