@@ -43,7 +43,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/site-data/{slug}', [SiteController::class, 'fetchLatestData'])->name('site.fetchData');
 
     // For Mobile Application
-    Route::get('/devices', [SiteController::class, 'apiFetchDevice']);
+    Route::get('/notification-list', [SiteController::class, 'apiFetchDevice'])->name('notification.list');
+    Route::get('/notification-create', [SiteController::class, 'NotificationCreate'])->name('notification.create');
+    Route::get('/edit-notification-form/{deviceId}', [SiteController::class, 'NotificationEdit'])->name('notification.edit');
     Route::post('/store-device-events', [SiteController::class, 'apiStoreDevice']);
     Route::put('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);
 

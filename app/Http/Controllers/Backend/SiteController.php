@@ -796,7 +796,7 @@ class SiteController extends Controller
        
         return response()->json(['eventData' => $events]);
     }    
-    
+
     // For Api
     public function apiSites()
     {
@@ -865,8 +865,17 @@ class SiteController extends Controller
     public function apiFetchDevice(Request $request)
     {
         $data = DB::table('device_events')->get();
+        return view('backend.pages.notification.dg-list', ['data' => $data]);
+    }
 
-        return response()->json(['data' => $data], 200);
+    public function NotificationCreate(Request $request)
+    {
+        return view('backend.pages.notification.create-site');
+    }
+
+    public function NotificationEdit(Request $request)
+    {
+        return view('backend.pages.notification.edit-site');
     }
 
     public function apiUpdateDevice(Request $request, $deviceId)
