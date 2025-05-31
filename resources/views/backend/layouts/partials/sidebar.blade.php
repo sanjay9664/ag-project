@@ -99,6 +99,24 @@
                      </li>
                      @endif
 
+                     <li>
+                         <a href="javascript:void(0)" aria-expanded="true">
+                             <i class="fa fa-cogs"></i> <!-- Updated icon -->
+                             <span>Notification </span>
+                         </a>
+                         <ul
+                             class="collapse {{ Route::is('admin.notification.create') || Route::is('admin.notification.index') || Route::is('admin.notification.edit') || Route::is('admin.notification.show') ? 'in' : '' }}">
+                             <li class="{{ Route::is('admin.notification.create')  ? 'active' : '' }}">
+                                 <a href="{{ route('admin.notification.create') }}"> Notification Form</a>
+                             </li>
+                             <li
+                                 class="{{ Route::is('admin.notification.index')  || Route::is('admin.notification.edit') ? 'active' : '' }}">
+                                 <a href="{{ route('admin.notification.index') }}">Notification List</a>
+                             </li>
+                         </ul>
+
+                     </li>
+
                  </ul>
              </nav>
          </div>
