@@ -176,7 +176,6 @@ class LoginController extends Controller
 
     public function Apilogout(Request $request)
     {
-        // Revoke all tokens for the user
         $request->user()->tokens()->delete();
 
         return response()->json([
