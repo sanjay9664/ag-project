@@ -21,17 +21,14 @@ use App\Http\Controllers\Backend\Auth\LoginController;
 //     return $request->user();
 // });
 
-/**
- * Admin routes
- */
-
 Route::post('/login/submit', [LoginController::class, 'Apilogin'])->name('login.submit');
+Route::post('/logout', [LoginController::class, 'Apilogout']);
+Route::post('/store-device-events', [SiteController::class, 'apiStoreDevice']);
+Route::put('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);
+Route::get('/devices', [SiteController::class, 'apiFetchDevice']);
+Route::get('/device-status', [DashboardController::class, 'apiFetchDeviceStatus']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [LoginController::class, 'Apilogout']);
-    Route::get('/sites', [SiteController::class, 'apiSites']);
-    Route::get('/dashboard-data', [DashboardController::class, 'apiIndex'])->name('dashboard');
-    Route::post('/store-device-events', [SiteController::class, 'apiStoreDevice']);
-    Route::put('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);
-
+    // Route::get('/sites', [SiteController::class, 'apiSites']);
+    // Route::get('/dashboard-data', [DashboardController::class, 'apiIndex'])->name('dashboard');
 });

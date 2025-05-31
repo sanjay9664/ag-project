@@ -42,6 +42,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/admin-sites', [SiteController::class, 'AdminSites'])->name('admin.sites');
     Route::get('/site-data/{slug}', [SiteController::class, 'fetchLatestData'])->name('site.fetchData');
 
+    // For Mobile Application
+    Route::post('/store-device-events', [SiteController::class, 'apiStoreDevice']);
+    Route::put('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);
+
     // Login Routes.
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login/submit', [LoginController::class, 'login'])->name('login.submit');
