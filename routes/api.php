@@ -30,4 +30,6 @@ Route::get('/device-status', [DashboardController::class, 'apiFetchDeviceStatus'
 Route::middleware('auth:sanctum')->group(function () {
     // Route::get('/sites', [SiteController::class, 'apiSites']);
     // Route::get('/dashboard-data', [DashboardController::class, 'apiIndex'])->name('dashboard');
+
+
 });

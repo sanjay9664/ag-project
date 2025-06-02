@@ -48,118 +48,126 @@
 
     <div class="form-container">
         <h4 class="form-title">Device Input Form</h4>
-
-        <!-- Dropdown to select previous data -->
-        <div class="mb-3">
-            <label for="savedDataDropdown" class="form-label">Load Previous Entry:</label>
-            <select id="savedDataDropdown" class="form-select">
-                <option value="">-- Select Saved Entry --</option>
-            </select>
-        </div>
-
-        <form id="deviceForm">
-            <div class="mb-3">
-                <input type="text" class="form-control" name="deviceName" placeholder="Device Name" required>
-            </div>
-            <div class="mb-3">
-                <input type="text" class="form-control" name="deviceId" placeholder="Device ID" required>
-            </div>
-            <div class="mb-3">
-                <input type="text" class="form-control" name="moduleId" placeholder="Module ID" required>
-            </div>
-            <div class="mb-3">
-                <input type="text" class="form-control" name="eventField" placeholder="Event Field" required>
-            </div>
-            <div class="mb-3">
-                <input type="text" class="form-control" name="siteId" placeholder="Site ID" required>
-            </div>
-            <div class="mb-3">
-                <input type="number" step="any" class="form-control" name="lowerLimit" placeholder="Lower Limit"
+        <select id="savedDataDropdown" class="form-select">
+            <option value="">Select your Save Privious data</option>
+            @foreach($data as $index => $entry)
+            <option value="{{ $index }}" data-device='@json($entry)'>
+                {{ $entry->deviceName ?? 'No Name' }}
+            </option>
+            @endforeach
+        </select>
+        <form id="deviceForm" class="mt-3">
+            @csrf
+            <div class=" mb-3"><input type="text" class="form-control" name="deviceName" placeholder="Device Name"
                     required>
             </div>
-            <div class="mb-3">
-                <input type="number" step="any" class="form-control" name="upperLimit" placeholder="Upper Limit"
+            <div class="mb-3"><input type="text" class="form-control" name="deviceId" placeholder="Device ID" required>
+            </div>
+            <div class="mb-3"><input type="text" class="form-control" name="moduleId" placeholder="Module ID" required>
+            </div>
+            <div class="mb-3"><input type="text" class="form-control" name="eventField" placeholder="Event Field"
                     required>
             </div>
-            <div class="mb-3">
-                <input type="text" class="form-control" name="lowerLimitMsg" placeholder="Lower Limit Message" required>
+            <div class="mb-3"><input type="text" class="form-control" name="siteId" placeholder="Site ID" required>
             </div>
-            <div class="mb-3">
-                <input type="text" class="form-control" name="upperLimitMsg" placeholder="Upper Limit Message" required>
+            <div class="mb-3"><input type="number" step="any" class="form-control" name="lowerLimit"
+                    placeholder="Lower Limit">
             </div>
-            <div class="mb-3">
-                <input type="email" class="form-control" name="userEmail" placeholder="User Email ID" required>
+            <div class="mb-3"><input type="number" step="any" class="form-control" name="upperLimit"
+                    placeholder="Upper Limit">
+            </div>
+            <div class="mb-3"><input type="text" class="form-control" name="lowerLimitMsg"
+                    placeholder="Lower Limit Message">
+            </div>
+            <div class="mb-3"><input type="text" class="form-control" name="upperLimitMsg"
+                    placeholder="Upper Limit Message">
+            </div>
+            <div class="mb-3"><input type="email" class="form-control" name="userEmail" placeholder="User Email ID"
+                    required>
             </div>
 
             <div class="text-center my-3">
-                <button class="btn btn-success" onclick="submitToServer()">Submit All to Server</button>
+                <button class="btn btn-success" onclick="submitSingleEntry(event)">Submit to Server</button>
             </div>
-
         </form>
-
     </div>
 
     <script>
     const form = document.getElementById("deviceForm");
     const dropdown = document.getElementById("savedDataDropdown");
 
-    // Load saved entries into dropdown
-    function loadDropdown() {
-        dropdown.innerHTML = '<option value="">-- Select Saved Entry --</option>';
-        const savedEntries = JSON.parse(localStorage.getItem("deviceEntries") || "[]");
-        savedEntries.forEach((entry, index) => {
-            const option = document.createElement("option");
-            option.value = index;
-            option.textContent = `${entry.siteName} (${entry.uuid})`;
-            dropdown.appendChild(option);
-        });
-    }
+    async function submitSingleEntry(event) {
+        event.preventDefault();
 
-    // Handle form submit
-    async function submitToServer() {
-        const entries = JSON.parse(localStorage.getItem("deviceEntries") || "[]");
+        const formData = new FormData(form);
+        const jsonObject = {};
+        formData.forEach((value, key) => jsonObject[key] = value);
 
-        for (const entry of entries) {
-            try {
-                const response = await fetch("/store-device-events", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(entry)
-                });
+        try {
+            const response = await fetch("/admin/store-device-events", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify(jsonObject)
+            });
 
-                const result = await response.json();
-                if (!response.ok) throw new Error(result.message || 'Server error');
+            const result = await response.json();
 
-                console.log("Saved:", result);
-            } catch (err) {
-                console.error("Failed to save entry:", err.message);
+            if (response.ok) {
+                alert("✅ Device event saved successfully!");
+                window.location.href =
+                    "/admin/notification-list";
+            } else {
+                alert(result.message || "❌ Error saving device event");
+                console.error("Validation/server error:", result);
             }
+        } catch (error) {
+            console.error("❌ Network error:", error);
+            alert("❌ Failed to send data to server");
         }
-
-        alert("All entries submitted to the server!");
     }
 
 
-    // Load selected data into form
-    dropdown.addEventListener("change", function() {
-        const index = this.value;
-        if (!index) return;
-        const entries = JSON.parse(localStorage.getItem("deviceEntries") || "[]");
-        const selected = entries[index];
 
-        if (selected) {
-            for (const [key, value] of Object.entries(selected)) {
-                form.elements[key].value = value;
+    async function loadDropdownFromServer() {
+        try {
+            const res = await fetch('/api/device-events');
+            const data = await res.json();
+
+            dropdown.innerHTML = `<option value="">-- Select Saved Entry --</option>`;
+            data.forEach((entry, index) => {
+                const option = document.createElement("option");
+                option.value = index;
+                option.textContent = entry.deviceName || 'No Name';
+                option.dataset.device = JSON.stringify(entry);
+                dropdown.appendChild(option);
+            });
+        } catch (err) {
+            console.error("Dropdown load error:", err);
+        }
+    }
+
+
+    dropdown.addEventListener("change", function() {
+        const selected = this.options[this.selectedIndex];
+        const deviceData = selected.dataset.device;
+
+        if (deviceData) {
+            const parsed = JSON.parse(deviceData);
+            for (const [key, value] of Object.entries(parsed)) {
+                if (form.elements[key]) {
+                    form.elements[key].value = value;
+                }
             }
         }
     });
 
-    // Initial load
-    loadDropdown();
+
+    loadDropdownFromServer();
     </script>
+
 
 </body>
 

@@ -818,7 +818,7 @@ class SiteController extends Controller
         ]);
     }
 
-    public function apiStoreDevice(Request $request)
+     public function apiStoreDevice(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'deviceName'       => 'required',
@@ -826,10 +826,10 @@ class SiteController extends Controller
             'moduleId'         => 'required',
             'eventField'       => 'required',
             'siteId'           => 'required',
-            'lowerLimit'       => 'nullable',
-            'upperLimit'       => 'nullable',
-            'lowerLimitMsg'    => 'nullable',
-            'upperLimitMsg'    => 'nullable',
+            'lowerLimit'       => 'nullable|numeric',
+            'upperLimit'       => 'nullable|numeric',
+            'lowerLimitMsg'    => 'nullable|string',
+            'upperLimitMsg'    => 'nullable|string',
             'userEmail'        => 'required|email',
         ]);
 
@@ -843,7 +843,7 @@ class SiteController extends Controller
             ->exists();
 
         if ($exists) {
-            return response()->json(['message' => 'Device with this name and ID already exists for this site.'], 409);
+            return response()->json(['message' => 'Device with this name and ID already exists.'], 409);
         }
 
         DB::table('device_events')->insert([
@@ -857,6 +857,8 @@ class SiteController extends Controller
             'lowerLimitMsg'  => $request->lowerLimitMsg,
             'upperLimitMsg'  => $request->upperLimitMsg,
             'userEmail'      => $request->userEmail,
+            'created_at'     => now(),
+            'updated_at'     => now()
         ]);
 
         return response()->json(['message' => 'Device event saved successfully'], 201);
@@ -865,12 +867,13 @@ class SiteController extends Controller
     public function apiFetchDevice(Request $request)
     {
         $data = DB::table('device_events')->get();
-        return view('backend.pages.notification.dg-list', ['data' => $data]);
+         return view('backend.pages.notification.dg-list', ['data' => $data]);
     }
 
     public function NotificationCreate(Request $request)
     {
-        return view('backend.pages.notification.create-site');
+         $data = DB::table('device_events')->get();
+        return view('backend.pages.notification.create-site', ['data' => $data]);
     }
 
     public function NotificationEdit(Request $request)
@@ -917,5 +920,9 @@ class SiteController extends Controller
 
         return response()->json(['message' => 'Device event updated successfully'], 200);
     }
+    
+
+
+
 
 }

@@ -110,8 +110,8 @@
                                  <a href="{{ route('admin.notification.create') }}"> Notification Form</a>
                              </li>
                              <li
-                                 class="{{ Route::is('admin.notification.index')  || Route::is('admin.notification.edit') ? 'active' : '' }}">
-                                 <a href="{{ route('admin.notification.index') }}">Notification List</a>
+                                 class="{{ Route::is('admin.notification.list')  || Route::is('admin.notification.edit') ? 'active' : '' }}">
+                                 <a href="{{ route('admin.notification.list') }}">Notification List</a>
                              </li>
                          </ul>
 

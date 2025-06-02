@@ -59,4 +59,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     // Forget Password Routes.
     Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('/password/reset/submit', [ForgotPasswordController::class, 'reset'])->name('password.update');
+    
+    
+
 })->middleware('auth:admin');
