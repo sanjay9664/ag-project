@@ -470,7 +470,7 @@ class SiteController extends Controller
         session()->flash('success', __('Site has been Updated.'));
         return redirect()->route('admin.sites.index');
     }
-
+                                                                        
     public function destroy(int $id): RedirectResponse
     {
         $this->checkAuthorization(auth()->user(), ['site.delete']);
@@ -844,6 +844,7 @@ class SiteController extends Controller
             'lowerLimitMsg'    => 'nullable|string',
             'upperLimitMsg'    => 'nullable|string',
             'userEmail'        => 'required|email',
+            'userPassword'     => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -870,6 +871,7 @@ class SiteController extends Controller
             'lowerLimitMsg'  => $request->lowerLimitMsg,
             'upperLimitMsg'  => $request->upperLimitMsg,
             'userEmail'      => $request->userEmail,
+            'userPassword'   => Hash::make($request->userPassword),
             'created_at'     => now(),
             'updated_at'     => now()
         ]);

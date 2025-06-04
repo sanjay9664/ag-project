@@ -85,6 +85,9 @@
             <div class="mb-3"><input type="email" class="form-control" name="userEmail" placeholder="User Email ID"
                     required>
             </div>
+            <div class="mb-3"><input type="password" class="form-control" name="userPassword"
+                    placeholder="User Email ID" required>
+            </div>
 
             <div class="text-center my-3">
                 <button class="btn btn-success" onclick="submitSingleEntry(event)">Submit to Server</button>

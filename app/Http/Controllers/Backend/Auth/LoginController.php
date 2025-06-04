@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Admin;
 use App\Models\Login;
 use App\User;
+use Illuminate\Support\Str;
+use DB,Hash;
 
 class LoginController extends Controller
 {
@@ -150,29 +152,65 @@ class LoginController extends Controller
     }     
 
     // For Api Use
-    public function Apilogin(Request $request)
-    {
-        $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-        ]);
+    // public function Apilogin(Request $request)
+    // {
+    //     $request->validate([
+    //     'email' => 'required|email',
+    //     'password' => 'required',
+    //     ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
-        }
+    //     if (!Auth::attempt($request->only('email', 'password'))) {
+    //         return response()->json([
+    //             'message' => 'Invalid credentials'
+    //         ], 401);
+    //     }
 
-        $user = Auth::user();
+    //     $user = Auth::user();
 
-        $token = $user->createToken('api-token')->plainTextToken;
+    //     $token = $user->createToken('api-token')->plainTextToken;
 
+    //     return response()->json([
+    //         'message' => 'Logged in successfully',
+    //         'user' => $user,
+    //         'token' => $token,
+    //     ]);
+    // }
+
+    
+
+public function Apilogin(Request $request)
+{
+    $request->validate([
+        'userEmail' => 'required|email',
+        'userPassword' => 'required|string',
+    ]);
+
+    // Fetch user from device_events table
+    $user = DB::table('device_events')->where('userEmail', $request->userEmail)->first();
+
+    if (!$user) {
         return response()->json([
-            'message' => 'Logged in successfully',
-            'user' => $user,
-            'token' => $token,
-        ]);
+            'message' => 'Invalid credentials (user not found)'
+        ], 401);
     }
+
+    // If passwords are hashed in the DB
+    if (!Hash::check($request->userPassword, $user->userPassword)) {
+        return response()->json([
+            'message' => 'Invalid credentials (incorrect password)'
+        ], 401);
+    }
+
+    // Generate a random token (not stored)
+    $token = Str::random(60);
+
+return response()->json([
+    'message' => 'Logged in successfully',
+    'user'    => $user,
+    'token'   => $token,
+]);
+
+}
 
     public function Apilogout(Request $request)
     {
