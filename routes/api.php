@@ -21,7 +21,7 @@ use App\Http\Controllers\Backend\Auth\LoginController;
 //     return $request->user();
 // });
 
-Route::post('/login/submit', [LoginController::class, 'Apilogin'])->name('login.submit');
+Route::post('/login/submit', [LoginController::class, 'Apilogin']);
 Route::post('/logout', [LoginController::class, 'Apilogout']);
 Route::post('/store-device-events', [SiteController::class, 'apiStoreDevice']);
 Route::put('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);

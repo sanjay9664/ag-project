@@ -249,105 +249,216 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function apiFetchDeviceStatus(): JsonResponse
-    {
-        $logins = DB::table('sites')
-            ->leftJoin('admins', 'sites.email', '=', 'admins.email') 
-            ->leftJoin('logins', 'admins.id', '=', 'logins.user_id') 
-            ->select(
-                'sites.id',
-                'sites.site_name',
-                'sites.slug',
-                'sites.email',
-                'sites.device_id',
-                'sites.data'
-            )
-            ->get();
+    // public function apiFetchDeviceStatus(): JsonResponse
+    // {
+    //     $logins = DB::table('sites')
+    //         ->leftJoin('admins', 'sites.email', '=', 'admins.email') 
+    //         ->leftJoin('logins', 'admins.id', '=', 'logins.user_id') 
+    //         ->select(
+    //             'sites.id',
+    //             'sites.site_name',
+    //             'sites.slug',
+    //             'sites.email',
+    //             'sites.device_id',
+    //             'sites.data'
+    //         )
+    //         ->get();
 
-        $filteredData = [];
+    //     $filteredData = [];
 
-        // MongoDB connection
-        $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
-        $client = new MongoClient($mongoUri);
-        $collection = $client->isa_qa->device_events;
+    //     // MongoDB connection
+    //     $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+    //     $client = new MongoClient($mongoUri);
+    //     $collection = $client->isa_qa->device_events;
 
-        foreach ($logins as $login) {
-            $data = json_decode($login->data, true);
+    //     foreach ($logins as $login) {
+    //         $data = json_decode($login->data, true);
 
-            $battery_voltage_md = $data['parameters']['battery_voltage']['md'] ?? null;
-            $battery_voltage_add = $data['parameters']['battery_voltage']['add'] ?? null;
-            $voltage_l_l_a_md = $data['electric_parameters']['voltage_l_l']['a']['md'] ?? null;
-            $voltage_l_l_a_add = $data['electric_parameters']['voltage_l_l']['a']['add'] ?? null;
+    //         $battery_voltage_md = $data['parameters']['battery_voltage']['md'] ?? null;
+    //         $battery_voltage_add = $data['parameters']['battery_voltage']['add'] ?? null;
+    //         $voltage_l_l_a_md = $data['electric_parameters']['voltage_l_l']['a']['md'] ?? null;
+    //         $voltage_l_l_a_add = $data['electric_parameters']['voltage_l_l']['a']['add'] ?? null;
 
-            $deviceId = $login->device_id;
+    //         $deviceId = $login->device_id;
 
-            $batteryStatus = 'unknown';
+    //         $batteryStatus = 'unknown';
 
-            if ($battery_voltage_md && $battery_voltage_add && $deviceId) {
-                $latestEvent = $collection->findOne(
-                    [
-                        'module_id' => (int) $battery_voltage_md,
-                        'device_id' => $deviceId
-                    ],
-                    ['sort' => ['createdAt' => -1]]
-                );
+    //         if ($battery_voltage_md && $battery_voltage_add && $deviceId) {
+    //             $latestEvent = $collection->findOne(
+    //                 [
+    //                     'module_id' => (int) $battery_voltage_md,
+    //                     'device_id' => $deviceId
+    //                 ],
+    //                 ['sort' => ['createdAt' => -1]]
+    //             );
 
-                if ($latestEvent && isset($latestEvent[$battery_voltage_add])) {
-                    $value = $latestEvent[$battery_voltage_add];
+    //             if ($latestEvent && isset($latestEvent[$battery_voltage_add])) {
+    //                 $value = $latestEvent[$battery_voltage_add];
 
-                   if ($value == 10) {
-                        $batteryStatus = 'normal';
-                    } elseif ($value > 14) {
-                        $batteryStatus = "high";
-                        $batteryMessage = "DG Battery voltage for Site ID {$login->id} is greater than normal voltage. DG Battery voltage: {$value}";
-                    } elseif ($value < 10) {
-                        $batteryStatus = "low";
-                        $batteryMessage = "DG Battery voltage for Site ID {$login->id} is less than normal voltage. DG Battery voltage: {$value}";
-                    } else {
-                        $batteryStatus = "normal";
-                    }
-                }
-            }
+    //                if ($value == 10) {
+    //                     $batteryStatus = 'normal';
+    //                 } elseif ($value > 14) {
+    //                     $batteryStatus = "high";
+    //                     $batteryMessage = "DG Battery voltage for Site ID {$login->id} is greater than normal voltage. DG Battery voltage: {$value}";
+    //                 } elseif ($value < 10) {
+    //                     $batteryStatus = "low";
+    //                     $batteryMessage = "DG Battery voltage for Site ID {$login->id} is less than normal voltage. DG Battery voltage: {$value}";
+    //                 } else {
+    //                     $batteryStatus = "normal";
+    //                 }
+    //             }
+    //         }
             
-            $deviceStatus = 'unknown';
+    //         $deviceStatus = 'unknown';
 
-            if ($voltage_l_l_a_md && $voltage_l_l_a_add && $deviceId) {
-                $latestEvent = $collection->findOne(
-                    [
-                        'module_id' => (int) $voltage_l_l_a_md,
-                        'device_id' => $deviceId
-                    ],
-                    ['sort' => ['createdAt' => -1]]
-                );
+    //         if ($voltage_l_l_a_md && $voltage_l_l_a_add && $deviceId) {
+    //             $latestEvent = $collection->findOne(
+    //                 [
+    //                     'module_id' => (int) $voltage_l_l_a_md,
+    //                     'device_id' => $deviceId
+    //                 ],
+    //                 ['sort' => ['createdAt' => -1]]
+    //             );
 
-                if ($latestEvent && isset($latestEvent[$voltage_l_l_a_add])) {
-                    $value = $latestEvent[$voltage_l_l_a_add];
-                    if ($value == 1) {
-                        $deviceStatus = 'on';
-                    } elseif ($value == 0) {
-                        $deviceStatus = 'off';
-                    }
+    //             if ($latestEvent && isset($latestEvent[$voltage_l_l_a_add])) {
+    //                 $value = $latestEvent[$voltage_l_l_a_add];
+    //                 if ($value == 1) {
+    //                     $deviceStatus = 'on';
+    //                 } elseif ($value == 0) {
+    //                     $deviceStatus = 'off';
+    //                 }
+    //             }
+    //         }
+
+    //         $filteredData[] = [
+    //             'site_id' => $login->id,
+    //             'site_name' => $login->site_name,
+    //             'slug' => $login->slug,
+    //             'email' => $login->email,
+    //             'device_id' => $deviceId,
+    //             'battery_voltage_md' => $battery_voltage_md,
+    //             'battery_voltage_add' => $battery_voltage_add,
+    //             'voltage_l_l_a_md' => $voltage_l_l_a_md,
+    //             'voltage_l_l_a_add' => $voltage_l_l_a_add,
+    //             'battery_status' => $batteryStatus,
+    //             'device_status' => $deviceStatus
+    //         ];
+    //     }
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'data' => $filteredData
+    //     ]);
+    // }
+
+
+ public function apiFetchDeviceStatus(): JsonResponse
+{
+    $sites = DB::table('sites')
+        ->leftJoin('admins', 'sites.email', '=', 'admins.email') 
+        ->leftJoin('logins', 'admins.id', '=', 'logins.user_id') 
+        ->select(
+            'sites.id as siteId',
+            'sites.site_name as deviceName',
+            'sites.slug',
+            'sites.email as userEmail',
+            'sites.device_id as deviceId',
+            'sites.data',
+            'sites.created_at',
+            'sites.updated_at'
+        )
+        ->get();
+
+    $filteredData = [];
+
+    // MongoDB connection
+    $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+    $client = new MongoClient($mongoUri);
+    $collection = $client->isa_qa->device_events;
+
+    foreach ($sites as $site) {
+        $data = json_decode($site->data, true);
+
+        $battery_voltage_md = $data['parameters']['battery_voltage']['md'] ?? null;
+        $battery_voltage_add = $data['parameters']['battery_voltage']['add'] ?? null;
+        $voltage_l_l_a_md = $data['electric_parameters']['voltage_l_l']['a']['md'] ?? null;
+        $voltage_l_l_a_add = $data['electric_parameters']['voltage_l_l']['a']['add'] ?? null;
+
+        // Get limits from data if available
+        $lowerLimit = $data['parameters']['battery_voltage']['limits']['lower'] ?? null;
+        $upperLimit = $data['parameters']['battery_voltage']['limits']['upper'] ?? null;
+        $lowerLimitMsg = $data['parameters']['battery_voltage']['messages']['lower'] ?? null;
+        $upperLimitMsg = $data['parameters']['battery_voltage']['messages']['upper'] ?? null;
+
+        $batteryStatus = 'unknown';
+        $batteryValue = null;
+
+        if ($battery_voltage_md && $battery_voltage_add && $site->deviceId) {
+            $latestEvent = $collection->findOne(
+                [
+                    'module_id' => (int) $battery_voltage_md,
+                    'device_id' => $site->deviceId
+                ],
+                ['sort' => ['createdAt' => -1]]
+            );
+
+            if ($latestEvent && isset($latestEvent[$battery_voltage_add])) {
+                $batteryValue = $latestEvent[$battery_voltage_add];
+                
+                if ($batteryValue == 10) {
+                    $batteryStatus = 'normal';
+                } elseif ($batteryValue > 14) {
+                    $batteryStatus = "high";
+                } elseif ($batteryValue < 10) {
+                    $batteryStatus = "low";
+                } else {
+                    $batteryStatus = "normal";
                 }
             }
+        }
+        
+        $deviceStatus = 'unknown';
+        $deviceValue = null;
 
-            $filteredData[] = [
-                'site_id' => $login->id,
-                'site_name' => $login->site_name,
-                'slug' => $login->slug,
-                'email' => $login->email,
-                'device_id' => $deviceId,
-                'battery_voltage_md' => $battery_voltage_md,
-                'battery_voltage_add' => $battery_voltage_add,
-                'voltage_l_l_a_md' => $voltage_l_l_a_md,
-                'voltage_l_l_a_add' => $voltage_l_l_a_add,
-                'battery_status' => $batteryStatus,
-                'device_status' => $deviceStatus
-            ];
+        if ($voltage_l_l_a_md && $voltage_l_l_a_add && $site->deviceId) {
+            $latestEvent = $collection->findOne(
+                [
+                    'module_id' => (int) $voltage_l_l_a_md,
+                    'device_id' => $site->deviceId
+                ],
+                ['sort' => ['createdAt' => -1]]
+            );
+
+            if ($latestEvent && isset($latestEvent[$voltage_l_l_a_add])) {
+                $deviceValue = $latestEvent[$voltage_l_l_a_add];
+                $deviceStatus = $deviceValue == 1 ? 'on' : 'off';
+            }
         }
 
-        return response()->json([
-            'status' => true,
-            'data' => $filteredData
-        ]);
+        $filteredData[] = [
+            'deviceName' => $site->deviceName,
+            'deviceId' => $site->deviceId,
+            'moduleId' => $battery_voltage_md,
+            'eventField' => $battery_voltage_add,
+            'siteId' => $site->siteId,
+            'lowerLimit' => $lowerLimit,
+            'upperLimit' => $upperLimit,
+            'lowerLimitMsg' => $lowerLimitMsg,
+            'upperLimitMsg' => $upperLimitMsg,
+            'userEmail' => $site->userEmail,
+            'batteryValue' => $batteryValue,
+            'batteryStatus' => $batteryStatus,
+            'deviceValue' => $deviceValue,
+            'deviceStatus' => $deviceStatus,
+            'created_at' => $site->created_at,
+            'updated_at' => $site->updated_at
+        ];
     }
+
+    return response()->json([
+        'status' => true,
+        'data' => $filteredData
+    ]);
+}
+ 
 }
