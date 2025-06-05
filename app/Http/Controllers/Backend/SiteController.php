@@ -896,48 +896,74 @@ class SiteController extends Controller
         return view('backend.pages.notification.edit-site');
     }
 
-    public function apiUpdateDevice(Request $request, $deviceId)
-    {
-        $validator = Validator::make($request->all(), [
-            'deviceName'       => 'required',
-            'deviceId'         => 'required',
-            'moduleId'         => 'required',
-            'eventField'       => 'required',
-            'siteId'           => 'required',
-            'lowerLimit'       => 'nullable',
-            'upperLimit'       => 'nullable',
-            'lowerLimitMsg'    => 'nullable',
-            'upperLimitMsg'    => 'nullable',
-            'userEmail'        => 'required|email',
-        ]);
+    // public function apiUpdateDevice(Request $request, $deviceId)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'deviceName'       => 'required',
+    //         'deviceId'         => 'required',
+    //         'moduleId'         => 'required',
+    //         'eventField'       => 'required',
+    //         'siteId'           => 'required',
+    //         'lowerLimit'       => 'nullable',
+    //         'upperLimit'       => 'nullable',
+    //         'lowerLimitMsg'    => 'nullable',
+    //         'upperLimitMsg'    => 'nullable',
+    //         'userEmail'        => 'required|email',
+    //     ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    //     if ($validator->fails()) {
+    //         return response()->json(['errors' => $validator->errors()], 422);
+    //     }
 
-        $event = DB::table('device_events')->where('deviceId', $deviceId)->first();
+    //     $event = DB::table('device_events')->where('deviceId', $deviceId)->first();
 
-        if (!$event) {
-            return response()->json(['message' => 'Device event not found'], 404);
-        }
+    //     if (!$event) {
+    //         return response()->json(['message' => 'Device event not found'], 404);
+    //     }
 
-        DB::table('device_events')->where('deviceId', $deviceId)->update([
-            'deviceName'     => $request->deviceName,
-            'moduleId'       => $request->moduleId,
-            'eventField'     => $request->eventField,
-            'siteId'         => $request->siteId,
-            'lowerLimit'     => $request->lowerLimit,
-            'upperLimit'     => $request->upperLimit,
-            'lowerLimitMsg'  => $request->lowerLimitMsg,
-            'upperLimitMsg'  => $request->upperLimitMsg,
-            'userEmail'      => $request->userEmail,
-        ]);
+    //     DB::table('device_events')->where('deviceId', $deviceId)->update([
+    //         'deviceName'     => $request->deviceName,
+    //         'moduleId'       => $request->moduleId,
+    //         'eventField'     => $request->eventField,
+    //         'siteId'         => $request->siteId,
+    //         'lowerLimit'     => $request->lowerLimit,
+    //         'upperLimit'     => $request->upperLimit,
+    //         'lowerLimitMsg'  => $request->lowerLimitMsg,
+    //         'upperLimitMsg'  => $request->upperLimitMsg,
+    //         'userEmail'      => $request->userEmail,
+    //     ]);
 
-        return response()->json(['message' => 'Device event updated successfully'], 200);
-    }
+    //     return response()->json(['message' => 'Device event updated successfully'], 200);
+    // }
     
+public function apiUpdateDevice(Request $request, $deviceId)
+{
+    $device = DeviceEvent::where('deviceId', $deviceId)->first();
+
+    if (!$device) {
+        return response()->json(['message' => 'Device not found'], 404);
+    }
+
+    $device->update([
+        'deviceName' => $request->deviceName,
+        'deviceId' => $request->deviceId,
+        'moduleId' => $request->moduleId,
+        'eventField' => $request->eventField,
+        'siteId' => $request->siteId,
+        'lowerLimit' => $request->lowerLimit,
+        'upperLimit' => $request->upperLimit,
+        'lowerLimitMsg' => $request->lowerLimitMsg,
+        'upperLimitMsg' => $request->upperLimitMsg,
+        'userEmail' => $request->userEmail,
+    ]);
+
+    return response()->json(['message' => 'Device updated successfully']);
+}
 
 
+
+   
+    
 
 
 }

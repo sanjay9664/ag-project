@@ -32,4 +32,5 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::get('/dashboard-data', [DashboardController::class, 'apiIndex'])->name('dashboard');
 
 
+
 });
