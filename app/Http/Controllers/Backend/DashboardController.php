@@ -765,139 +765,408 @@ class DashboardController extends Controller
 //     ]);
 // }
 
+// *******************************************************
+// public function apiFetchDeviceStatus()
+// {
+//     // Helper function to safely get nested keys from an array
+//     function array_get_nested($array, $path, $default = null) {
+//         $keys = explode('.', $path);
+//         foreach ($keys as $key) {
+//             if (is_array($array) && array_key_exists($key, $array)) {
+//                 $array = $array[$key];
+//             } else {
+//                 return $default;
+//             }
+//         }
+//         return $array;
+//     }
 
-public function apiFetchDeviceStatus(): JsonResponse
-{
-    // Helper function to safely get nested keys from an array
-    function array_get_nested($array, $path, $default = null) {
-        $keys = explode('.', $path);
-        foreach ($keys as $key) {
-            if (is_array($array) && array_key_exists($key, $array)) {
-                $array = $array[$key];
-            } else {
-                return $default;
+//     $deviceEvents = DB::table('device_events')
+//         ->leftJoin('admins', 'device_events.userEmail', '=', 'admins.email')
+//         ->leftJoin('sites', 'device_events.siteId', '=', 'sites.id')  // join site table
+//         ->select(
+//             'device_events.id as siteId',
+//             'device_events.deviceName',
+//             'device_events.deviceId',
+//             'device_events.moduleId',
+//             'device_events.eventField',
+//             'device_events.lowerLimit',
+//             'device_events.upperLimit',
+//             'device_events.lowerLimitMsg',
+//             'device_events.userEmail',
+//             'device_events.upperLimitMsg',
+//             'device_events.siteId as actualSiteId',
+//             'sites.data',      // JSON data from site table
+//             'device_events.created_at',
+//             'device_events.updated_at'
+//         )
+//         ->get();
+
+//     $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+//     $client = new Client($mongoUri);
+//     $collection = $client->isa_qa->device_events;
+
+//     $filteredData = [];
+
+//     foreach ($deviceEvents as $event) {
+//         // Check if 'data' is a non-empty string before decoding
+//         if (!empty($event->data) && is_string($event->data)) {
+//             $data = json_decode($event->data, true);
+
+//             // Handle JSON decode errors gracefully
+//             if (json_last_error() !== JSON_ERROR_NONE) {
+//                 $data = [];
+//             }
+//         } else {
+//             $data = [];
+//         }
+
+//         // Safely get battery voltage and device parameters from JSON
+//         $battery_voltage_md = array_get_nested($data, 'parameters.battery_voltage.md');
+//         $battery_voltage_add = array_get_nested($data, 'parameters.battery_voltage.add');
+//         $voltage_l_l_a_md = array_get_nested($data, 'electric_parameters.voltage_l_l.a.md');
+//         $voltage_l_l_a_add = array_get_nested($data, 'electric_parameters.voltage_l_l.a.add');
+
+//         // Safely get limits and messages
+//         $lowerLimit = array_get_nested($data, 'parameters.battery_voltage.limits.lower');
+//         $upperLimit = array_get_nested($data, 'parameters.battery_voltage.limits.upper');
+//         $lowerLimitMsg = array_get_nested($data, 'parameters.battery_voltage.messages.lower');
+//         $upperLimitMsg = array_get_nested($data, 'parameters.battery_voltage.messages.upper');
+
+//         // Battery Status
+//         $batteryValue = null;
+//         $batteryStatus = 'unknown';
+
+//         if ($battery_voltage_md && $battery_voltage_add && $event->deviceId) {
+//             $latestEvent = $collection->findOne(
+//                 [
+//                     'module_id' => (int) $battery_voltage_md,
+//                     'device_id' => $event->deviceId
+//                 ],
+//                 ['sort' => ['createdAt' => -1]]
+//             );
+
+//             if ($latestEvent && isset($latestEvent[$battery_voltage_add])) {
+//                 $batteryValue = $latestEvent[$battery_voltage_add];
+//                 $batteryStatus = ($batteryValue == 10) ? 'normal' :
+//                                  (($batteryValue > 14) ? 'high' :
+//                                  (($batteryValue < 10) ? 'low' : 'normal'));
+//             }
+//         }
+
+//         // Device Status
+//         $deviceValue = null;
+//         $deviceStatus = 'unknown';
+
+//         if ($voltage_l_l_a_md && $voltage_l_l_a_add && $event->deviceId) {
+//             $latestEvent = $collection->findOne(
+//                 [
+//                     'module_id' => (int) $voltage_l_l_a_md,
+//                     'device_id' => $event->deviceId
+//                 ],
+//                 ['sort' => ['createdAt' => -1]]
+//             );
+
+//             if ($latestEvent && isset($latestEvent[$voltage_l_l_a_add])) {
+//                 $deviceValue = $latestEvent[$voltage_l_l_a_add];
+//                 $deviceStatus = $deviceValue == 1 ? 'on' : 'off';
+//             }
+//         }
+
+//         $filteredData[] = [
+//             'deviceName' => $event->deviceName,
+//             'deviceId' => $event->deviceId,
+//             'moduleId' => $event->moduleId,
+//             'siteId' => $event->actualSiteId,
+//             'lowerLimit' => $event->lowerLimit,
+//             'upperLimit' => $event->upperLimit,
+//             'lowerLimitMsg' => $event->lowerLimitMsg,
+//             'upperLimitMsg' => $event->upperLimitMsg,
+//             'batteryValue' => $batteryValue,
+//             'batteryStatus' => $batteryStatus,
+//             'deviceValue' => $deviceValue,
+//             'deviceStatus' => $deviceStatus,
+//             'userEmail' => $event->userEmail,
+//             'created_at' => $event->created_at,
+//             'updated_at' => $event->updated_at
+//         ];
+//     }
+
+//     return response()->json([
+//         'status' => true,
+//         'data' => $filteredData
+//     ]);
+// }
+// **************************************************************
+
+// public function apiFetchDeviceStatus(): JsonResponse
+// {
+//     // Helper function to safely get nested keys from an array
+//     function array_get_nested($array, $path, $default = null) {
+//         $keys = explode('.', $path);
+//         foreach ($keys as $key) {
+//             if (is_array($array) && array_key_exists($key, $array)) {
+//                 $array = $array[$key];
+//             } else {
+//                 return $default;
+//             }
+//         }
+//         return $array;
+//     }
+
+//     $deviceEvents = DB::table('device_events')
+//         ->leftJoin('admins', 'device_events.userEmail', '=', 'admins.email')
+//         ->leftJoin('sites', 'device_events.siteId', '=', 'sites.id')
+//         ->select(
+//             'device_events.id as siteId',
+//             'device_events.deviceName',
+//             'device_events.deviceId',
+//             'device_events.moduleId',
+//             'device_events.eventField',
+//             'device_events.lowerLimit',
+//             'device_events.upperLimit',
+//             'device_events.lowerLimitMsg',
+//             'device_events.userEmail',
+//             'device_events.upperLimitMsg',
+//             'device_events.siteId as actualSiteId',
+//             'sites.data'
+//         )
+//         ->get();
+
+//     $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+//     $client = new Client($mongoUri);
+//     $collection = $client->isa_qa->device_events;
+
+//     $filteredData = [];
+
+//     foreach ($deviceEvents as $event) {
+//         // Parse JSON from 'data' column
+//         $data = (!empty($event->data) && is_string($event->data)) ? json_decode($event->data, true) : [];
+//         if (json_last_error() !== JSON_ERROR_NONE) {
+//             $data = [];
+//         }
+
+//         // Extract metadata
+//         $battery_voltage_md = array_get_nested($data, 'parameters.battery_voltage.md');
+//         $battery_voltage_add = array_get_nested($data, 'parameters.battery_voltage.add');
+//         $voltage_l_l_a_md = array_get_nested($data, 'electric_parameters.voltage_l_l.a.md');
+//         $voltage_l_l_a_add = array_get_nested($data, 'electric_parameters.voltage_l_l.a.add');
+
+//         $batteryValue = null;
+//         $batteryStatus = 'unknown';
+//         $deviceValue = null;
+//         $deviceStatus = 'unknown';
+
+//         $mongoCreatedAt = null;
+//         $mongoUpdatedAt = null;
+
+//         // Get battery status
+//         if ($battery_voltage_md && $battery_voltage_add && $event->deviceId) {
+//             $latestBattery = $collection->findOne(
+//                 ['module_id' => (int)$battery_voltage_md, 'device_id' => $event->deviceId],
+//                 ['sort' => ['createdAt' => -1]]
+//             );
+
+//             if ($latestBattery) {
+//                 if (isset($latestBattery[$battery_voltage_add])) {
+//                     $batteryValue = $latestBattery[$battery_voltage_add];
+//                     $batteryStatus = ($batteryValue == 10) ? 'normal' :
+//                                      (($batteryValue > 14) ? 'high' :
+//                                      (($batteryValue < 10) ? 'low' : 'normal'));
+//                 }
+
+//                 if (isset($latestBattery['createdAt'])) {
+//                     $mongoCreatedAt = Carbon::parse($latestBattery['createdAt']->toDateTime())
+//                         ->setTimezone('Asia/Kolkata')
+//                         ->format('Y-m-d H:i:s');
+//                 }
+//                 if (isset($latestBattery['updatedAt'])) {
+//                     $mongoUpdatedAt = Carbon::parse($latestBattery['updatedAt']->toDateTime())
+//                         ->setTimezone('Asia/Kolkata')
+//                         ->format('Y-m-d H:i:s');
+//                 }
+//             }
+//         }
+
+//         // Get device status
+//         if ($voltage_l_l_a_md && $voltage_l_l_a_add && $event->deviceId) {
+//             $latestDevice = $collection->findOne(
+//                 ['module_id' => (int)$voltage_l_l_a_md, 'device_id' => $event->deviceId],
+//                 ['sort' => ['createdAt' => -1]]
+//             );
+
+//             if ($latestDevice) {
+//                 if (isset($latestDevice[$voltage_l_l_a_add])) {
+//                     $deviceValue = $latestDevice[$voltage_l_l_a_add];
+//                     $deviceStatus = ($deviceValue == 1) ? 'on' : 'off';
+//                 }
+
+//                 if (!$mongoCreatedAt && isset($latestDevice['createdAt'])) {
+//                     $mongoCreatedAt = Carbon::parse($latestDevice['createdAt']->toDateTime())
+//                         ->setTimezone('Asia/Kolkata')
+//                         ->format('Y-m-d H:i:s');
+//                 }
+
+//                 if (!$mongoUpdatedAt && isset($latestDevice['updatedAt'])) {
+//                     $mongoUpdatedAt = Carbon::parse($latestDevice['updatedAt']->toDateTime())
+//                         ->setTimezone('Asia/Kolkata')
+//                         ->format('Y-m-d H:i:s');
+//                 }
+//             }
+//         }
+
+//         $filteredData[] = [
+//             'deviceName' => $event->deviceName,
+//             'deviceId' => $event->deviceId,
+//             'moduleId' => $event->moduleId,
+//             'siteId' => $event->actualSiteId,
+//             'lowerLimit' => $event->lowerLimit,
+//             'upperLimit' => $event->upperLimit,
+//             'lowerLimitMsg' => $event->lowerLimitMsg,
+//             'upperLimitMsg' => $event->upperLimitMsg,
+//             'batteryValue' => $batteryValue,
+//             'batteryStatus' => $batteryStatus,
+//             'deviceValue' => $deviceValue,
+//             'deviceStatus' => $deviceStatus,
+//             'userEmail' => $event->userEmail,
+//             'created_at' => $mongoCreatedAt,
+//             'updated_at' => $mongoUpdatedAt
+//         ];
+//     }
+
+//     return response()->json([
+//         'status' => true,
+//         'data' => $filteredData
+//     ]);
+// }
+
+
+
+    public function apiFetchDeviceStatus(): JsonResponse
+    {
+        // Helper to get nested values
+        function array_get_nested($array, $path, $default = null) {
+            $keys = explode('.', $path);
+            foreach ($keys as $key) {
+                if (is_array($array) && array_key_exists($key, $array)) {
+                    $array = $array[$key];
+                } else {
+                    return $default;
+                }
             }
+            return $array;
         }
-        return $array;
-    }
 
-    $deviceEvents = DB::table('device_events')
-        ->leftJoin('admins', 'device_events.userEmail', '=', 'admins.email')
-        ->leftJoin('sites', 'device_events.siteId', '=', 'sites.id')  // join site table
-        ->select(
-            'device_events.id as siteId',
-            'device_events.deviceName',
-            'device_events.deviceId',
-            'device_events.moduleId',
-            'device_events.eventField',
-            'device_events.lowerLimit',
-            'device_events.upperLimit',
-            'device_events.lowerLimitMsg',
-            'device_events.userEmail',
-            'device_events.upperLimitMsg',
-            'device_events.siteId as actualSiteId',
-            'sites.data',      // JSON data from site table
-            'device_events.created_at',
-            'device_events.updated_at'
-        )
-        ->get();
+        $deviceEvents = DB::table('device_events')
+            ->leftJoin('admins', 'device_events.userEmail', '=', 'admins.email')
+            ->leftJoin('sites', 'device_events.siteId', '=', 'sites.id')
+            ->select(
+                'device_events.id as siteId',
+                'device_events.deviceName',
+                'device_events.deviceId',
+                'device_events.moduleId',
+                'device_events.eventField',
+                'device_events.lowerLimit',
+                'device_events.upperLimit',
+                'device_events.lowerLimitMsg',
+                'device_events.upperLimitMsg',
+                'device_events.userEmail',
+                'device_events.owner_email',
+                'device_events.siteId as actualSiteId',
+                'sites.data'
+            )
+            ->get();
 
-    $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
-    $client = new Client($mongoUri);
-    $collection = $client->isa_qa->device_events;
+        $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+        $client = new Client($mongoUri);
+        $collection = $client->isa_qa->device_events;
 
-    $filteredData = [];
+        $filteredData = [];
 
-    foreach ($deviceEvents as $event) {
-        // Check if 'data' is a non-empty string before decoding
-        if (!empty($event->data) && is_string($event->data)) {
-            $data = json_decode($event->data, true);
-
-            // Handle JSON decode errors gracefully
+        foreach ($deviceEvents as $event) {
+            $data = (!empty($event->data) && is_string($event->data)) ? json_decode($event->data, true) : [];
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $data = [];
             }
-        } else {
-            $data = [];
-        }
 
-        // Safely get battery voltage and device parameters from JSON
-        $battery_voltage_md = array_get_nested($data, 'parameters.battery_voltage.md');
-        $battery_voltage_add = array_get_nested($data, 'parameters.battery_voltage.add');
-        $voltage_l_l_a_md = array_get_nested($data, 'electric_parameters.voltage_l_l.a.md');
-        $voltage_l_l_a_add = array_get_nested($data, 'electric_parameters.voltage_l_l.a.add');
+            $battery_voltage_md = array_get_nested($data, 'parameters.battery_voltage.md');
+            $battery_voltage_add = array_get_nested($data, 'parameters.battery_voltage.add');
+            $voltage_l_l_a_md = array_get_nested($data, 'electric_parameters.voltage_l_l.a.md');
+            $voltage_l_l_a_add = array_get_nested($data, 'electric_parameters.voltage_l_l.a.add');
 
-        // Safely get limits and messages
-        $lowerLimit = array_get_nested($data, 'parameters.battery_voltage.limits.lower');
-        $upperLimit = array_get_nested($data, 'parameters.battery_voltage.limits.upper');
-        $lowerLimitMsg = array_get_nested($data, 'parameters.battery_voltage.messages.lower');
-        $upperLimitMsg = array_get_nested($data, 'parameters.battery_voltage.messages.upper');
+            $batteryValue = null;
+            $batteryStatus = 'unknown';
+            $deviceValue = null;
+            $deviceStatus = 'unknown';
 
-        // Battery Status
-        $batteryValue = null;
-        $batteryStatus = 'unknown';
+            $mongoCreatedAt = null;
+            $mongoUpdatedAt = null;
 
-        if ($battery_voltage_md && $battery_voltage_add && $event->deviceId) {
-            $latestEvent = $collection->findOne(
-                [
-                    'module_id' => (int) $battery_voltage_md,
-                    'device_id' => $event->deviceId
-                ],
-                ['sort' => ['createdAt' => -1]]
-            );
+            if ($battery_voltage_md && $battery_voltage_add && $event->deviceId) {
+                $latestBattery = $collection->findOne(
+                    ['module_id' => (int)$battery_voltage_md, 'device_id' => $event->deviceId],
+                    ['sort' => ['createdAt' => -1]]
+                );
 
-            if ($latestEvent && isset($latestEvent[$battery_voltage_add])) {
-                $batteryValue = $latestEvent[$battery_voltage_add];
-                $batteryStatus = ($batteryValue == 10) ? 'normal' :
-                                 (($batteryValue > 14) ? 'high' :
-                                 (($batteryValue < 10) ? 'low' : 'normal'));
+                if ($latestBattery && isset($latestBattery[$battery_voltage_add])) {
+                    $batteryValue = $latestBattery[$battery_voltage_add];
+                    $batteryStatus = ($batteryValue == 10) ? 'normal' :
+                                     (($batteryValue > 14) ? 'high' :
+                                     (($batteryValue < 10) ? 'low' : 'normal'));
+                }
+
+                if (isset($latestBattery['createdAt'])) {
+                    $mongoCreatedAt = Carbon::parse($latestBattery['createdAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+                }
+                if (isset($latestBattery['updatedAt'])) {
+                    $mongoUpdatedAt = Carbon::parse($latestBattery['updatedAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+                }
             }
-        }
 
-        // Device Status
-        $deviceValue = null;
-        $deviceStatus = 'unknown';
+            if ($voltage_l_l_a_md && $voltage_l_l_a_add && $event->deviceId) {
+                $latestDevice = $collection->findOne(
+                    ['module_id' => (int)$voltage_l_l_a_md, 'device_id' => $event->deviceId],
+                    ['sort' => ['createdAt' => -1]]
+                );
 
-        if ($voltage_l_l_a_md && $voltage_l_l_a_add && $event->deviceId) {
-            $latestEvent = $collection->findOne(
-                [
-                    'module_id' => (int) $voltage_l_l_a_md,
-                    'device_id' => $event->deviceId
-                ],
-                ['sort' => ['createdAt' => -1]]
-            );
+                if ($latestDevice && isset($latestDevice[$voltage_l_l_a_add])) {
+                    $deviceValue = $latestDevice[$voltage_l_l_a_add];
+                    $deviceStatus = ($deviceValue == 1) ? 'on' : 'off';
+                }
 
-            if ($latestEvent && isset($latestEvent[$voltage_l_l_a_add])) {
-                $deviceValue = $latestEvent[$voltage_l_l_a_add];
-                $deviceStatus = $deviceValue == 1 ? 'on' : 'off';
+                if (!$mongoCreatedAt && isset($latestDevice['createdAt'])) {
+                    $mongoCreatedAt = Carbon::parse($latestDevice['createdAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+                }
+                if (!$mongoUpdatedAt && isset($latestDevice['updatedAt'])) {
+                    $mongoUpdatedAt = Carbon::parse($latestDevice['updatedAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+                }
             }
+
+            $filteredData[] = [
+                'deviceName'     => $event->deviceName,
+                'deviceId'       => $event->deviceId,
+                'moduleId'       => $event->moduleId,
+                'siteId'         => $event->actualSiteId,
+                'lowerLimit'     => $event->lowerLimit,
+                'upperLimit'     => $event->upperLimit,
+                'lowerLimitMsg'  => $event->lowerLimitMsg,
+                'upperLimitMsg'  => $event->upperLimitMsg,
+                'batteryValue'   => $batteryValue,
+                'batteryStatus'  => $batteryStatus,
+                'deviceValue'    => $deviceValue,
+                'deviceStatus'   => $deviceStatus,
+                'userEmail'      => $event->userEmail,
+                'ownerEmail'     => $event->owner_email,
+                'created_at'     => $mongoCreatedAt,
+                'updated_at'     => $mongoUpdatedAt
+            ];
         }
 
-        $filteredData[] = [
-            'deviceName' => $event->deviceName,
-            'deviceId' => $event->deviceId,
-            'moduleId' => $event->moduleId,
-            'siteId' => $event->actualSiteId,
-            'lowerLimit' => $event->lowerLimit,
-            'upperLimit' => $event->upperLimit,
-            'lowerLimitMsg' => $event->lowerLimitMsg,
-            'upperLimitMsg' => $event->upperLimitMsg,
-            'batteryValue' => $batteryValue,
-            'batteryStatus' => $batteryStatus,
-            'deviceValue' => $deviceValue,
-            'deviceStatus' => $deviceStatus,
-            'userEmail' => $event->userEmail,
-            'created_at' => $event->created_at,
-            'updated_at' => $event->updated_at
-        ];
+        return response()->json([
+            'status' => true,
+            'data' => $filteredData
+        ]);
     }
-
-    return response()->json([
-        'status' => true,
-        'data' => $filteredData
-    ]);
-}
-
 
 
 
