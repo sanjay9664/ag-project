@@ -146,8 +146,8 @@
                         <th>Low Limit Message</th>
                         <th>Upper Limit Message</th>
                         <th>User Email ID</th>
-                        <th>Created</th>
-                        <th>Updated</th>
+                        <th>Owner Eamil ID</th>
+                        <!-- <th>Updated</th> -->
                         <!-- <th></th> -->
                         <th>Actions</th>
                     </tr>
@@ -167,8 +167,8 @@
                         <td>{{$device->lowerLimitMsg}}</td>
                         <td>{{$device->upperLimitMsg}}</td>
                         <td>{{$device->userEmail}}</td>
-                        <td>{{$device->created_at}}</td>
-                        <td>{{$device->updated_at}}</td>
+                        <td>{{$device->owner_email}}</td>
+                        <!-- <td>{{$device->updated_at}}</td> -->
                         <!-- <td></td> -->
                         <td class="action-btns">
                             <button class="btn btn-warning btn-sm"
