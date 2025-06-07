@@ -325,11 +325,13 @@
                 }
             } catch (error) {
                 console.error("❌ Network error:", error);
-                alert("❌ Failed to send data to server. Please check your network connection.");
+                alert("❌ Already Save .");
             }
         }
+
     });
     </script>
+
 </body>
 
 </html>
