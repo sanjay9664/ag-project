@@ -1042,53 +1042,188 @@ class DashboardController extends Controller
 
 
 
+    // public function apiFetchDeviceStatus(): JsonResponse
+    // {
+    //     // Helper to get nested values
+    //     function array_get_nested($array, $path, $default = null) {
+    //         $keys = explode('.', $path);
+    //         foreach ($keys as $key) {
+    //             if (is_array($array) && array_key_exists($key, $array)) {
+    //                 $array = $array[$key];
+    //             } else {
+    //                 return $default;
+    //             }
+    //         }
+    //         return $array;
+    //     }
+
+    //     $deviceEvents = DB::table('device_events')
+    //         ->leftJoin('admins', 'device_events.userEmail', '=', 'admins.email')
+    //         ->leftJoin('sites', 'device_events.siteId', '=', 'sites.id')
+    //         ->select(
+    //             'device_events.id as siteId',
+    //             'device_events.deviceName',
+    //             'device_events.deviceId',
+    //             'device_events.moduleId',
+    //             'device_events.eventField',
+    //             'device_events.lowerLimit',
+    //             'device_events.upperLimit',
+    //             'device_events.lowerLimitMsg',
+    //             'device_events.upperLimitMsg',
+    //             'device_events.userEmail',
+    //             'device_events.owner_email',
+    //             'device_events.siteId as actualSiteId',
+    //             'sites.data'
+    //         )
+    //         ->get();
+
+    //     $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+    //     $client = new Client($mongoUri);
+    //     $collection = $client->isa_qa->device_events;
+
+    //     $filteredData = [];
+
+    //     foreach ($deviceEvents as $event) {
+    //         $data = (!empty($event->data) && is_string($event->data)) ? json_decode($event->data, true) : [];
+    //         if (json_last_error() !== JSON_ERROR_NONE) {
+    //             $data = [];
+    //         }
+
+    //         $battery_voltage_md = array_get_nested($data, 'parameters.battery_voltage.md');
+    //         $battery_voltage_add = array_get_nested($data, 'parameters.battery_voltage.add');
+    //         $voltage_l_l_a_md = array_get_nested($data, 'electric_parameters.voltage_l_l.a.md');
+    //         $voltage_l_l_a_add = array_get_nested($data, 'electric_parameters.voltage_l_l.a.add');
+
+    //         $batteryValue = null;
+    //         $batteryStatus = 'unknown';
+    //         $deviceValue = null;
+    //         $deviceStatus = 'unknown';
+
+    //         $mongoCreatedAt = null;
+    //         $mongoUpdatedAt = null;
+
+    //         if ($battery_voltage_md && $battery_voltage_add && $event->deviceId) {
+    //             $latestBattery = $collection->findOne(
+    //                 ['module_id' => (int)$battery_voltage_md, 'device_id' => $event->deviceId],
+    //                 ['sort' => ['createdAt' => -1]]
+    //             );
+
+    //             if ($latestBattery && isset($latestBattery[$battery_voltage_add])) {
+    //                 $batteryValue = $latestBattery[$battery_voltage_add];
+    //                 $batteryStatus = ($batteryValue == 10) ? 'normal' :
+    //                                  (($batteryValue > 14) ? 'high' :
+    //                                  (($batteryValue < 10) ? 'low' : 'normal'));
+    //             }
+
+    //             if (isset($latestBattery['createdAt'])) {
+    //                 $mongoCreatedAt = Carbon::parse($latestBattery['createdAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+    //             }
+    //             if (isset($latestBattery['updatedAt'])) {
+    //                 $mongoUpdatedAt = Carbon::parse($latestBattery['updatedAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+    //             }
+    //         }
+
+    //         if ($voltage_l_l_a_md && $voltage_l_l_a_add && $event->deviceId) {
+    //             $latestDevice = $collection->findOne(
+    //                 ['module_id' => (int)$voltage_l_l_a_md, 'device_id' => $event->deviceId],
+    //                 ['sort' => ['createdAt' => -1]]
+    //             );
+
+    //             if ($latestDevice && isset($latestDevice[$voltage_l_l_a_add])) {
+    //                 $deviceValue = $latestDevice[$voltage_l_l_a_add];
+    //                 $deviceStatus = ($deviceValue == 1) ? 'on' : 'off';
+    //             }
+
+    //             if (!$mongoCreatedAt && isset($latestDevice['createdAt'])) {
+    //                 $mongoCreatedAt = Carbon::parse($latestDevice['createdAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+    //             }
+    //             if (!$mongoUpdatedAt && isset($latestDevice['updatedAt'])) {
+    //                 $mongoUpdatedAt = Carbon::parse($latestDevice['updatedAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+    //             }
+    //         }
+
+    //         $filteredData[] = [
+    //             'deviceName'     => $event->deviceName,
+    //             'deviceId'       => $event->deviceId,
+    //             'moduleId'       => $event->moduleId,
+    //             'siteId'         => $event->actualSiteId,
+    //             'lowerLimit'     => $event->lowerLimit,
+    //             'upperLimit'     => $event->upperLimit,
+    //             'lowerLimitMsg'  => $event->lowerLimitMsg,
+    //             'upperLimitMsg'  => $event->upperLimitMsg,
+    //             'batteryValue'   => $batteryValue,
+    //             'batteryStatus'  => $batteryStatus,
+    //             'deviceValue'    => $deviceValue,
+    //             'deviceStatus'   => $deviceStatus,
+    //             'userEmail'      => $event->userEmail,
+    //             'ownerEmail'     => $event->owner_email,
+    //             'created_at'     => $mongoCreatedAt,
+    //             'updated_at'     => $mongoUpdatedAt
+    //         ];
+    //     }
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'data' => $filteredData
+    //     ]);
+    // }
+
     public function apiFetchDeviceStatus(): JsonResponse
-    {
-        // Helper to get nested values
-        function array_get_nested($array, $path, $default = null) {
-            $keys = explode('.', $path);
-            foreach ($keys as $key) {
-                if (is_array($array) && array_key_exists($key, $array)) {
-                    $array = $array[$key];
-                } else {
-                    return $default;
-                }
-            }
-            return $array;
+{
+    // Helper to get nested values
+    function array_get_nested($array, $path, $default = null) {
+        if (!is_array($array)) {
+            return $default;
         }
 
-        $deviceEvents = DB::table('device_events')
-            ->leftJoin('admins', 'device_events.userEmail', '=', 'admins.email')
-            ->leftJoin('sites', 'device_events.siteId', '=', 'sites.id')
-            ->select(
-                'device_events.id as siteId',
-                'device_events.deviceName',
-                'device_events.deviceId',
-                'device_events.moduleId',
-                'device_events.eventField',
-                'device_events.lowerLimit',
-                'device_events.upperLimit',
-                'device_events.lowerLimitMsg',
-                'device_events.upperLimitMsg',
-                'device_events.userEmail',
-                'device_events.owner_email',
-                'device_events.siteId as actualSiteId',
-                'sites.data'
-            )
-            ->get();
-
-        $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
-        $client = new Client($mongoUri);
-        $collection = $client->isa_qa->device_events;
-
-        $filteredData = [];
-
-        foreach ($deviceEvents as $event) {
-            $data = (!empty($event->data) && is_string($event->data)) ? json_decode($event->data, true) : [];
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                $data = [];
+        $keys = explode('.', $path);
+        foreach ($keys as $key) {
+            if (is_array($array) && array_key_exists($key, $array)) {
+                $array = $array[$key];
+            } else {
+                return $default;
             }
+        }
+        return $array;
+    }
 
+    $deviceEvents = DB::table('device_events')
+        ->leftJoin('admins', 'device_events.userEmail', '=', 'admins.email')
+        ->leftJoin('sites', 'device_events.siteId', '=', 'sites.id')
+        ->select(
+            'device_events.id as siteId',
+            'device_events.deviceName',
+            'device_events.deviceId',
+            'device_events.moduleId',
+            'device_events.eventField',
+            'device_events.lowerLimit',
+            'device_events.upperLimit',
+            'device_events.lowerLimitMsg',
+            'device_events.upperLimitMsg',
+            'device_events.userEmail',
+            'device_events.owner_email',
+            'device_events.siteId as actualSiteId',
+            'sites.data'
+        )
+        ->get();
+
+    try {
+        $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+        $mongoClient = new MongoClient($mongoUri);
+        $collection = $mongoClient->isa_qa->device_events;
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Failed to connect to MongoDB: ' . $e->getMessage()
+        ], 500);
+    }
+
+    $filteredData = [];
+
+    foreach ($deviceEvents as $event) {
+        try {
+            $data = json_decode($event->data, true) ?? [];
+            
             $battery_voltage_md = array_get_nested($data, 'parameters.battery_voltage.md');
             $battery_voltage_add = array_get_nested($data, 'parameters.battery_voltage.add');
             $voltage_l_l_a_md = array_get_nested($data, 'electric_parameters.voltage_l_l.a.md');
@@ -1098,7 +1233,6 @@ class DashboardController extends Controller
             $batteryStatus = 'unknown';
             $deviceValue = null;
             $deviceStatus = 'unknown';
-
             $mongoCreatedAt = null;
             $mongoUpdatedAt = null;
 
@@ -1109,17 +1243,15 @@ class DashboardController extends Controller
                 );
 
                 if ($latestBattery && isset($latestBattery[$battery_voltage_add])) {
-                    $batteryValue = $latestBattery[$battery_voltage_add];
-                    $batteryStatus = ($batteryValue == 10) ? 'normal' :
-                                     (($batteryValue > 14) ? 'high' :
-                                     (($batteryValue < 10) ? 'low' : 'normal'));
+                    $batteryValue = (float)$latestBattery[$battery_voltage_add];
+                    $batteryStatus = ($batteryValue >= 10 && $batteryValue <= 14) ? 'normal' :
+                                    ($batteryValue > 14 ? 'high' : 'low');
                 }
 
-                if (isset($latestBattery['createdAt'])) {
-                    $mongoCreatedAt = Carbon::parse($latestBattery['createdAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
-                }
-                if (isset($latestBattery['updatedAt'])) {
-                    $mongoUpdatedAt = Carbon::parse($latestBattery['updatedAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+                if (isset($latestBattery['createdAt']) && $latestBattery['createdAt'] instanceof \MongoDB\BSON\UTCDateTime) {
+                    $mongoCreatedAt = Carbon::parse($latestBattery['createdAt']->toDateTime())
+                        ->setTimezone('Asia/Kolkata')
+                        ->format('Y-m-d H:i:s');
                 }
             }
 
@@ -1130,43 +1262,54 @@ class DashboardController extends Controller
                 );
 
                 if ($latestDevice && isset($latestDevice[$voltage_l_l_a_add])) {
-                    $deviceValue = $latestDevice[$voltage_l_l_a_add];
-                    $deviceStatus = ($deviceValue == 1) ? 'on' : 'off';
+                    $deviceValue = (float)$latestDevice[$voltage_l_l_a_add];
+                    $deviceStatus = $deviceValue >= 1 ? 'on' : 'off';
                 }
 
-                if (!$mongoCreatedAt && isset($latestDevice['createdAt'])) {
-                    $mongoCreatedAt = Carbon::parse($latestDevice['createdAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
+                if (!$mongoCreatedAt && isset($latestDevice['createdAt']) && $latestDevice['createdAt'] instanceof \MongoDB\BSON\UTCDateTime) {
+                    $mongoCreatedAt = Carbon::parse($latestDevice['createdAt']->toDateTime())
+                        ->setTimezone('Asia/Kolkata')
+                        ->format('Y-m-d H:i:s');
                 }
-                if (!$mongoUpdatedAt && isset($latestDevice['updatedAt'])) {
-                    $mongoUpdatedAt = Carbon::parse($latestDevice['updatedAt']->toDateTime())->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s');
-                }
+                if (!$mongoUpdatedAt && isset($latestDevice['updatedAt']) && $latestDevice['updatedAt'] instanceof \MongoDB\BSON\UTCDateTime) {
+    $mongoUpdatedAt = Carbon::parse($latestDevice['updatedAt']->toDateTime())
+        ->setTimezone('Asia/Kolkata')
+        ->format('Y-m-d H:i:s');
+}
             }
 
             $filteredData[] = [
-                'deviceName'     => $event->deviceName,
-                'deviceId'       => $event->deviceId,
-                'moduleId'       => $event->moduleId,
-                'siteId'         => $event->actualSiteId,
-                'lowerLimit'     => $event->lowerLimit,
-                'upperLimit'     => $event->upperLimit,
-                'lowerLimitMsg'  => $event->lowerLimitMsg,
-                'upperLimitMsg'  => $event->upperLimitMsg,
-                'batteryValue'   => $batteryValue,
-                'batteryStatus'  => $batteryStatus,
-                'deviceValue'    => $deviceValue,
-                'deviceStatus'   => $deviceStatus,
-                'userEmail'      => $event->userEmail,
-                'ownerEmail'     => $event->owner_email,
-                'created_at'     => $mongoCreatedAt,
-                'updated_at'     => $mongoUpdatedAt
-            ];
-        }
+    'deviceName'     => $event->deviceName ?? '',
+    'deviceId'       => $event->deviceId ?? '',
+    'moduleId'       => $event->moduleId ?? '',
+    'siteId'         => $event->actualSiteId ?? '',
+    'lowerLimit'     => $event->lowerLimit ?? null,
+    'upperLimit'     => $event->upperLimit ?? null,
+    'lowerLimitMsg'  => $event->lowerLimitMsg ?? '',
+    'upperLimitMsg'  => $event->upperLimitMsg ?? '',
+    'batteryValue'   => $batteryValue,
+    'batteryStatus'  => $batteryStatus,
+    'deviceValue'    => $deviceValue,
+    'deviceStatus'   => $deviceStatus,
+    'userEmail'      => is_array(json_decode($event->userEmail, true)) 
+                        ? json_decode($event->userEmail, true)
+                        : explode(',', $event->userEmail ?? ''),
+    'ownerEmail'     => $event->owner_email ?? '',
+    'created_at'     => $mongoCreatedAt,
+    'updated_at'     => $mongoUpdatedAt
+];
 
-        return response()->json([
-            'status' => true,
-            'data' => $filteredData
-        ]);
+
+        } catch (\Exception $e) {
+            continue; // Skip this record but continue processing others
+        }
     }
+
+    return response()->json([
+        'status' => true,
+        'data' => $filteredData
+    ]);
+}
 
 
 

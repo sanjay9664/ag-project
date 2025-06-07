@@ -900,7 +900,7 @@ class SiteController extends Controller
         'message' => 'Device event saved successfully'
     ], 201);
 }
-
+  
 
 // public function apiStoreDevice(Request $request)
 // {
@@ -972,7 +972,6 @@ class SiteController extends Controller
 // }
 
 
-
     public function apiFetchDevice(Request $request)
     {
         $data = DB::table('device_events')->get();
@@ -1030,6 +1029,36 @@ class SiteController extends Controller
     //     return response()->json(['message' => 'Device event updated successfully'], 200);
     // }
     
+public function apiUpdateDevice(Request $request)
+{
+    $device = DeviceEvent::find($request->id);
+
+    if (!$device) {
+        return response()->json(['message' => 'Device not found.'], 404);
+    }
+
+    $emails = is_array($request->userEmail)
+        ? $request->userEmail
+        : explode(',', $request->userEmail);
+
+    // Update fields
+    $device->deviceName      = $request->deviceName;
+    $device->deviceId        = $request->deviceId;
+    $device->moduleId        = $request->moduleId;
+    $device->eventField      = $request->eventField;
+    $device->siteId          = $request->siteId;
+    $device->lowerLimit      = $request->lowerLimit;
+    $device->upperLimit      = $request->upperLimit;
+    $device->lowerLimitMsg   = $request->lowerLimitMsg;
+    $device->upperLimitMsg   = $request->upperLimitMsg;
+    $device->userEmail       = json_encode($emails); // ✅ Save as JSON array
+    $device->userPassword    = $request->userPassword;
+    $device->owner_email     = $request->owner_email;
+
+    $device->save();
+
+    return response()->json(['message' => 'Device updated successfully.']);
+}
 
 public function showDeviceForm()
     {
@@ -1037,32 +1066,9 @@ public function showDeviceForm()
         return view('device-update', compact('data'));
     }
 
-    public function apiUpdateDevice(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|integer|exists:device_events,id',
-            'deviceName' => 'required|string',
-            'deviceId' => 'required|string',
-            'moduleId' => 'required|string',
-            'eventField' => 'required|string',
-            'siteId' => 'required|string',
-            'userEmail' => 'required|string',
-            'userPassword' => 'required|string|min:6',
-        ]);
+   
 
-        DB::table('device_events')->where('id', $request->id)->update([
-            'deviceName' => $request->deviceName,
-            'deviceId' => $request->deviceId,
-            'moduleId' => $request->moduleId,
-            'eventField' => $request->eventField,
-            'siteId' => $request->siteId,
-            'userEmail' => $request->userEmail,
-            'userPassword' => Hash::make($request->userPassword),
-            'updated_at' => now(),
-        ]);
-
-        return response()->json(['message' => 'Device updated successfully']);
-    }
+    
    
     
 

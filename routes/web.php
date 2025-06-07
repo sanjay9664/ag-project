@@ -67,4 +67,6 @@ Route::post('/update-device-events/{deviceId}', [SiteController::class, 'apiUpda
 
 Route::delete('/delete-device-events/{deviceId}', [SiteController::class, 'apiDeleteDevice']);
 
+
+
 })->middleware('auth:admin');
