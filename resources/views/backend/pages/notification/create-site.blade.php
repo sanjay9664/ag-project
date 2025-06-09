@@ -2,13 +2,13 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Device Input Form</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
     <style>
     body {
         background-color: #f9f9f9;
@@ -49,9 +49,9 @@
 </head>
 
 <body>
-
     <div class="form-container">
         <h4 class="form-title">Device Input Form</h4>
+
         <select id="savedDataDropdown" class="form-select mb-3">
             <option value="">Select your saved data</option>
             @foreach($data as $index => $entry)
@@ -63,50 +63,60 @@
 
         <form id="deviceForm" class="mt-3">
             @csrf
-            <input type="hidden" id="deviceId" name="id" value="">
+            <input type="hidden" id="deviceId" name="id" value="" />
 
             <div class="mb-3">
                 <label for="deviceName" class="form-label visually-hidden">Device Name</label>
                 <input type="text" class="form-control" id="deviceName" name="deviceName" placeholder="Device Name"
-                    required>
+                    required autocomplete="off" />
             </div>
+
             <div class="mb-3">
                 <label for="deviceUniqueId" class="form-label visually-hidden">Device ID</label>
                 <input type="text" class="form-control" id="deviceUniqueId" name="deviceId" placeholder="Device ID"
-                    required>
+                    required autocomplete="off" />
             </div>
+
             <div class="mb-3">
                 <label for="moduleId" class="form-label visually-hidden">Module ID</label>
-                <input type="text" class="form-control" id="moduleId" name="moduleId" placeholder="Module ID" required>
+                <input type="text" class="form-control" id="moduleId" name="moduleId" placeholder="Module ID" required
+                    autocomplete="off" />
             </div>
+
             <div class="mb-3">
                 <label for="eventField" class="form-label visually-hidden">Event Field</label>
                 <input type="text" class="form-control" id="eventField" name="eventField" placeholder="Event Field"
-                    required>
+                    required autocomplete="off" />
             </div>
+
             <div class="mb-3">
                 <label for="siteId" class="form-label visually-hidden">Site ID</label>
-                <input type="text" class="form-control" id="siteId" name="siteId" placeholder="Site ID" required>
+                <input type="text" class="form-control" id="siteId" name="siteId" placeholder="Site ID" required
+                    autocomplete="off" />
             </div>
+
             <div class="mb-3">
                 <label for="lowerLimit" class="form-label visually-hidden">Lower Limit</label>
                 <input type="number" step="any" class="form-control" id="lowerLimit" name="lowerLimit"
-                    placeholder="Lower Limit">
+                    placeholder="Lower Limit" autocomplete="off" />
             </div>
+
             <div class="mb-3">
                 <label for="upperLimit" class="form-label visually-hidden">Upper Limit</label>
                 <input type="number" step="any" class="form-control" id="upperLimit" name="upperLimit"
-                    placeholder="Upper Limit">
+                    placeholder="Upper Limit" autocomplete="off" />
             </div>
+
             <div class="mb-3">
                 <label for="lowerLimitMsg" class="form-label visually-hidden">Lower Limit Message</label>
                 <input type="text" class="form-control" id="lowerLimitMsg" name="lowerLimitMsg"
-                    placeholder="Lower Limit Message">
+                    placeholder="Lower Limit Message" autocomplete="off" />
             </div>
+
             <div class="mb-3">
                 <label for="upperLimitMsg" class="form-label visually-hidden">Upper Limit Message</label>
                 <input type="text" class="form-control" id="upperLimitMsg" name="upperLimitMsg"
-                    placeholder="Upper Limit Message">
+                    placeholder="Upper Limit Message" autocomplete="off" />
             </div>
 
             <div class="mb-3">
@@ -114,7 +124,7 @@
                 <div id="emailFieldsContainer">
                     <div class="input-group email-group mb-2">
                         <input type="email" class="form-control" name="userEmails[]" placeholder="User Email ID"
-                            required>
+                            required autocomplete="email" />
                         <button type="button" class="btn btn-primary" onclick="addEmailField()">
                             <i class="bi bi-plus"></i> Add
                         </button>
@@ -125,12 +135,13 @@
             <div class="mb-3">
                 <label for="userPassword" class="form-label visually-hidden">User Password</label>
                 <input type="password" class="form-control" id="userPassword" name="userPassword"
-                    placeholder="User Password" autocomplete="current-password" required>
+                    placeholder="User Password" autocomplete="current-password" required />
             </div>
 
             <div class="mb-3">
                 <label for="owner_email" class="form-label visually-hidden">Owner Email</label>
-                <input type="email" class="form-control" id="owner_email" name="owner_email" placeholder="Owner Email">
+                <input type="email" class="form-control" id="owner_email" name="owner_email" placeholder="Owner Email"
+                    autocomplete="email" />
             </div>
 
             <div class="text-center my-3">
@@ -140,198 +151,219 @@
         </form>
     </div>
 
+
+    <!-- Include EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript">
+    (function() {
+        emailjs.init("XV9V8o3w_jtgjHR7J");
+    })();
+
+    // Function to send email to owner
+    const sendMailToOwner = (to_email, site_name) => {
+        emailjs.send(
+            'service_l362y9i',
+            'template_nd323pd', {
+                to_email,
+                site_name
+            },
+            'XV9V8o3w_jtgjHR7J'
+        ).then(response => {
+            console.log('✅ Email sent!', response.status, response.text);
+        }).catch(err => {
+            console.error('❌ Email error:', err);
+        });
+    };
+
+
+    // Example: Fetch from Laravel API and send email to each owner
+    fetch('/api/fetch-owner-emails') // ✅ Replace with actual route
+        .then(res => res.json())
+        .then(data => {
+            if (data.status && Array.isArray(data.owners)) {
+                data.owners.forEach(owner => {
+                    sendMailToOwner(owner.owner_email, owner.deviceName);
+                });
+            }
+        })
+        .catch(err => console.error('❌ Fetch error:', err));
+    </script>
+
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById("deviceForm");
-        const dropdown = document.getElementById("savedDataDropdown");
-        const emailFieldsContainer = document.getElementById("emailFieldsContainer");
-        const deviceIdHiddenField = document.getElementById("deviceId"); // Renamed to avoid conflict
+        const form = document.getElementById('deviceForm');
+        const dropdown = document.getElementById('savedDataDropdown');
+        const emailFieldsContainer = document.getElementById('emailFieldsContainer');
+        const deviceIdHiddenField = document.getElementById('deviceId');
 
-        // Add email field
+        // Add email field function
         window.addEmailField = function() {
             const emailGroup = document.createElement('div');
             emailGroup.className = 'input-group email-group mb-2';
-
             emailGroup.innerHTML = `
-                    <input type="email" class="form-control" name="userEmails[]" placeholder="Additional Email ID">
+                    <input type="email" class="form-control" name="userEmails[]" placeholder="Additional Email ID" autocomplete="email" />
                     <button type="button" class="btn btn-danger" onclick="removeEmailField(this)">
                         <i class="bi bi-trash"></i> Remove
                     </button>
                 `;
-
             emailFieldsContainer.appendChild(emailGroup);
-        }
+        };
 
-        // Remove email field
+        // Remove email field function
         window.removeEmailField = function(button) {
             const emailGroups = document.querySelectorAll('.email-group');
-            if (emailGroups.length > 1) { // Keep at least one email field
+            if (emailGroups.length > 1) {
                 button.closest('.email-group').remove();
             }
-        }
+        };
 
-        // Reset form
+        // Reset form function
         window.resetForm = function() {
             form.reset();
-            deviceIdHiddenField.value = ''; // Clear the hidden ID field
-            // Reset to single email field
+            deviceIdHiddenField.value = '';
             emailFieldsContainer.innerHTML = `
                     <div class="input-group email-group mb-2">
-                        <input type="email" class="form-control" name="userEmails[]" placeholder="User Email ID" required>
+                        <input type="email" class="form-control" name="userEmails[]" placeholder="User Email ID" required autocomplete="email" />
                         <button type="button" class="btn btn-primary" onclick="addEmailField()">
                             <i class="bi bi-plus"></i> Add
                         </button>
                     </div>
                 `;
-        }
+        };
 
-        // Handle dropdown selection
-        dropdown.addEventListener("change", function() {
+        // Dropdown change handler
+        dropdown.addEventListener('change', function() {
             const selected = this.options[this.selectedIndex];
             const deviceData = selected.dataset.device;
 
             if (deviceData) {
                 const parsed = JSON.parse(deviceData);
-
-                // Clear all fields first to ensure a clean slate
                 resetForm();
 
-                // Set the device ID for updates
-                deviceIdHiddenField.value = parsed.id || ''; // Populate the hidden ID field
+                // Fill hidden id field for update
+                deviceIdHiddenField.value = parsed.id || '';
 
-                // Fill form fields
+                // Fill other form fields
                 for (const [key, value] of Object.entries(parsed)) {
                     if (key === 'userEmail') {
-                        const emails = value.split(',').filter(email => email.trim() !== '');
+                        // Emails may be saved as JSON array or comma separated string, handle both
+                        let emails = [];
+                        if (typeof value === 'string') {
+                            try {
+                                emails = JSON.parse(value);
+                                if (!Array.isArray(emails)) emails = value.split(',').map(e => e
+                                    .trim());
+                            } catch {
+                                emails = value.split(',').map(e => e.trim());
+                            }
+                        } else if (Array.isArray(value)) {
+                            emails = value;
+                        }
 
-                        // Clear existing email fields before populating
                         emailFieldsContainer.innerHTML = '';
-
-                        // Create fields for each email
-                        emails.forEach((email, index) => {
-                            if (index === 0) {
-                                // First email goes in the initial field (or a new one if cleared)
+                        emails.forEach((email, idx) => {
+                            if (idx === 0) {
                                 const firstGroup = document.createElement('div');
                                 firstGroup.className = 'input-group email-group mb-2';
                                 firstGroup.innerHTML = `
-                                        <input type="email" class="form-control" name="userEmails[]" value="${email}" placeholder="User Email ID" required>
+                                        <input type="email" class="form-control" name="userEmails[]" value="${email}" placeholder="User Email ID" required autocomplete="email" />
                                         <button type="button" class="btn btn-primary" onclick="addEmailField()">
                                             <i class="bi bi-plus"></i> Add
                                         </button>
                                     `;
                                 emailFieldsContainer.appendChild(firstGroup);
                             } else {
-                                // Add new email fields for subsequent emails
                                 addEmailField();
                                 const emailInputs = document.querySelectorAll(
                                     'input[name="userEmails[]"]');
-                                // Set the value of the newly added input
                                 emailInputs[emailInputs.length - 1].value = email;
                             }
                         });
-                        // If no emails, ensure one empty field is present
-                        if (emails.length === 0) {
-                            resetForm(); // This will put back the default single email field
-                        }
 
+                        if (emails.length === 0) resetForm();
                     } else {
-                        // Handle other form fields by their 'name' attribute
                         const inputField = form.querySelector(`[name="${key}"]`);
-                        if (inputField) {
-                            inputField.value = value || '';
-                        }
+                        if (inputField) inputField.value = value ?? '';
                     }
                 }
             } else {
-                // If no device is selected (e.g., "Select your saved data" is chosen)
                 resetForm();
             }
         });
 
-        // Submit form
+        // Submit form function
         window.submitDeviceForm = async function() {
-            // Validate at least one email is entered
+            // Validate emails
             const emailInputs = document.querySelectorAll('input[name="userEmails[]"]');
             let hasValidEmail = false;
-            emailInputs.forEach(input => {
-                if (input.value.trim() !== '') {
-                    hasValidEmail = true;
-                }
+            emailInputs.forEach((input) => {
+                if (input.value.trim() !== '') hasValidEmail = true;
             });
 
             if (!hasValidEmail) {
-                alert("Please enter at least one email address");
+                alert('Please enter at least one email address');
                 return;
             }
 
-            // Check if all required fields are filled
+            // Validate form required fields
             if (!form.checkValidity()) {
-                alert("Please fill in all required fields.");
-                form.reportValidity(); // Show native browser validation messages
+                alert('Please fill in all required fields.');
+                form.reportValidity();
                 return;
             }
-
 
             const formData = new FormData(form);
             const jsonObject = {};
 
-            // Handle multiple emails
+            // Gather emails as JSON array string for backend
             const emails = [];
-            emailInputs.forEach(input => {
-                if (input.value.trim() !== '') {
-                    emails.push(input.value.trim());
-                }
+            emailInputs.forEach((input) => {
+                if (input.value.trim() !== '') emails.push(input.value.trim());
             });
-            jsonObject.userEmail = emails.join(','); // Join emails with a comma
+            jsonObject.userEmail = JSON.stringify(emails);
 
-            // Add other form fields to the JSON object
+            // Add other form fields except emails[] and _token
             formData.forEach((value, key) => {
-                if (key !== 'userEmails[]' && key !==
-                    '_token'
-                ) { // Exclude userEmails[] and CSRF token from direct FormData iteration
+                if (key !== 'userEmails[]' && key !== '_token') {
                     jsonObject[key] = value;
                 }
             });
 
-            // Ensure the 'id' (deviceIdHiddenField) is included in the JSON object for updates
+            // Include hidden id field for update
             jsonObject.id = deviceIdHiddenField.value;
-
 
             try {
                 const isUpdate = jsonObject.id !== '';
-                // Assuming your routes are correct
-                const url = isUpdate ? "/admin/update-device-events" : "/admin/store-device-events";
-                const method = isUpdate ? "PUT" : "POST";
+                const url = isUpdate ? '/admin/update-device-events' : '/admin/store-device-events';
+                const method = isUpdate ? 'PUT' : 'POST';
 
                 const response = await fetch(url, {
-                    method: method,
+                    method,
                     headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
-                            .content
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                            .content,
                     },
-                    body: JSON.stringify(jsonObject)
+                    body: JSON.stringify(jsonObject),
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert("✅ Device saved successfully!");
-                    window.location.reload(); // Refresh to show updated list
+                    alert('✅ Device saved successfully!');
+                    window.location.reload();
                 } else {
-                    // Display error message from server if available, otherwise a generic one
-                    alert(result.message || "❌ Error saving device");
-                    console.error("Error:", result);
+                    alert(result.message || '❌ Error saving device');
+                    console.error('Error:', result);
                 }
             } catch (error) {
-                console.error("❌ Network error:", error);
-                alert("❌ Already Save .");
+                console.error('❌ Network error:', error);
+                alert('❌ Error while saving device.');
             }
-        }
-
+        };
     });
     </script>
-
 </body>
 
 </html>

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Backend;
-
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Admin;
@@ -1313,5 +1313,87 @@ class DashboardController extends Controller
 
 
 
+// owner_email id  new api here 
+
+
+// public function apiSendEmailIfMatch(): JsonResponse
+// {
+//     $deviceEvents = DB::table('device_events')
+//         ->select('siteId', 'owner_email')
+//         ->get();
+
+//     $targetSiteName = 'Vaishali_Ghaziabad';
+//     $targetEmail = 'altrixsoftech@gmail.com';
+
+//     $matched = false;
+
+//     foreach ($deviceEvents as $event) {
+//         if (
+//             trim($event->owner_email) === $targetEmail &&
+//             trim($event->siteId) === $targetSiteName
+//         ) {
+//             $matched = true;
+
+//             try {
+//                 $http = new HttpClient();
+//                 $res = $http->post('https://api.emailjs.com/api/v1.0/email/send', [
+//                     'headers' => [
+//                         'origin' => 'http://localhost', // or your domain
+//                         'Content-Type' => 'application/json'
+//                     ],
+//                     'json' => [
+//                         'service_id' => 'service_l362y9i',
+//                         'template_id' => 'template_nd323pd',
+//                         'user_id' => 'XV9V8o3w_jtgjHR7J',
+//                         'template_params' => [
+//                             'to_email' => $targetEmail,
+//                             'site_name' => $targetSiteName,
+//                         ]
+//                     ],
+//                     'timeout' => 4
+//                 ]);
+
+//                 return response()->json([
+//                     'status' => true,
+//                     'message' => 'Email sent successfully.',
+//                     'response' => json_decode($res->getBody()->getContents())
+//                 ]);
+//             } catch (\Exception $e) {
+//                 return response()->json([
+//                     'status' => false,
+//                     'message' => 'Failed to send email: ' . $e->getMessage()
+//                 ], 500);
+//             }
+//         }
+//     }
+
+//     return response()->json([
+//         'status' => false,
+//         'message' => 'No matching site_name and to_email found.'
+//     ]);
+// }
+
+
+public function apiSendEmailIfMatch(Request $request)
+{
+   
+    $to = $request->input('to');
+    $site = $request->input('site');
+    $subject = $request->input('subject');
+    $messageBody = $request->input('message');
+
+    // You can add manual checks if you want:
+    if (!$to || !$subject || !$messageBody) {
+        return response()->json(['error' => 'Missing required fields'], 400);
+    }
+
+    // Send the email
+    Mail::raw($messageBody, function ($message) use ($to, $subject) {
+        $message->to($to)->subject($subject);
+    });
+
+
+    return response()->json(['status' => 'Email sent successfully']);
+}
 
 }
