@@ -470,7 +470,7 @@ class SiteController extends Controller
         session()->flash('success', __('Site has been Updated.'));
         return redirect()->route('admin.sites.index');
     }
-
+                                                                        
     public function destroy(int $id): RedirectResponse
     {
         $this->checkAuthorization(auth()->user(), ['site.delete']);
@@ -598,7 +598,7 @@ class SiteController extends Controller
         }
     }
 
-     public function AdminSites(Request $request)
+     public function AdminSites(Request $request)     
     {
         $role = $request->query('role');
         $bankName = $request->query('bank_name');
@@ -624,7 +624,7 @@ class SiteController extends Controller
             if (!empty($location) && $location !== 'Select Location') {
                 $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.group')) = ?", [$location]);
             }
-
+            
             $siteData = $query->get();
 
             $decodedSiteData = $siteData->map(function ($site) {
@@ -831,51 +831,146 @@ class SiteController extends Controller
         ]);
     }
 
-     public function apiStoreDevice(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'deviceName'       => 'required',
-            'deviceId'         => 'required',
-            'moduleId'         => 'required',
-            'eventField'       => 'required',
-            'siteId'           => 'required',
-            'lowerLimit'       => 'nullable|numeric',
-            'upperLimit'       => 'nullable|numeric',
-            'lowerLimitMsg'    => 'nullable|string',
-            'upperLimitMsg'    => 'nullable|string',
-            'userEmail'        => 'required|email',
-        ]);
+    public function apiStoreDevice(Request $request)
+{
+    $emails = is_array($request->userEmail) 
+        ? $request->userEmail 
+        : explode(',', $request->userEmail);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    $validator = Validator::make($request->all(), [
+        'deviceName'       => 'required|string|max:255',
+        'deviceId'         => 'required|string|max:255',
+        'moduleId'         => 'required|string|max:255',
+        'eventField'       => 'required|string|max:255',
+        'siteId'           => 'required|string|max:255',
+        'lowerLimit'       => 'nullable|numeric',
+        'upperLimit'       => 'nullable|numeric',
+        'lowerLimitMsg'    => 'nullable|string|max:255',
+        'upperLimitMsg'    => 'nullable|string|max:255',
+        'userEmail'        => ['required', function ($attribute, $value, $fail) use ($emails) {
+            foreach ($emails as $email) {
+                if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL)) {
+                    $fail('One or more email addresses are invalid.');
+                    break;
+                }
+            }
+        }],
+         'userPassword'     => 'required|string|min:8',
+         'userPassword'     => 'required|string|min:8',
+         'owner_email'      => 'nullable|email|max:255',
+    ]);
 
-        $exists = DB::table('device_events')
-            ->where('deviceName', $request->deviceName)
-            ->where('deviceId', $request->deviceId)
-            ->exists();
-
-        if ($exists) {
-            return response()->json(['message' => 'Device with this name and ID already exists.'], 409);
-        }
-
-        DB::table('device_events')->insert([
-            'deviceName'     => $request->deviceName,
-            'deviceId'       => $request->deviceId,
-            'moduleId'       => $request->moduleId,
-            'eventField'     => $request->eventField,
-            'siteId'         => $request->siteId,
-            'lowerLimit'     => $request->lowerLimit,
-            'upperLimit'     => $request->upperLimit,
-            'lowerLimitMsg'  => $request->lowerLimitMsg,
-            'upperLimitMsg'  => $request->upperLimitMsg,
-            'userEmail'      => $request->userEmail,
-            'created_at'     => now(),
-            'updated_at'     => now()
-        ]);
-
-        return response()->json(['message' => 'Device event saved successfully'], 201);
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
     }
+
+    // Check for existing device
+    $exists = DB::table('device_events')
+        ->where('deviceName', $request->deviceName)
+        ->where('deviceId', $request->deviceId)
+        ->exists();
+
+    if ($exists) {
+        return response()->json([
+            'message' => 'Device with this name and ID already exists.'
+        ], 409);
+    }
+
+    // Insert device record
+    DB::table('device_events')->insert([
+        'deviceName'     => $request->deviceName,
+        'deviceId'       => $request->deviceId,
+        'moduleId'       => $request->moduleId,
+        'eventField'     => $request->eventField,
+        'siteId'         => $request->siteId,
+        'lowerLimit'     => $request->lowerLimit,
+        'upperLimit'     => $request->upperLimit,
+        'lowerLimitMsg'  => $request->lowerLimitMsg,
+        'upperLimitMsg'  => $request->upperLimitMsg,
+        'userEmail'      => is_array($request->userEmail) 
+            ? implode(',', $request->userEmail) 
+            : $request->userEmail,
+        'userPassword'   => Hash::make($request->userPassword),
+        'owner_email'    => $request->owner_email,
+        'created_at'     => now(),
+        'updated_at'     => now()
+    ]);
+
+    return response()->json([
+        'message' => 'Device event saved successfully'
+    ], 201);
+}
+  
+
+// public function apiStoreDevice(Request $request)
+// {
+//     $emails = is_array($request->userEmail) 
+//         ? $request->userEmail 
+//         : explode(',', $request->userEmail);
+
+//     $validator = Validator::make($request->all(), [
+//         'deviceName'       => 'required|string|max:255',
+//         'deviceId'         => 'required|string|max:255',
+//         'moduleId'         => 'required|string|max:255',
+//         'eventField'       => 'required|string|max:255',
+//         'siteId'           => 'required|string|max:255',
+//         'lowerLimit'       => 'nullable|numeric',
+//         'upperLimit'       => 'nullable|numeric',
+//         'lowerLimitMsg'    => 'nullable|string|max:255',
+//         'upperLimitMsg'    => 'nullable|string|max:255',
+//         'userEmail'        => ['required', function ($attribute, $value, $fail) use ($emails) {
+//             foreach ($emails as $email) {
+//                 if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL)) {
+//                     $fail('One or more email addresses are invalid.');
+//                     break;
+//                 }
+//             }
+//         }],
+//         'userPassword'     => 'required|string|min:8',
+//         'owner_email'      => 'nullable|email|max:255',
+//     ]);
+
+//     if ($validator->fails()) {
+//         return response()->json(['errors' => $validator->errors()], 422);
+//     }
+
+//     // Check for existing device
+//     $exists = DB::table('device_events')
+//         ->where('deviceName', $request->deviceName)
+//         ->where('deviceId', $request->deviceId)
+//         ->exists();
+
+//     if ($exists) {
+//         return response()->json([
+//             'message' => 'Device with this name and ID already exists.'
+//         ], 409);
+//     }
+
+//     // Insert device record
+//     DB::table('device_events')->insert([
+//         'deviceName'     => $request->deviceName,
+//         'deviceId'       => $request->deviceId,
+//         'moduleId'       => $request->moduleId,
+//         'eventField'     => $request->eventField,
+//         'siteId'         => $request->siteId,
+//         'lowerLimit'     => $request->lowerLimit,
+//         'upperLimit'     => $request->upperLimit,
+//         'lowerLimitMsg'  => $request->lowerLimitMsg,
+//         'upperLimitMsg'  => $request->upperLimitMsg,
+//         'userEmail'      => is_array($request->userEmail) 
+//             ? implode(',', $request->userEmail) 
+//             : $request->userEmail,
+//         'userPassword'   => Hash::make($request->userPassword),
+//         'owner_email'    => $request->owner_email,
+//         'created_at'     => now(),
+//         'updated_at'     => now()
+//     ]);
+
+//     return response()->json([
+//         'message' => 'Device event saved successfully'
+//     ], 201);
+// }
+
 
     public function apiFetchDevice(Request $request)
     {
@@ -894,48 +989,90 @@ class SiteController extends Controller
         return view('backend.pages.notification.edit-site');
     }
 
-    public function apiUpdateDevice(Request $request, $deviceId)
-    {
-        $validator = Validator::make($request->all(), [
-            'deviceName'       => 'required',
-            'deviceId'         => 'required',
-            'moduleId'         => 'required',
-            'eventField'       => 'required',
-            'siteId'           => 'required',
-            'lowerLimit'       => 'nullable',
-            'upperLimit'       => 'nullable',
-            'lowerLimitMsg'    => 'nullable',
-            'upperLimitMsg'    => 'nullable',
-            'userEmail'        => 'required|email',
-        ]);
+    //  public function apiUpdateDevice(Request $request, $deviceId)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'deviceName'       => 'required',
+    //         'deviceId'         => 'required',
+    //         'moduleId'         => 'required',
+    //         'eventField'       => 'required',
+    //         'siteId'           => 'required',
+    //         'lowerLimit'       => 'nullable',
+    //         'upperLimit'       => 'nullable',
+    //         'lowerLimitMsg'    => 'nullable',
+    //         'upperLimitMsg'    => 'nullable',
+    //         'userEmail'        => 'required|email',
+    //     ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    //     if ($validator->fails()) {
+    //         return response()->json(['errors' => $validator->errors()], 422);
+    //     }
 
-        $event = DB::table('device_events')->where('deviceId', $deviceId)->first();
+    //     $event = DB::table('device_events')->where('deviceId', $deviceId)->first();
 
-        if (!$event) {
-            return response()->json(['message' => 'Device event not found'], 404);
-        }
+    //     if (!$event) {
+    //         return response()->json(['message' => 'Device event not found'], 404);
+    //     }
 
-        DB::table('device_events')->where('deviceId', $deviceId)->update([
-            'deviceName'     => $request->deviceName,
-            'moduleId'       => $request->moduleId,
-            'eventField'     => $request->eventField,
-            'siteId'         => $request->siteId,
-            'lowerLimit'     => $request->lowerLimit,
-            'upperLimit'     => $request->upperLimit,
-            'lowerLimitMsg'  => $request->lowerLimitMsg,
-            'upperLimitMsg'  => $request->upperLimitMsg,
-            'userEmail'      => $request->userEmail,
-        ]);
+    //     DB::table('device_events')->where('deviceId', $deviceId)->update([
+    //         'deviceName'     => $request->deviceName,
+    //         'moduleId'       => $request->moduleId,
+    //         'eventField'     => $request->eventField,
+    //         'siteId'         => $request->siteId,
+    //         'lowerLimit'     => $request->lowerLimit,
+    //         'upperLimit'     => $request->upperLimit,
+    //         'lowerLimitMsg'  => $request->lowerLimitMsg,
+    //         'upperLimitMsg'  => $request->upperLimitMsg,
+    //         'userEmail'      => $request->userEmail,
+    //     ]);
 
-        return response()->json(['message' => 'Device event updated successfully'], 200);
+    //     return response()->json(['message' => 'Device event updated successfully'], 200);
+    // }
+    
+public function apiUpdateDevice(Request $request)
+{
+    $device = DeviceEvent::find($request->id);
+
+    if (!$device) {
+        return response()->json(['message' => 'Device not found.'], 404);
     }
+
+    $emails = is_array($request->userEmail)
+        ? $request->userEmail
+        : explode(',', $request->userEmail);
+
+    // Update fields
+    $device->deviceName      = $request->deviceName;
+    $device->deviceId        = $request->deviceId;
+    $device->moduleId        = $request->moduleId;
+    $device->eventField      = $request->eventField;
+    $device->siteId          = $request->siteId;
+    $device->lowerLimit      = $request->lowerLimit;
+    $device->upperLimit      = $request->upperLimit;
+    $device->lowerLimitMsg   = $request->lowerLimitMsg;
+    $device->upperLimitMsg   = $request->upperLimitMsg;
+    $device->userEmail       = json_encode($emails); // ✅ Save as JSON array
+    $device->userPassword    = $request->userPassword;
+    $device->owner_email     = $request->owner_email;
+
+    $device->save();
+
+    return response()->json(['message' => 'Device updated successfully.']);
+}
+
+public function showDeviceForm()
+    {
+        $data = DB::table('device_events')->get();
+        return view('device-update', compact('data'));
+    }
+
+   
+
     
 
-
+    
+   
+    
 
 
 }

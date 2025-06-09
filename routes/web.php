@@ -60,6 +60,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('/password/reset/submit', [ForgotPasswordController::class, 'reset'])->name('password.update');
     
-    
+   
+
+// web.php
+Route::post('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);
+
+Route::delete('/delete-device-events/{deviceId}', [SiteController::class, 'apiDeleteDevice']);
+
+
+
 
 })->middleware('auth:admin');

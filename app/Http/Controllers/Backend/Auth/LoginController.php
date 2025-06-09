@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Admin;
 use App\Models\Login;
 use App\User;
+use Illuminate\Support\Str;
+use DB,Hash;
 
 class LoginController extends Controller
 {
@@ -150,29 +152,209 @@ class LoginController extends Controller
     }     
 
     // For Api Use
-    public function Apilogin(Request $request)
-    {
-        $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-        ]);
+    // public function Apilogin(Request $request)
+    // {
+    //     $request->validate([
+    //     'email' => 'required|email',
+    //     'password' => 'required',
+    //     ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+    //     if (!Auth::attempt($request->only('email', 'password'))) {
+    //         return response()->json([
+    //             'message' => 'Invalid credentials'
+    //         ], 401);
+    //     }
+
+    //     $user = Auth::user();
+
+    //     $token = $user->createToken('api-token')->plainTextToken;
+
+    //     return response()->json([
+    //         'message' => 'Logged in successfully',
+    //         'user' => $user,
+    //         'token' => $token,
+    //     ]);
+    // }
+
+    
+
+// public function Apilogin(Request $request)
+// {
+//     $request->validate([
+//         'userEmail' => 'required|email',
+//         'userPassword' => 'required|string',
+//     ]);
+
+//     // Fetch user from device_events table
+//     $user = DB::table('device_events')->where('userEmail', $request->userEmail)->first();
+
+//     if (!$user) {
+//         return response()->json([
+//             'message' => 'Invalid credentials (user not found)'
+//         ], 401);
+//     }
+
+//     // If passwords are hashed in the DB
+//     if (!Hash::check($request->userPassword, $user->userPassword)) {
+//         return response()->json([
+//             'message' => 'Invalid credentials (incorrect password)'
+//         ], 401);
+//     }
+
+//     // Generate a random token (not stored)
+//     $token = Str::random(60);
+
+// return response()->json([
+//     'message' => 'Logged in successfully',
+//     'user'    => $user,
+//     'token'   => $token,
+// ]);
+
+// }
+
+
+// public function Apilogin(Request $request)
+// {
+//     $request->validate([
+//         'userEmail' => 'required|email',
+//         'userPassword' => 'required|string',
+//     ]);
+
+//     $devices = DB::table('device_events')->get();
+
+//     foreach ($devices as $device) {
+//         $rawEmails = $device->userEmail;
+
+//         // Support both JSON array and comma-separated strings
+//         $emails = json_decode($rawEmails, true);
+
+//         if (!is_array($emails)) {
+//             // fallback: treat as comma string
+//             $emails = explode(',', $rawEmails);
+//         }
+
+//         foreach ($emails as $index => $email) {
+//             if (trim(strtolower($email)) === trim(strtolower($request->userEmail))) {
+//                 if (!empty($device->userPassword) && Hash::check($request->userPassword, $device->userPassword)) {
+//                     $token = Str::random(60);
+
+//                     return response()->json([
+//                         'message' => '✅ Logged in successfully',
+//                         'user' => $device,
+//                         'matched_email_index' => $index,
+//                         'token' => $token,
+//                     ]);
+//                 } else {
+//                     return response()->json([
+//                         'message' => '❌ Incorrect password',
+//                     ], 401);
+//                 }
+//             }
+//         }
+//     }
+
+//     return response()->json([
+//         'message' => '❌ Invalid credentials (email not found)',
+//     ], 401);
+// }
+
+// public function Apilogin(Request $request)
+// {
+//     $request->validate([
+//         'userEmail' => 'required|email',
+//         'userPassword' => 'required|string',
+//     ]);
+
+//     $devices = DB::table('device_events')->get();
+
+//     foreach ($devices as $device) {
+//         $rawEmails = $device->userEmail;
+
+//         // Decode JSON or fallback to comma
+//         $emails = json_decode($rawEmails, true);
+//         if (!is_array($emails)) {
+//             $emails = explode(',', $rawEmails);
+//         }
+
+//         foreach ($emails as $index => $email) {
+//             if (trim(strtolower($email)) === trim(strtolower($request->userEmail))) {
+//                 // ✅ Password check
+//                 if (!empty($device->userPassword) && Hash::check($request->userPassword, $device->userPassword)) {
+//                     // Create a filtered device object
+//                     $filteredDevice = (array) $device;
+//                     $filteredDevice['userEmail'] = $email; // ✅ Only matched email returned
+
+//                     return response()->json([
+//                         'message' => '✅ Logged in successfully',
+//                         'user' => $filteredDevice,
+//                         'matched_email_index' => $index,
+//                         'token' => Str::random(60),
+//                     ]);
+//                 } else {
+//                     return response()->json([
+//                         'message' => '❌ Incorrect password',
+//                     ], 401);
+//                 }
+//             }
+//         }
+//     }
+
+//     return response()->json([
+//         'message' => '❌ Invalid credentials (email not found)',
+//     ], 401);
+// }
+
+public function Apilogin(Request $request)
+{
+    $request->validate([
+        'userEmail'    => 'required|email',
+        'userPassword' => 'required|string',
+    ]);
+
+    $devices = DB::table('device_events')->get();
+
+    $matchedDevices = [];
+
+    foreach ($devices as $device) {
+        $rawEmails = $device->userEmail;
+
+        // Decode JSON or fallback to comma-separated string
+        $emails = json_decode($rawEmails, true);
+        if (!is_array($emails)) {
+            $emails = explode(',', $rawEmails);
         }
 
-        $user = Auth::user();
+        foreach ($emails as $index => $email) {
+            if (trim(strtolower($email)) === trim(strtolower($request->userEmail))) {
+                // ✅ Password check
+                if (!empty($device->userPassword) && Hash::check($request->userPassword, $device->userPassword)) {
+                    // Include only the matched email
+                    $filteredDevice = (array) $device;
+                    $filteredDevice['userEmail'] = $email;
+                    $filteredDevice['matched_email_index'] = $index;
 
-        $token = $user->createToken('api-token')->plainTextToken;
+                    $matchedDevices[] = $filteredDevice;
+                }
+            }
+        }
+    }
 
+    if (count($matchedDevices) > 0) {
         return response()->json([
-            'message' => 'Logged in successfully',
-            'user' => $user,
-            'token' => $token,
+            'message' => '✅ Login successful',
+            'devices' => $matchedDevices,
+            'token'   => Str::random(60),
         ]);
     }
+
+    return response()->json([
+        'message' => '❌ Invalid credentials (email or password incorrect)',
+    ], 401);
+}
+
+
+
+
 
     public function Apilogout(Request $request)
     {
