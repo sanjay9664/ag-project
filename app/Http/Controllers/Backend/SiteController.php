@@ -598,7 +598,7 @@ class SiteController extends Controller
         }
     }
 
-     public function AdminSites(Request $request)
+     public function AdminSites(Request $request)     
     {
         $role = $request->query('role');
         $bankName = $request->query('bank_name');
@@ -624,7 +624,7 @@ class SiteController extends Controller
             if (!empty($location) && $location !== 'Select Location') {
                 $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.group')) = ?", [$location]);
             }
-
+            
             $siteData = $query->get();
 
             $decodedSiteData = $siteData->map(function ($site) {
@@ -1067,6 +1067,8 @@ public function showDeviceForm()
     }
 
    
+
+    
 
     
    

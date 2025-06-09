@@ -69,4 +69,5 @@ Route::delete('/delete-device-events/{deviceId}', [SiteController::class, 'apiDe
 
 
 
+
 })->middleware('auth:admin');

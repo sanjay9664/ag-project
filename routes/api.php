@@ -26,11 +26,11 @@ Route::post('/logout', [LoginController::class, 'Apilogout']);
 Route::post('/store-device-events', [SiteController::class, 'apiStoreDevice']);
 Route::put('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);
 Route::get('/device-status', [DashboardController::class, 'apiFetchDeviceStatus']);
-
+Route::post('/send-if-match', [DashboardController::class, 'apiSendEmailIfMatch']);
 Route::middleware('auth:sanctum')->group(function () {
     // Route::get('/sites', [SiteController::class, 'apiSites']);
     // Route::get('/dashboard-data', [DashboardController::class, 'apiIndex'])->name('dashboard');
 
-
+   
 
 });
