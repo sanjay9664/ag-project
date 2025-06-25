@@ -80,6 +80,7 @@ class DashboardController extends Controller
 
                 $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
                 $client = new \MongoDB\Client($mongoUri);
+                // $client = new Client("mongodb://localhost:27017");
                 $database = $client->isa_qa;
                 $collection = $database->device_events;
 
@@ -89,7 +90,7 @@ class DashboardController extends Controller
                     foreach ($uniqueMdValues as $moduleId) {
                         $event = $collection->findOne(
                             ['module_id' => $moduleId],
-                            ['sort' => ['createdAt' => -1]]
+                            ['sort' => ['createdAt' => -1]]  
                         );
 
                         if ($event) {

@@ -95,6 +95,62 @@
 .logo-white:hover {
     opacity: 0.8;
 }
+.status-toggle {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    background-color: #ccc;
+    border-radius: 30px;
+    padding: 3px;
+    transition: background-color 0.3s ease;
+}
+
+/* Status circle inside */
+.status-circle {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background-color: white;
+    border-radius: 50%;
+    transition: left 0.3s ease;
+}
+
+/* Online */
+.gateway-toggle.online .status-circle,
+.controller-toggle.online .status-circle {
+    left: 25px; /* Moves circle to right when ON */
+}
+
+/* Gateway colors */
+.gateway-toggle.online {
+    background-color: #28a745;
+}
+.gateway-toggle.offline {
+    background-color: #dc3545;
+}
+
+/* Controller colors */
+.controller-toggle.online {
+    background-color: #28a745;
+}
+.controller-toggle.offline {
+    background-color: #dc3545;
+}
+
+/* Optional: blinking dot animation */
+.blinking {
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
 </style>
 
 <body>
@@ -197,6 +253,8 @@
                         <tr>
                             <th>S.No</th>
                             <th>Site Name</th>
+                            <th>Gateway Status</th>
+                            <th>Controller Status</th>
                             <th>Bank Name</th>
                             <th>Location</th>
                             <th>Id</th>
@@ -206,6 +264,7 @@
                             <th>DG Status</th>
                         </tr>
                     </thead>
+                    
                     <tbody>
                         @php $i=1; @endphp
                         @foreach ($siteData as $site)
@@ -228,15 +287,37 @@
                             }
                             @endphp
 
+                            @php
+                                $gatewayStatus = $isRecent ? 'online' : 'offline';
+                                $controllerStatus = $isRecent ? 'online' : 'offline';
+                            @endphp
+
                             <tr data-site-id="{{ $site->id }}">
                                 <td>{{ $i }}</td>
                                 <td style="color: {{ $isRecent ? 'green' : 'red' }};">
                                     <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
-                                        style="text-decoration: none; color: inherit; font-weight: bold;"
-                                        target="_blank">
+                                    style="text-decoration: none; color: inherit; font-weight: bold;"
+                                    target="_blank">
                                         {{ $site->site_name }}
                                     </a>
                                 </td>
+
+                                 
+                                       <!-- Gateway Status -->
+                                            <td>
+                                                <div class="status-toggle gateway-toggle {{ $gatewayStatus }}">
+                                                    <div class="status-circle {{ $gatewayStatus == 'online' ? 'blinking' : '' }}"></div>
+                                                </div>
+                                            </td>
+
+                                            <!-- Controller Status -->
+                                            <td>
+                                                <div class="status-toggle controller-toggle {{ $controllerStatus }}">
+                                                    <div class="status-circle {{ $controllerStatus == 'online' ? 'blinking' : '' }}"></div>
+                                                </div>
+                                            </td>
+
+
                                 <td>{{ $sitejsonData['generator'] ?? 'N/A' }}</td>
                                 <td>{{ $sitejsonData['group'] ?? 'N/A' }}</td>
                                 <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
@@ -310,7 +391,7 @@
                 {{$site->updatedAt}}
             </td>
 
-            <td>
+            <!-- <td>
                 @php
                 $addValuerunstatus = 0;
                 if (isset($sitejsonData['electric_parameters']['voltage_l_l']['a'])) {
@@ -334,7 +415,41 @@
                 @else
                 <span class="status-stopped">OFF</span>
                 @endif
-            </td>
+            </td> -->
+          
+<td>
+    @php
+        $addValuerunstatus = 0;
+
+        // If controller is online, try to calculate DG status
+        if ($controllerStatus === 'online') {
+            if (isset($sitejsonData['electric_parameters']['voltage_l_l']['a'])) {
+                $keya = $sitejsonData['electric_parameters']['voltage_l_l']['a']['add'] ?? null;
+                $moduleId = $sitejsonData['electric_parameters']['voltage_l_l']['a']['md'] ?? null;
+
+                foreach ($eventData as $event) {
+                    $eventArraya = $event->getArrayCopy();
+                    if ($moduleId && isset($eventArraya['module_id']) && $eventArraya['module_id'] == $moduleId) {
+                        if ($keya && array_key_exists($keya, $eventArraya)) {
+                            $addValuerunstatus = $eventArraya[$keya];
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    @endphp
+
+    {{-- Show status based on controller status --}}
+    @if($controllerStatus === 'offline')
+        <strong style="font-size: 1.3rem; font-weight: bold;">—</strong>
+    @elseif($addValuerunstatus > 0)
+        <span class="status-running blinking">ON</span>
+    @else
+        <span class="status-stopped">OFF</span>
+    @endif
+</td>
+
             </tr>
             @php $i=$i+1; @endphp
             @endforeach
@@ -404,7 +519,6 @@
         });
     });
     </script>
-
 </body>
 
 </html>

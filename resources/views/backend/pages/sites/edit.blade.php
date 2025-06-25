@@ -94,6 +94,12 @@ input {
                                     value="{{ $site->device_id }}" placeholder="Enter Device Id" required autofocus
                                     MD="{{ old('device_id') }}">
                             </div>
+                            <div class="form-group col-md-4 col-sm-12">
+                                <label for="name">Cluster ID</label>
+                                <input type="text" class="form-control" id="clusterID" name="clusterID"
+                                    value="{{ $site->clusterID }}" placeholder="Enter Device Id" required autofocus
+                                    MD="{{ old('clusterID') }}">
+                            </div>
                         </div>
 
                         <div class="form-row">
