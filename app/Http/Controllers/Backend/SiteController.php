@@ -20,6 +20,9 @@ use MongoDB\BSON\UTCDateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
 use Auth,DB,Validator;
+use  App\Models\DeviceEvent;
+// namespace App\Models;
+
 
 class SiteController extends Controller
 {
@@ -71,6 +74,7 @@ class SiteController extends Controller
         $site->slug = $this->generateUniqueSlug($request->site_name);
         $site->email = $request->email;
         $site->device_id = $request->device_id;
+        $site->clusterID = $request->clusterID;
         $site->increase_running_hours_status = $request->has('increase_running_hours_status') ? 1 : 0;
     
         $additionalData = [
@@ -283,6 +287,7 @@ class SiteController extends Controller
         $site->slug = $this->generateUniqueSlug($request->site_name);
         $site->email = $request->email;
         $site->device_id = $request->device_id;
+        $site->clusterID = $request->clusterID;
         $site->increase_running_hours_status = $request->input('increase_running_hours_status', 0);
 
         $additionalData = [
@@ -831,11 +836,17 @@ class SiteController extends Controller
         ]);
     }
 
+
     public function apiStoreDevice(Request $request)
 {
-    $emails = is_array($request->userEmail) 
-        ? $request->userEmail 
-        : explode(',', $request->userEmail);
+    // Handle userEmail as array or JSON string
+    $emails = is_array($request->userEmail)
+        ? $request->userEmail
+        : json_decode($request->userEmail, true);
+
+    if (!is_array($emails)) {
+        $emails = explode(',', $request->userEmail);
+    }
 
     $validator = Validator::make($request->all(), [
         'deviceName'       => 'required|string|max:255',
@@ -855,14 +866,51 @@ class SiteController extends Controller
                 }
             }
         }],
-         'userPassword'     => 'required|string|min:8',
-         'userPassword'     => 'required|string|min:8',
-         'owner_email'      => 'nullable|email|max:255',
+        'userPassword'     => 'required|string|min:8',
+        'owner_email'      => 'nullable|email|max:255',
     ]);
 
     if ($validator->fails()) {
+        Log::error('Device form validation failed', [
+            'errors' => $validator->errors(),
+            'input' => $request->all()
+        ]);
         return response()->json(['errors' => $validator->errors()], 422);
     }
+
+    // Check for existing device
+    $exists = DB::table('device_events')
+        ->where('deviceName', $request->deviceName)
+        ->where('deviceId', $request->deviceId)
+        ->exists();
+
+    if ($exists) {
+        return response()->json([
+            'message' => 'Device with this name and ID already exists.'
+        ], 409);
+    }
+
+    // Insert device record
+    DB::table('device_events')->insert([
+        'deviceName'     => $request->deviceName,
+        'deviceId'       => $request->deviceId,
+        'moduleId'       => $request->moduleId,
+        'eventField'     => $request->eventField,
+        'siteId'         => $request->siteId,
+        'lowerLimit'     => $request->lowerLimit,
+        'upperLimit'     => $request->upperLimit,
+        'lowerLimitMsg'  => $request->lowerLimitMsg,
+        'upperLimitMsg'  => $request->upperLimitMsg,
+        'userEmail'      => implode(',', $emails),
+        'userPassword'   => Hash::make($request->userPassword),
+        'owner_email'    => $request->owner_email,
+        'created_at'     => now(),
+        'updated_at'     => now()
+    ]);
+
+    return response()->json([
+        'message' => 'Device event saved successfully'
+    ], 201);
 
     // Check for existing device
     $exists = DB::table('device_events')
@@ -901,6 +949,8 @@ class SiteController extends Controller
     ], 201);
 }
   
+
+
 
 // public function apiStoreDevice(Request $request)
 // {
@@ -1029,38 +1079,69 @@ class SiteController extends Controller
     //     return response()->json(['message' => 'Device event updated successfully'], 200);
     // }
     
-public function apiUpdateDevice(Request $request)
-{
-    $device = DeviceEvent::find($request->id);
+// public function apiUpdateDevice(Request $request)
+// {
+//     $device = DeviceEvent::find($request->id);
 
-    if (!$device) {
-        return response()->json(['message' => 'Device not found.'], 404);
+//     if (!$device) {
+//         return response()->json(['message' => 'Device not found.'], 404);
+//     }
+
+//     $emails = is_array($request->userEmail)
+//         ? $request->userEmail
+//         : explode(',', $request->userEmail);
+
+//     // Update fields
+//     $device->deviceName      = $request->deviceName;
+//     $device->deviceId        = $request->deviceId;
+//     $device->moduleId        = $request->moduleId;
+//     $device->eventField      = $request->eventField;
+//     $device->siteId          = $request->siteId;
+//     $device->lowerLimit      = $request->lowerLimit;
+//     $device->upperLimit      = $request->upperLimit;
+//     $device->lowerLimitMsg   = $request->lowerLimitMsg;
+//     $device->upperLimitMsg   = $request->upperLimitMsg;
+//     $device->userEmail       = json_encode($emails); // ✅ Save as JSON array
+//     $device->userPassword    = $request->userPassword;
+//     $device->owner_email     = $request->owner_email;
+
+//     $device->save();
+
+//     return response()->json(['message' => 'Device updated successfully.']);
+// } origanal 
+
+ public function apiUpdateDevice(Request $request, $deviceId)
+    {
+        $device = DeviceEvent::where('deviceId', $deviceId)->first();
+
+
+        if (!$device) {
+            return response()->json(['message' => 'Device not found.'], 404);
+        }
+
+        $emails = is_array($request->userEmail)
+            ? $request->userEmail
+            : explode(',', $request->userEmail);
+
+        $device->deviceName      = $request->deviceName;
+        $device->deviceId        = $request->deviceId;
+        $device->moduleId        = $request->moduleId;
+        $device->eventField      = $request->eventField;
+        $device->siteId          = $request->siteId;
+        $device->lowerLimit      = $request->lowerLimit;
+        $device->upperLimit      = $request->upperLimit;
+        $device->lowerLimitMsg   = $request->lowerLimitMsg;
+        $device->upperLimitMsg   = $request->upperLimitMsg;
+        $device->userEmail       = json_encode($emails);
+        $device->userPassword    = $request->userPassword;
+        $device->owner_email     = $request->owner_email;
+
+        $device->save();
+
+        return response()->json(['message' => 'Device updated successfully.']);
     }
 
-    $emails = is_array($request->userEmail)
-        ? $request->userEmail
-        : explode(',', $request->userEmail);
-
-    // Update fields
-    $device->deviceName      = $request->deviceName;
-    $device->deviceId        = $request->deviceId;
-    $device->moduleId        = $request->moduleId;
-    $device->eventField      = $request->eventField;
-    $device->siteId          = $request->siteId;
-    $device->lowerLimit      = $request->lowerLimit;
-    $device->upperLimit      = $request->upperLimit;
-    $device->lowerLimitMsg   = $request->lowerLimitMsg;
-    $device->upperLimitMsg   = $request->upperLimitMsg;
-    $device->userEmail       = json_encode($emails); // ✅ Save as JSON array
-    $device->userPassword    = $request->userPassword;
-    $device->owner_email     = $request->owner_email;
-
-    $device->save();
-
-    return response()->json(['message' => 'Device updated successfully.']);
-}
-
-public function showDeviceForm()
+    public function showDeviceForm()
     {
         $data = DB::table('device_events')->get();
         return view('device-update', compact('data'));

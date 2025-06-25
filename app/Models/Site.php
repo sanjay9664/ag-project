@@ -19,6 +19,7 @@ class Site extends Authenticatable
         'slug',
         'email',
         'device_id',
+        'clusterID',
         'data'
     ];
 }

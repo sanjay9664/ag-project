@@ -293,75 +293,84 @@
         });
 
         // Submit form function
-        window.submitDeviceForm = async function() {
-            // Validate emails
-            const emailInputs = document.querySelectorAll('input[name="userEmails[]"]');
-            let hasValidEmail = false;
-            emailInputs.forEach((input) => {
-                if (input.value.trim() !== '') hasValidEmail = true;
-            });
+      window.submitDeviceForm = async function () {
+    const emailInputs = document.querySelectorAll('input[name="userEmails[]"]');
+    let emails = [];
 
-            if (!hasValidEmail) {
-                alert('Please enter at least one email address');
-                return;
+    emailInputs.forEach((input) => {
+        const trimmed = input.value.trim();
+        if (trimmed !== '') {
+            emails.push(trimmed);
+        }
+    });
+
+    if (emails.length === 0) {
+        alert('Please enter at least one email address');
+        return;
+    }
+
+    const formData = new FormData(form);
+    const jsonObject = {};
+
+    formData.forEach((value, key) => {
+        if (key !== 'userEmails[]' && key !== '_token') {
+            jsonObject[key] = value;
+        }
+    });
+
+    // Include email array
+    jsonObject.userEmail = emails;
+
+    // Include hidden ID for update detection
+    jsonObject.id = deviceIdHiddenField.value;
+
+    // Basic validation check
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    try {
+        const isUpdate = jsonObject.id !== '';
+        const url = isUpdate
+            ? '/admin/update-device-events'
+            : '/admin/store-device-events';
+
+        const method = isUpdate ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute('content'),
+            },
+            body: JSON.stringify(jsonObject),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert('✅ Device saved successfully!');
+            window.location.reload();
+        } else {
+            if (result.errors) {
+                const errorMessages = Object.values(result.errors)
+                    .flat()
+                    .join('\n');
+                alert(`❌ Validation Errors:\n${errorMessages}`);
+            } else {
+                alert(result.message || '❌ Something went wrong.');
             }
+            console.error(result);
+        }
+    } catch (error) {
+        console.error('❌ Network error:', error);
+        alert('❌ Failed to save device. See console for details.');
+    }
+};
 
-            // Validate form required fields
-            if (!form.checkValidity()) {
-                alert('Please fill in all required fields.');
-                form.reportValidity();
-                return;
-            }
-
-            const formData = new FormData(form);
-            const jsonObject = {};
-
-            // Gather emails as JSON array string for backend
-            const emails = [];
-            emailInputs.forEach((input) => {
-                if (input.value.trim() !== '') emails.push(input.value.trim());
-            });
-            jsonObject.userEmail = JSON.stringify(emails);
-
-            // Add other form fields except emails[] and _token
-            formData.forEach((value, key) => {
-                if (key !== 'userEmails[]' && key !== '_token') {
-                    jsonObject[key] = value;
-                }
-            });
-
-            // Include hidden id field for update
-            jsonObject.id = deviceIdHiddenField.value;
-
-            try {
-                const isUpdate = jsonObject.id !== '';
-                const url = isUpdate ? '/admin/update-device-events' : '/admin/store-device-events';
-                const method = isUpdate ? 'PUT' : 'POST';
-
-                const response = await fetch(url, {
-                    method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                            .content,
-                    },
-                    body: JSON.stringify(jsonObject),
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert('✅ Device saved successfully!');
-                    window.location.reload();
-                } else {
-                    alert(result.message || '❌ Error saving device');
-                    console.error('Error:', result);
-                }
-            } catch (error) {
-                console.error('❌ Network error:', error);
-                alert('❌ Error while saving device.');
-            }
-        };
     });
     </script>
 </body>

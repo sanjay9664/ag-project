@@ -171,10 +171,9 @@
                         <!-- <td>{{$device->updated_at}}</td> -->
                         <!-- <td></td> -->
                         <td class="action-btns">
-                            <button class="btn btn-warning btn-sm"
-                                onclick="editRow('{{ $device->deviceId }}', this)">Edit</button>
-                            <button class="btn btn-danger btn-sm"
-                                onclick="deleteRow('{{ $device->deviceId }}', this)">Delete</button>
+                            <button class="btn btn-warning btn-sm" onclick="editRow('{{ $device->deviceId }}', this)">Edit</button>
+<button class="btn btn-danger btn-sm" onclick="deleteRow('{{ $device->deviceId }}', this)">Delete</button>
+
                         </td>
 
 
@@ -189,6 +188,72 @@
 
     <script>
     const tableBody = document.getElementById("tableBody");
+
+    const form = document.getElementById("deviceForm");
+
+async function editRow(deviceId, btn) {
+    // Fetch device data from database (optional, or use inline dataset)
+    const res = await fetch(`/api/get-device/${deviceId}`);
+    const data = await res.json();
+
+    if (!res.ok || !data) {
+        alert("❌ Device not found.");
+        return;
+    }
+
+    // Fill the form with fetched values
+    for (const [key, value] of Object.entries(data)) {
+        const input = form.querySelector(`[name="${key}"]`);
+        if (input) input.value = value;
+    }
+
+    // Update form submit to handle update logic
+    form.onsubmit = async function(e) {
+        e.preventDefault();
+        const formData = Object.fromEntries(new FormData(form));
+
+        const updateResponse = await fetch(`/update-device-events/${deviceId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                 "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await updateResponse.json();
+
+        if (updateResponse.ok) {
+            alert("✅ Device updated!");
+            location.reload(); // Or refresh list dynamically
+        } else {
+            alert("❌ " + (result.message || "Update failed"));
+        }
+    };
+}
+
+async function deleteRow(deviceId, btn) {
+    if (!confirm("Are you sure you want to delete this device?")) return;
+
+    const res = await fetch(`/delete-device-events/${deviceId}`, {
+        method: "DELETE",
+       headers: {
+    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+}
+
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+        alert("🗑️ Device deleted!");
+        // Remove row from DOM if it's a table
+        const row = btn.closest("tr");
+        if (row) row.remove();
+    } else {
+        alert("❌ " + (result.message || "Delete failed"));
+    }
+}
 
     async function loadTableFromServer() {
         try {
@@ -286,57 +351,59 @@
     }
 
     function saveRow(deviceId, btn) {
-        const row = btn.closest('tr');
-        const inputs = row.querySelectorAll('td:not(:last-child) input');
+    const row = btn.closest('tr');
+    const inputs = row.querySelectorAll('td:not(:last-child) input');
 
-        // Create data object based on your table structure
-        const updatedData = {};
-        const fieldNames = ['deviceName', 'deviceId', 'moduleId', 'eventField', 'siteId',
-            'lowerLimit', 'upperLimit', 'lowerLimitMsg', 'upperLimitMsg', 'userEmail'
-        ];
+    const updatedData = {};
+  const fieldNames = [
+  'deviceName', 'deviceId', 'moduleId', 'eventField', 'siteId',
+  'lowerLimit', 'upperLimit', 'lowerLimitMsg', 'upperLimitMsg', 'userEmail'
+];
 
-        inputs.forEach((input, index) => {
-            if (index > 0) { // Skip S.No
-                updatedData[fieldNames[index - 1]] = input.value;
-            }
-        });
+inputs.forEach((input, index) => {
+    if (index > 0) {
+        updatedData[fieldNames[index - 1]] = input.value;
+    }
+});
 
-        // Simple validation
-        if (!updatedData.deviceId || !updatedData.deviceName) {
-            alert('Device ID and Name are required!');
-            return;
-        }
 
-        $.ajax({
-            url: `/update-device-events/${deviceId}`,
-            method: "POST",
-            data: {
-                _method: "PUT",
-                _token: document.querySelector('meta[name="csrf-token"]').content,
-                ...updatedData
-            },
-            success: function(response) {
-                // Update the row with new values
-                inputs.forEach((input, index) => {
-                    if (index > 0) {
-                        row.children[index].innerHTML = input.value;
-                    }
-                });
+    // Basic validation
+    if (!updatedData.deviceId || !updatedData.deviceName) {
+        alert('❌ Device ID and Name are required!');
+        return;
+    }
 
-                // Restore buttons
-                const btnGroup = row.querySelector(".action-btns");
-                btnGroup.innerHTML = `
+    // Send AJAX POST request to update
+    $.ajax({
+    url: `/admin/update-device-events/${deviceId}`,
+    method: "PUT",
+        data: {
+            _token: document.querySelector('meta[name="csrf-token"]').content,
+            ...updatedData
+        },
+        success: function(response) {
+            // Replace input fields with updated values in the row
+            inputs.forEach((input, index) => {
+                if (index > 0) {
+                    row.children[index].innerHTML = input.value;
+                }
+            });
+
+            // Reset action buttons
+            const btnGroup = row.querySelector(".action-btns");
+            btnGroup.innerHTML = `
                 <button class="btn btn-warning btn-sm" onclick="editRow('${deviceId}', this)">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="deleteRow('${deviceId}', this)">Delete</button>
             `;
 
-                alert("Updated successfully!");
-            },
-            error: function(xhr) {
-                alert("Failed to update: " + (xhr.responseJSON?.message || 'Unknown error'));
-            }
-        });
-    }
+            alert("✅ Device updated successfully!");
+        },
+        error: function(xhr) {
+            alert("❌ Failed to update: " + (xhr.responseJSON?.message || 'Unknown error'));
+        }
+    });
+}
+
     </script>
 </body>
 
