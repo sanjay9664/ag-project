@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Backend\AdminsController;
 use App\Http\Controllers\Backend\Auth\ForgotPasswordController;
 use App\Http\Controllers\Backend\Auth\LoginController;
@@ -28,6 +28,15 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/login', function () {
     return redirect('/admin/login');
+});
+
+Route::get('/clear-cache', function () {
+    Artisan::call('optimize');
+
+    return response()->json([
+        'message' => 'Application optimized successfully.',
+        'output' => Artisan::output(),
+    ]);
 });
 
 /**
@@ -60,11 +69,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('/password/reset/submit', [ForgotPasswordController::class, 'reset'])->name('password.update');
     
-// web.php
-    // Route::post('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);
-
-    Route::post('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdateDevice']);
+    // Fetch DG Status
+    Route::post('/site/statuses', [SiteController::class, 'fetchStatuses'])->name('site.statuses');
 
     Route::delete('/delete-device-events/{deviceId}', [SiteController::class, 'apiDeleteDevice']);
-    
 })->middleware('auth:admin');
