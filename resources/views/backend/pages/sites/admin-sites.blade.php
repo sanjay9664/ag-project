@@ -95,61 +95,41 @@
 .logo-white:hover {
     opacity: 0.8;
 }
-.status-toggle {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 28px;
-    background-color: #ccc;
-    border-radius: 30px;
-    padding: 3px;
-    transition: background-color 0.3s ease;
+.status-cell {
+    width: 50px; /* Narrow column */
+    text-align: center;
+    vertical-align: middle;
+    padding: 5px;
 }
 
-/* Status circle inside */
-.status-circle {
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 22px;
-    height: 22px;
-    background-color: white;
+.status-dot {
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    transition: left 0.3s ease;
+    display: inline-block;
 }
 
-/* Online */
-.gateway-toggle.online .status-circle,
-.controller-toggle.online .status-circle {
-    left: 25px; /* Moves circle to right when ON */
+/* Colors */
+.gateway-dot.online,
+.controller-dot.online {
+    background-color: #28a745; /* green */
 }
 
-/* Gateway colors */
-.gateway-toggle.online {
-    background-color: #28a745;
-}
-.gateway-toggle.offline {
-    background-color: #dc3545;
+.gateway-dot.offline,
+.controller-dot.offline {
+    background-color: #dc3545; /* red */
 }
 
-/* Controller colors */
-.controller-toggle.online {
-    background-color: #28a745;
-}
-.controller-toggle.offline {
-    background-color: #dc3545;
-}
-
-/* Optional: blinking dot animation */
-.blinking {
+/* Blinking */
+/* .blinking {
     animation: blink 1.5s infinite;
-}
+} */
 
-@keyframes blink {
-    0% { opacity: 1; }
+/* @keyframes blink {
+    0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
-    100% { opacity: 1; }
-}
+} */
+
 
 </style>
 
@@ -303,19 +283,22 @@
                                 </td>
 
                                  
-                                       <!-- Gateway Status -->
-                                            <td>
-                                                <div class="status-toggle gateway-toggle {{ $gatewayStatus }}">
-                                                    <div class="status-circle {{ $gatewayStatus == 'online' ? 'blinking' : '' }}"></div>
-                                                </div>
-                                            </td>
+                                     <!-- Gateway Status -->
+                                    <!-- Gateway Status -->
+                                    <!-- Gateway Status -->
+                                   <!-- Gateway Status -->
+                                        <td class="status-cell">
+                                            <div class="status-dot gateway-dot {{ $gatewayStatus }}"></div>
+                                        </td>
 
-                                            <!-- Controller Status -->
-                                            <td>
-                                                <div class="status-toggle controller-toggle {{ $controllerStatus }}">
-                                                    <div class="status-circle {{ $controllerStatus == 'online' ? 'blinking' : '' }}"></div>
-                                                </div>
-                                            </td>
+                                        <!-- Controller Status -->
+                                        <td class="status-cell">
+                                            <div class="status-dot controller-dot {{ $controllerStatus }}"></div>
+                                        </td>
+
+
+
+
 
 
                                 <td>{{ $sitejsonData['generator'] ?? 'N/A' }}</td>
