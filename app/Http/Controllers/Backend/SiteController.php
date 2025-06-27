@@ -694,8 +694,8 @@ class SiteController extends Controller
             $userEmail = $user->email;
 
             $siteData = $user->hasRole('superadmin')
-                ? Site::select(['id', 'site_name', 'email', 'data', 'device_id', 'clusterID'])->get()
-                : Site::where('email', $userEmail)->select(['id', 'site_name', 'email', 'data', 'device_id', 'clusterID'])->get();
+                ? Site::select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get()
+                : Site::where('email', $userEmail)->select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get();
 
             $mdValues = $this->extractMdFields(
                 $siteData->pluck('data')->map(fn($data) => json_decode($data, true))->toArray()
