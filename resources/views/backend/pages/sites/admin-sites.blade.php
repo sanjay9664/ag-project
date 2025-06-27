@@ -253,8 +253,8 @@
                         <tr>
                             <th>S.No</th>
                             <th>Site Name</th>
-                            <th>Gateway Status</th>
-                            <th>Controller Status</th>
+                            <th>RMS Status</th>
+                            <th>DG Controller</th>
                             <th>Bank Name</th>
                             <th>Location</th>
                             <th>Id</th>
