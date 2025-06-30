@@ -13,13 +13,12 @@
 </head>
 
 <style>
-/* Custom Navbar Styles */
+/* Navbar styles remain unchanged */
 .custom-navbar {
     background: linear-gradient(135deg, #002E6E 0%, #004a8f 100%) !important;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     padding: 0.5rem 1rem;
 }
-
 .navbar-brand {
     display: flex;
     align-items: center;
@@ -27,10 +26,7 @@
     font-size: 1.25rem;
     letter-spacing: 0.5px;
 }
-
-.navbar-brand img {
-    margin-right: 12px;
-}
+.navbar-brand img { margin-right: 12px; }
 
 .refresh-time-box {
     background: rgba(255, 255, 255, 0.15);
@@ -40,12 +36,7 @@
     font-size: 0.85rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
-
-.nav-buttons {
-    display: flex;
-    align-items: center;
-}
-
+.nav-buttons { display: flex; align-items: center; }
 .nav-buttons .btn {
     margin-left: 8px;
     font-size: 0.85rem;
@@ -53,105 +44,173 @@
     border-radius: 4px;
     transition: all 0.3s ease;
 }
-
-.nav-buttons .btn:hover {
-    transform: translateY(-1px);
-}
-
+.nav-buttons .btn:hover { transform: translateY(-1px); }
 .btn-refresh {
     background-color: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.3);
 }
-
 .btn-logout {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.2);
 }
-
-.ONLINE {
-    background-color: green;
-}
-
-.OFFLINE {
-    background-color: red;
-}
-
 @media (max-width: 991.98px) {
-    .navbar-brand {
-        font-size: 1rem;
-    }
-
+    .navbar-brand { font-size: 1rem; }
     .refresh-time-box {
         margin-right: 5px;
         padding: 3px 6px;
         font-size: 0.75rem;
     }
-
     .nav-buttons .btn {
         font-size: 0.75rem;
         padding: 3px 8px;
     }
 }
 
-/* Make logo white */
-.logo-white {
-    filter: brightness(0) invert(1);
-
+/* Layout full width */
+.container {
+    max-width: 100% !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+.dashboard-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 10px;
 }
 
-/* If you need to change the hover state too */
-.logo-white:hover {
-    opacity: 0.8;
+/* Table settings */
+.table-responsive {
+    overflow-x: hidden;
+    width: 100%;
+}
+.table {
+    table-layout: fixed;
+    width: 100%;
+}
+.table th,
+.table td {
+    white-space: nowrap;
+    vertical-align: middle;
+    font-size: 15px;
+    padding: 5px 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;  
+    
 }
 
+/* Global text centering for table */
+
+
+/* Smart column widths */
+.table th:nth-child(1), .table td:nth-child(1) { width: 4%; text-align: center; }     /* S.No */
+.table th:nth-child(2), .table td:nth-child(2) { width: 13%; } /* Site Name */
+.table th:nth-child(3), .table td:nth-child(3) { width: 6%; text-align: center; }     /* RMS Status */
+.table th:nth-child(4), .table td:nth-child(4) { width: 6%; text-align: center; }     /* DG Controller */
+.table th:nth-child(5), .table td:nth-child(5) { width: 10%;text-align: center; }    /* Controller Type */
+.table th:nth-child(5), .table td:nth-child(5) { width: 10%;text-align: center; }    /* Controller Type */
+.table th:nth-child(6), .table td:nth-child(6) {
+    width: 7%;                 /* Shrink Bank Name */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+.table th:nth-child(7), .table td:nth-child(7) {
+    width: 7%;                 /* Shrink Location */
+    overflow: hidden;
+    text-overflow: ellipsis;
+     text-align: center;
+}
+.table th:nth-child(8), .table td:nth-child(8) {
+    width: 14%;                /* Expand ID column */
+    overflow: visible !important;
+    text-overflow: unset !important;
+    white-space: nowrap;
+    font-family: monospace;    /* Optional: clearer ID display */
+}   /* Id */
+.table th:nth-child(9), .table td:nth-child(9) { width: 8%; }     /* Fuel Level */
+.table th:nth-child(10), .table td:nth-child(10) { width: 10%;  text-align: center; }  /* Run Hours */
+.table th:nth-child(11), .table td:nth-child(11) { width: 12%;   text-align: center;}  /* Updated Date */
+.table th:nth-child(12), .table td:nth-child(12) { width: 8%; text-align: center; }  /* DG Status */
+
+/* Status dots */
 .status-cell {
-    width: 50px;
-    /* Narrow column */
     text-align: center;
     vertical-align: middle;
-    padding: 5px;
 }
-
 .status-dot {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     display: inline-block;
 }
-
-/* Colors */
-.gateway-dot.ONLINE,
-.controller-dot.ONLINE {
-    background-color: #28a745;
-    /* green */
+.gateway-dot.ONLINE, .controller-dot.ONLINE {
+    background-color: #28a745; 
 }
-
-.gateway-dot.OFFLINE,
-.controller-dot.OFFLINE {
-    background-color: #dc3545;
-    /* red */
+.gateway-dot.OFFLINE, .controller-dot.OFFLINE {
+    background-color: #dc3545; 
 }
 
 .status-dot.loading {
-    width: 14px;
-    height: 14px;
     border: 2px solid #ccc;
     border-top: 2px solid #007bff;
-    border-radius: 50%;
     animation: spin 1s linear infinite;
-    display: inline-block;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
+/* Fuel UI */
+.fuel-container { position: relative; width: 100%; }
+.fuel-indicator {
+    display: flex;
+    align-items: center;
+    height: 18px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    
+}
+.fuel-level {
+    height: 100%;
+    /* background-color: #007bff; */
+}
+.low-fuel .fuel-level {
+    /* background-color: #dc3545 !important; */
+}
+.fuel-percentage {
+    padding-left: 5px;
+    font-size: 0.75rem;
+}
+.fueldata {
+    color: red;
+    font-weight: bold;
+    font-size: 0.75rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
 
-    100% {
-        transform: rotate(360deg);
-    }
+
+/* DG Status */
+.status-running {
+    color: green;
+    font-weight: bold;
+}
+.status-stopped {
+    color: red;
+    font-weight: bold;
+}
+.blinking {
+    animation: blink 1s step-start infinite;
+}
+@keyframes blink {
+    50% { opacity: 0; }
 }
 </style>
+
 
 <body>
     <!-- Navbar -->
@@ -253,8 +312,9 @@
                         <tr>
                             <th>S.No</th>
                             <th>Site Name</th>
-                            <th>Gateway Status</th>
-                            <th>Controller Status</th>
+                            <th>RMS Status</th>
+                            <th>DG Controller</th>
+                            <th>Controller Type</th>
                             <th>Bank Name</th>
                             <th>Location</th>
                             <th>Id</th>
@@ -302,12 +362,16 @@
                                     </a>
                                 </td>
 
-                                <td class="status-cell">
-                                    <div class="status-dot controller-dot"></div>
-                                </td>
+                               <td class="status-cell">      
+    <div class="status-dot controller-dot {{ $controllerStatus === 'online' ? 'ONLINE' : 'OFFLINE' }}"></div>
+</td>
+
 
                                 <td class="status-cell">
                                     <div class="status-dot gateway-dot"></div>
+                                </td>
+                                <td >
+                                    {{ $sitejsonData['asset_name'] ?? 'N/A' }}
                                 </td>
 
                                 <td>{{ $sitejsonData['generator'] ?? 'N/A' }}</td>
@@ -390,39 +454,42 @@
             <td class="last-updated">
                 {{$site->updatedAt}}
             </td>
+<td>
+    @php
+    $addValuerunstatus = 0;
 
-            <td>
-                @php
-                $addValuerunstatus = 0;
+    // If controller is online, try to calculate DG status
+    if ($controllerStatus === 'online') {
+        if (isset($sitejsonData['electric_parameters']['voltage_l_l']['a'])) {
+            $keya = $sitejsonData['electric_parameters']['voltage_l_l']['a']['add'] ?? null;
+            $moduleId = $sitejsonData['electric_parameters']['voltage_l_l']['a']['md'] ?? null;
 
-                // If controller is online, try to calculate DG status
-                if ($controllerStatus === 'online') {
-                if (isset($sitejsonData['electric_parameters']['voltage_l_l']['a'])) {
-                $keya = $sitejsonData['electric_parameters']['voltage_l_l']['a']['add'] ?? null;
-                $moduleId = $sitejsonData['electric_parameters']['voltage_l_l']['a']['md'] ?? null;
-
-                foreach ($eventData as $event) {
+            foreach ($eventData as $event) {
                 $eventArraya = $event->getArrayCopy();
                 if ($moduleId && isset($eventArraya['module_id']) && $eventArraya['module_id'] == $moduleId) {
-                if ($keya && array_key_exists($keya, $eventArraya)) {
-                $addValuerunstatus = $eventArraya[$keya];
+                    if ($keya && array_key_exists($keya, $eventArraya)) {
+                        $addValuerunstatus = $eventArraya[$keya];
+                    }
+                    break;
                 }
-                break;
-                }
-                }
-                }
-                }
-                @endphp
+            }
+        }
+    }
+    @endphp
 
-                {{-- Show status based on controller status --}}
-                @if($controllerStatus === 'offline')
-                <strong style="font-size: 1.3rem; font-weight: bold;">—</strong>
-                @elseif($addValuerunstatus > 0)
-                <span class="status-running blinking">ON</span>
-                @else
-                <span class="status-stopped">OFF</span>
-                @endif
-            </td>
+    {{-- Show status based on controller status --}}
+    @if($controllerStatus === 'offline')
+        <strong style="font-size: 1.3rem; font-weight: bold;">—</strong>
+    @elseif($addValuerunstatus > 0)
+        <span class="status-running blinking">ON</span>
+    @else
+        <span class="status-stopped">OFF</span>
+    @endif
+</td>
+
+
+
+
 
             </tr>
             @php $i=$i+1; @endphp

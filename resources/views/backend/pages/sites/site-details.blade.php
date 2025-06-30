@@ -326,7 +326,7 @@ body {
                                     <strong>S/N:</strong> {{ $sitejsonData->serial_number }}
                                 </td>
                                 <td data-label="Model">
-                                    <strong>Model:</strong> {{ $sitejsonData->model }}
+                                    <strong>Controller-type:</strong> {{ $sitejsonData->asset_name }}
                                 </td>
                                 <td data-label="Brand">
                                     <strong>Brand:</strong> {{ $sitejsonData->brand }}
@@ -683,9 +683,9 @@ body {
                                                         <td data-label="S/N">
                                                             <strong>S/N:</strong> {{ $sitejsonData->serial_number }}
                                                         </td>
-                                                        <td data-label="Model">
-                                                            <strong>Model:</strong> {{ $sitejsonData->model }}
-                                                        </td>
+                                                         <td data-label="Model">
+                                                           <strong>Controller-type:</strong> {{ $sitejsonData->asset_name }}
+                                                          </td>
                                                         <td data-label="Brand">
                                                             <strong>Brand:</strong> {{ $sitejsonData->brand }}
                                                         </td>
