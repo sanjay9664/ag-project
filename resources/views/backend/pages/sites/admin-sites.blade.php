@@ -314,7 +314,10 @@
                             <th>Site Name</th>
                             <th>RMS Status</th>
                             <th>DG Controller</th>
+<<<<<<< HEAD
                             <th>Controller Type</th>
+=======
+>>>>>>> 1f9a07821e5ee55dbaa98a7d16c48c322ff0a30e
                             <th>Bank Name</th>
                             <th>Location</th>
                             <th>Id</th>
