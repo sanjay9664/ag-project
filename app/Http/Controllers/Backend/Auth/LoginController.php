@@ -145,10 +145,10 @@ class LoginController extends Controller
             $user = Auth::guard('admin')->user();
 
             if ($user->hasRole('superadmin')) {
-                return redirect()->route('admin.sites');
+                return redirect()->route('admin.admin.sites');
             } else {
                 // return redirect('admin/admin-sites');
-                return redirect()->route('admin.sites');
+                return redirect()->route('admin.admin.sites');
             }
         }
 
