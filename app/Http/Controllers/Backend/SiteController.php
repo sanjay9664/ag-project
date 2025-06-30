@@ -695,11 +695,7 @@ class SiteController extends Controller
 
             $siteData = $user->hasRole('superadmin')
                 ? Site::select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get()
-<<<<<<< HEAD
-                : Site::where('email', $userEmail)->select(['id', 'site_name','slug', 'email', 'data', 'device_id', 'clusterID'])->get();
-=======
                 : Site::where('email', $userEmail)->select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get();
->>>>>>> 1f9a07821e5ee55dbaa98a7d16c48c322ff0a30e
 
             $mdValues = $this->extractMdFields(
                 $siteData->pluck('data')->map(fn($data) => json_decode($data, true))->toArray()
@@ -762,8 +758,14 @@ class SiteController extends Controller
                 $matchingEvent = $eventMap[$deviceId] ?? null;
 
                 $updatedAt = 'N/A';
-                if ($matchingEvent && isset($matchingEvent['updatedAt'])) {
-                    $updatedAt = $matchingEvent['updatedAt']->toDateTime()
+
+                if (
+                    $matchingEvent &&
+                    isset($matchingEvent['updatedAt']) &&
+                    $matchingEvent['updatedAt'] instanceof \MongoDB\BSON\UTCDateTime
+                ) {
+                    $updatedAt = $matchingEvent['updatedAt']
+                        ->toDateTime()
                         ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
                         ->format('d-m-Y H:i:s');
                 }
@@ -774,6 +776,7 @@ class SiteController extends Controller
             $sitejsonData = json_decode($siteData->first()->data ?? '{}', true);
 
             Log::info('Site reload completed in ' . round(microtime(true) - $start, 3) . ' seconds');
+       
             return view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'));
         }
     }

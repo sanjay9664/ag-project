@@ -68,6 +68,14 @@
     border-color: rgba(255, 255, 255, 0.2);
 }
 
+.ONLINE {
+    background-color: green;
+}
+
+.OFFLINE {
+    background-color: red;
+}
+
 @media (max-width: 991.98px) {
     .navbar-brand {
         font-size: 1rem;
@@ -94,6 +102,54 @@
 /* If you need to change the hover state too */
 .logo-white:hover {
     opacity: 0.8;
+}
+
+.status-cell {
+    width: 50px;
+    /* Narrow column */
+    text-align: center;
+    vertical-align: middle;
+    padding: 5px;
+}
+
+.status-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Colors */
+.gateway-dot.ONLINE,
+.controller-dot.ONLINE {
+    background-color: #28a745;
+    /* green */
+}
+
+.gateway-dot.OFFLINE,
+.controller-dot.OFFLINE {
+    background-color: #dc3545;
+    /* red */
+}
+
+.status-dot.loading {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ccc;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>
 
@@ -148,6 +204,7 @@
         </div>
     </nav>
 
+
     <!-- Loader (Initially Hidden) -->
     <div id="loader" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
     z-index: 9999;">
@@ -196,6 +253,8 @@
                         <tr>
                             <th>S.No</th>
                             <th>Site Name</th>
+                            <th>RMS Status</th>
+                            <th>DG Controller</th>
                             <th>Bank Name</th>
                             <th>Location</th>
                             <th>Id</th>
@@ -205,6 +264,7 @@
                             <th>DG Status</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @php $i=1; @endphp
                         @foreach ($siteData as $site)
@@ -227,7 +287,12 @@
                             }
                             @endphp
 
-                            <tr data-site-id="{{ $site->id }}">
+                            @php
+                            $gatewayStatus = $isRecent ? 'online' : 'offline';
+                            $controllerStatus = $isRecent ? 'online' : 'offline';
+                            @endphp
+
+                            <tr class="site-row" data-site-id="{{ $site->id }}">
                                 <td>{{ $i }}</td>
                                 <td style="color: {{ $isRecent ? 'green' : 'red' }};">
                                     <a href="{{ url('admin/sites/'.$site->slug . '?role=admin') }}"
@@ -237,15 +302,30 @@
                                     </a>
                                 </td>
 
+                                <td class="status-cell">
+                                    <div class="status-dot controller-dot"></div>
+                                </td>
+
+                                <td class="status-cell">
+                                    <div class="status-dot gateway-dot"></div>
+                                </td>
+
                                 <td>{{ $sitejsonData['generator'] ?? 'N/A' }}</td>
                                 <td>{{ $sitejsonData['group'] ?? 'N/A' }}</td>
                                 <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
                                 <td>
                                     @php
-                                    $capacity = $sitejsonData[' capacity'] ?? 0;
-                                    $fuelMd=$sitejsonData['parameters']['fuel']['md'] ?? null;
-                                    $fuelKey=$sitejsonData['parameters']['fuel']['add'] ?? null; $addValue='_' ; foreach
-                                    ($eventData as $event) { $eventArray=$event->getArrayCopy();
+                                    $capacity = $sitejsonData['capacity'] ?? 0;
+
+                                    $fuelMd = $sitejsonData['parameters']['fuel']['md'] ?? null;
+                                    $fuelKey = $sitejsonData['parameters']['fuel']['add'] ?? null;
+
+                                    $addValue = 0;
+
+                                    foreach ($eventData as $event) {
+                                    $eventArray = $event instanceof \ArrayObject ? $event->getArrayCopy() : (array)
+                                    $event;
+
                                     if ($fuelMd && isset($eventArray['module_id']) && $eventArray['module_id'] ==
                                     $fuelMd) {
                                     if ($fuelKey && array_key_exists($fuelKey, $eventArray)) {
@@ -255,16 +335,16 @@
                                     }
                                     }
 
-                                    $percentage = is_numeric($addValue) ? $addValue : 0;
+                                    $percentage = is_numeric($addValue) ? floatval($addValue) : 0;
                                     $percentageDecimal = $percentage / 100;
                                     $totalFuelLiters = $capacity * $percentageDecimal;
+
                                     $fuelClass = $percentage <= 20 ? 'low-fuel' : 'normal-fuel' ;
                                         $lowFuelText=$percentage <=20 ? 'Low Fuel' : '' ; @endphp <div
                                         class="fuel-container" style="position: relative; width: 100%;">
                                         <div class="fuel-indicator {{ $fuelClass }}"
                                             style="display: flex; align-items: center;">
-                                            <div class="fuel-level">
-                                            </div>
+                                            <div class="fuel-level" style="width: {{ $percentage }}%;"></div>
                                             <span class="fuel-percentage">{{ $percentage }}%</span>
                                         </div>
 
@@ -273,6 +353,7 @@
                                         @endif
             </div>
             </td>
+
 
             <td class="running-hours">
                 @php
@@ -311,10 +392,35 @@
             </td>
 
             <td>
-                @if($site->dg_status == 'ONLINE')
-                <span class="status-running blinking">ONLINE</span>
+                @php
+                $addValuerunstatus = 0;
+
+                // If controller is online, try to calculate DG status
+                if ($controllerStatus === 'online') {
+                if (isset($sitejsonData['electric_parameters']['voltage_l_l']['a'])) {
+                $keya = $sitejsonData['electric_parameters']['voltage_l_l']['a']['add'] ?? null;
+                $moduleId = $sitejsonData['electric_parameters']['voltage_l_l']['a']['md'] ?? null;
+
+                foreach ($eventData as $event) {
+                $eventArraya = $event->getArrayCopy();
+                if ($moduleId && isset($eventArraya['module_id']) && $eventArraya['module_id'] == $moduleId) {
+                if ($keya && array_key_exists($keya, $eventArraya)) {
+                $addValuerunstatus = $eventArraya[$keya];
+                }
+                break;
+                }
+                }
+                }
+                }
+                @endphp
+
+                {{-- Show status based on controller status --}}
+                @if($controllerStatus === 'offline')
+                <strong style="font-size: 1.3rem; font-weight: bold;">—</strong>
+                @elseif($addValuerunstatus > 0)
+                <span class="status-running blinking">ON</span>
                 @else
-                <span class="status-stopped">OFFLINE</span>
+                <span class="status-stopped">OFF</span>
                 @endif
             </td>
 
@@ -385,6 +491,58 @@
                 }
             });
         });
+    });
+    </script>
+
+    <script>
+    $(document).ready(function() {
+        let siteIds = [];
+
+        $('.site-row').each(function() {
+            siteIds.push($(this).data('site-id'));
+
+            // Show loader before AJAX
+            $(this).find('.gateway-dot, .controller-dot')
+                .removeClass('ONLINE OFFLINE')
+                .addClass('loading');
+        });
+
+        if (siteIds.length > 0) {
+            $.ajax({
+                url: '{{ route("admin.site.statuses") }}',
+                method: 'POST',
+                data: {
+                    site_ids: siteIds,
+                    _token: '{{ csrf_token() }}'
+                },
+                beforeSend: function() {
+                    // (Already handled above per site-row)
+                },
+                success: function(data) {
+                    $.each(data, function(siteId, statuses) {
+                        let row = $('.site-row[data-site-id="' + siteId + '"]');
+
+                        let dgStatus = (statuses.dg_status || '').replace(/['"]+/g, '');
+                        let ctrlStatus = (statuses.controller_status || '').replace(
+                            /['"]+/g, '');
+
+                        row.find('.gateway-dot')
+                            .removeClass('loading ONLINE OFFLINE')
+                            .addClass(dgStatus);
+
+                        row.find('.controller-dot')
+                            .removeClass('loading ONLINE OFFLINE')
+                            .addClass(ctrlStatus);
+                    });
+                },
+                error: function() {
+                    // fallback: mark all as offline on error
+                    $('.gateway-dot, .controller-dot')
+                        .removeClass('loading ONLINE')
+                        .addClass('OFFLINE');
+                }
+            });
+        }
     });
     </script>
 
