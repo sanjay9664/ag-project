@@ -338,14 +338,12 @@ body {
 
                             <tr>
                                 <?php
-                                    // Get increased running hours from DB
                                     $increased_running_hours = DB::table('running_hours')->where('site_id', $siteData->id)->first();
                                     $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
 
                                     $addValue = 0;
                                     $key = $sitejsonData->running_hours->add ?? null;
 
-                                    // Extract addValue from eventData
                                     foreach ($eventData as $event) {
                                         $eventArray = $event->getArrayCopy();
                                         if (
@@ -362,7 +360,6 @@ body {
                                         }
                                     }
 
-                                    // Calculate increased value per minute
                                     $increaseMinutes = $sitejsonData->running_hours->increase_minutes ?? null;
                                     $inc_addValue = $addValue;
 
@@ -370,10 +367,8 @@ body {
                                         $inc_addValue /= (float)$increaseMinutes;
                                     }
 
-                                    // Final total running hours
                                     $inc_addValueFormatted = $inc_addValue + $increaseRunningHours;
 
-                                    // Convert to hours and minutes
                                     $hours = floor($inc_addValueFormatted);
                                     $minutes = round(($inc_addValueFormatted - $hours) * 60);
                                 ?>
