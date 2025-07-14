@@ -106,7 +106,7 @@ input {
                             <div class="container mt-2 ml-5 d-flex">
                                 <div class="col-md-3">
                                     <div class="card shadow-lg g-5"
-                                        style="width: 100%; height: 915px; overflow: hidden;">
+                                        style="width: 100%; height: 1480px; overflow: hidden;">
                                         <div class="card-header bg-light text-start text-center">
                                             <!-- site Name -->
                                             <div class="d-flex justify-content-between align-items-center mb-2"
@@ -255,6 +255,89 @@ input {
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            <!-- Start Card -->
+                                            <div class="card mb-2 shadow-lg border-0;">
+                                                <div class="card-body text-center">
+                                                    <div class="text-secondary fw-bold">Start</div>
+                                                    <div class="d-flex">
+                                                        <input type="text" name="start_md" class="form-control ms-2"
+                                                         value="{{ old('start_md', $siteData['start_md']['md'] ?? '') }}"
+                                                            style="width: 50%;" placeholder="MD">
+                                                        <input type="text" name="start_add"
+                                                            class="form-control ms-2" style="width: 50%;"
+                                                            value="{{ old('start_md', $siteData['start_md']['add'] ?? '') }}"
+                                                            placeholder="ADD">
+                                                    </div>
+                                                    <div class="d-flex">
+                                                        <input type="text" name="start_arg"
+                                                            class="form-control ms-2" 
+                                                            value="{{ old('start_md', $siteData['start_md']['argument'] ?? '') }}"
+                                                            placeholder="ARGUMENT">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             <div class="card mb-2 shadow-lg border-0;">
+                                                <div class="card-body text-center">
+                                                    <div class="text-secondary fw-bold">Stop</div>
+                                                    <div class="d-flex">
+                                                        <input type="text" name="stop_md" class="form-control ms-2"
+                                                         value="{{ old('stop_md', $siteData['stop_md']['md'] ?? '') }}"
+                                                            style="width: 50%;" placeholder="MD">
+                                                        <input type="text" name="stop_add"
+                                                            class="form-control ms-2" style="width: 50%;"
+                                                            value="{{ old('stop_md', $siteData['stop_md']['add'] ?? '') }}"
+                                                            placeholder="ADD">
+                                                    </div>
+                                                    <div class="d-flex">
+                                                        <input type="text" name="stop_arg"
+                                                            class="form-control ms-2" 
+                                                            value="{{ old('stop_md', $siteData['stop_md']['argument'] ?? '') }}"
+                                                            placeholder="ARGUMENT">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             <div class="card mb-2 shadow-lg border-0;">
+                                                <div class="card-body text-center">
+                                                    <div class="text-secondary fw-bold">Auto</div>
+                                                    <div class="d-flex">
+                                                        <input type="text" name="auto_md" class="form-control ms-2"
+                                                        value="{{ old('auto_md', $siteData['stop_md']['md'] ?? '') }}"
+                                                            style="width: 50%;" placeholder="MD">
+                                                        <input type="text" name="auto_add"
+                                                            class="form-control ms-2" style="width: 50%;"
+                                                            value="{{ old('auto_md', $siteData['stop_md']['add'] ?? '') }}"
+                                                            placeholder="ADD">
+                                                    </div>
+                                                    <div class="d-flex">
+                                                        <input type="text" name="auto_arg"
+                                                            class="form-control ms-2" 
+                                                            value="{{ old('stop_md', $siteData['stop_md']['argument'] ?? '') }}"
+                                                            placeholder="ARGUMENT">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             <div class="card mb-2 shadow-lg border-0;">
+                                                <div class="card-body text-center">
+                                                    <div class="text-secondary fw-bold">Manual</div>
+                                                    <div class="d-flex">
+                                                        <input type="text" name="manual_md" class="form-control ms-2"
+                                                        value="{{ old('manual_md', $siteData['manual_md']['md'] ?? '') }}"
+                                                            style="width: 50%;" placeholder="MD">
+                                                        <input type="text" name="manual_add"
+                                                            class="form-control ms-2" style="width: 50%;"
+                                                            value="{{ old('manual_md', $siteData['manual_md']['md'] ?? '') }}"
+                                                            placeholder="ARGUMENT">
+                                                    </div>
+                                                    <div class="d-flex">
+                                                        <input type="text" name="manual_arg1"
+                                                            class="form-control ms-2" 
+                                                            value="{{ old('manual_md', $siteData['manual_md']['argument'] ?? '') }}"
+                                                            placeholder="ADD">
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>

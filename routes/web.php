@@ -72,5 +72,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     // Fetch DG Status
     Route::post('/site/statuses', [SiteController::class, 'fetchStatuses'])->name('site.statuses');
 
+    //For Start,Stop,Manual
+    Route::post('/start-process', [SiteController::class, 'startProcess']);
+
     Route::delete('/delete-device-events/{deviceId}', [SiteController::class, 'apiDeleteDevice']);
 })->middleware('auth:admin');

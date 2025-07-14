@@ -110,6 +110,26 @@ class SiteController extends Controller
                 'md' => $request->input('total_kwh_md'),
                 'add' => $request->input('total_kwh_add'),
             ],
+            'start_md' => [
+                'md' => $request->input('start_md'),
+                'add' => $request->input('start_add'),
+                'argument' => $request->input('start_arg'),
+            ],
+            'stop_md' => [
+                'md' => $request->input('stop_md'),
+                'add' => $request->input('stop_add'),
+                'argument' => $request->input('stop_arg'),
+            ],
+             'auto_md' => [
+                'md' => $request->input('auto_md'),
+                'add' => $request->input('auto_add'),
+                'argument' => $request->input('auto_arg'),
+            ],
+             'manual_md' => [
+                'md' => $request->input('manual_md'),
+                'add' => $request->input('manual_add'),
+                'argument' => $request->input('manual_arg1'),
+            ],
             'parameters' => [
                 'coolant_temperature' => [
                     'md' => $request->input('coolant_temperature_md'),
@@ -322,6 +342,26 @@ class SiteController extends Controller
             'total_kwh' => [
                 'md' => $request->input('total_kwh_md'),
                 'add' => $request->input('total_kwh_add'),
+            ],
+            'start_md' => [
+                'md' => $request->input('start_md'),
+                'add' => $request->input('start_add'),
+                'argument' => $request->input('start_arg'),
+            ],
+            'stop_md' => [
+                'md' => $request->input('stop_md'),
+                'add' => $request->input('stop_add'),
+                'argument' => $request->input('stop_arg'),
+            ],
+             'auto_md' => [
+                'md' => $request->input('auto_md'),
+                'add' => $request->input('auto_add'),
+                'argument' => $request->input('auto_arg'),
+            ],
+             'manual_md' => [
+                'md' => $request->input('manual_md'),
+                'add' => $request->input('manual_add'),
+                'argument' => $request->input('manual_arg1'),
             ],
             'parameters' => [
                 'coolant_temperature' => [
@@ -1030,4 +1070,32 @@ class SiteController extends Controller
         $data = DB::table('device_events')->get();
         return view('device-update', compact('data'));
     }
+
+    public function startProcess(Request $request)
+    {
+        $data = $request->only(['argValue', 'moduleId', 'cmdField', 'cmdArg', 'actionType']);
+        $action = $data['actionType'] ?? 'unknown';
+
+        try {
+            $apiUrl = 'http://app.sochiot.com:8082/api/config-engine/device/command/push/remote';
+
+            $response = Http::post($apiUrl, [
+                'argValue' => $data['argValue'],
+                'moduleId' => $data['moduleId'],
+                'cmdField' => $data['cmdField'],
+                'cmdArg' => $data['cmdArg'],
+            ]);
+
+            return response()->json([
+                'message' => ucfirst($action) . ' process completed successfully.',
+                'external_response' => $response->json(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => ucfirst($action) . ' process failed.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }
