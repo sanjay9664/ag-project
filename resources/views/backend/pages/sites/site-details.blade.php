@@ -886,50 +886,57 @@
             return;
         }
 
-        let confirmationText = `Are you sure you want to ${actionType.toUpperCase()} this genset?`;
+        const ajaxCall = () => {
+            $.ajax({
+                url: '/admin/start-process',
+                method: 'POST',
+                data: {
+                    argValue,
+                    moduleId,
+                    cmdField,
+                    cmdArg,
+                    actionType,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: `${actionType.charAt(0).toUpperCase() + actionType.slice(1)}ed!`,
+                        text: response.message
+                    });
+                    console.log('External Response:', response.external_response);
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.'
+                    });
+                    console.error(xhr.responseText);
+                }
+            });
+        };
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: confirmationText,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: `Yes, ${actionType.charAt(0).toUpperCase() + actionType.slice(1)}`,
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/admin/start-process',
-                    method: 'POST',
-                    data: {
-                        argValue,
-                        moduleId,
-                        cmdField,
-                        cmdArg,
-                        actionType,
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: `${actionType.charAt(0).toUpperCase() + actionType.slice(1)}ed!`,
-                            text: response.message
-                        });
-                        console.log('External Response:', response.external_response);
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Something went wrong. Please try again.'
-                        });
-                        console.error(xhr.responseText);
-                    }
-                });
-            }
-        });
+        // Show confirmation only for 'start' button
+        if (actionType === 'start') {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Are you sure you want to START this genset?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Start',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    ajaxCall();
+                }
+            });
+        } else {
+            // Directly call AJAX for other actions
+            ajaxCall();
+        }
     });
     </script>
-
 </body>
 
 </html>
