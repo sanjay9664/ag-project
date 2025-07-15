@@ -16,7 +16,44 @@
     <!-- PDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
+<style>
+    .pdf-wrapper {
+        width: 1123px; /* A3 landscape */
+        padding: 20px;
+        background: white;
+        color: black;
+        font-size: 14px;
+        overflow-x: auto;
+        word-break: break-word;
+    }
 
+    .pdf-wrapper h3 {
+        margin-bottom: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .pdf-wrapper table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        page-break-inside: auto;
+    }
+
+    .pdf-wrapper tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    .pdf-wrapper th, .pdf-wrapper td {
+        border: 1px solid #000;
+        padding: 4px;
+        word-wrap: break-word;
+        font-size: 12px;
+        text-align: left;
+    }
+</style>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
@@ -329,7 +366,66 @@
     }
 
     // PDF Download Functionality
- document.getElementById('downloadPdf').addEventListener('click', function () {
+//  document.getElementById('downloadPdf').addEventListener('click', function () {
+//     document.getElementById('loader').style.display = 'block';
+
+//     const originalTable = document.getElementById('siteTable');
+//     const clonedTable = originalTable.cloneNode(true);
+
+//     $(clonedTable).find('tr').each(function () {
+//         if ($(this).css('display') === 'none') {
+//             $(this).remove();
+//         }
+//     });
+
+//     const wrapper = document.createElement('div');
+//     wrapper.classList.add('pdf-wrapper');
+
+//     const now = new Date();
+//     const formattedDateTime = now.toLocaleString('en-IN', {
+//         day: '2-digit',
+//         month: 'short',
+//         year: 'numeric',
+//         hour: '2-digit',
+//         minute: '2-digit',
+//         hour12: true
+//     });
+
+//     const heading = document.createElement('h3');
+//     heading.innerText = `DGMS Site Overview Report\nGenerated on: ${formattedDateTime}`;
+//     wrapper.appendChild(heading);
+//     wrapper.appendChild(clonedTable);
+
+//     const opt = {
+//         margin: 10,
+//         filename: 'DGMS_Site_Overview_' + now.toISOString().slice(0, 10) + '.pdf',
+//         image: { type: 'jpeg', quality: 0.98 },
+//         html2canvas: {
+//             scale: 2,
+//             scrollX: 0,
+//             scrollY: 0,
+//             windowWidth: wrapper.scrollWidth,
+//             windowHeight: wrapper.scrollHeight,
+//             useCORS: true
+//         },
+//         jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
+//     };
+
+//     html2pdf()
+//         .from(wrapper)
+//         .set(opt)
+//         .toPdf()
+//         .get('pdf')
+//         .then(function (pdf) {
+//             document.getElementById('loader').style.display = 'none';
+//             pdf.save(opt.filename);
+//         })
+//         .catch(function (error) {
+//             document.getElementById('loader').style.display = 'none';
+//             alert('PDF generation failed: ' + error.message);
+//         });
+// });
+document.getElementById('downloadPdf').addEventListener('click', function () {
     document.getElementById('loader').style.display = 'block';
 
     const originalTable = document.getElementById('siteTable');
@@ -358,35 +454,39 @@
     heading.innerText = `DGMS Site Overview Report\nGenerated on: ${formattedDateTime}`;
     wrapper.appendChild(heading);
     wrapper.appendChild(clonedTable);
+    document.body.appendChild(wrapper); // ⬅️ append to DOM for rendering
 
     const opt = {
         margin: 10,
         filename: 'DGMS_Site_Overview_' + now.toISOString().slice(0, 10) + '.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
-            scale: 2,
+            scale: 3,
             scrollX: 0,
             scrollY: 0,
-            windowWidth: wrapper.scrollWidth,
-            windowHeight: wrapper.scrollHeight,
             useCORS: true
         },
         jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
     };
 
-    html2pdf()
-        .from(wrapper)
-        .set(opt)
-        .toPdf()
-        .get('pdf')
-        .then(function (pdf) {
-            document.getElementById('loader').style.display = 'none';
-            pdf.save(opt.filename);
-        })
-        .catch(function (error) {
-            document.getElementById('loader').style.display = 'none';
-            alert('PDF generation failed: ' + error.message);
-        });
+    // Add slight delay before rendering
+    setTimeout(() => {
+        html2pdf()
+            .from(wrapper)
+            .set(opt)
+            .toPdf()
+            .get('pdf')
+            .then(function (pdf) {
+                document.getElementById('loader').style.display = 'none';
+                pdf.save(opt.filename);
+                document.body.removeChild(wrapper); // clean up
+            })
+            .catch(function (error) {
+                document.getElementById('loader').style.display = 'none';
+                alert('PDF generation failed: ' + error.message);
+                document.body.removeChild(wrapper); // clean up on error too
+            });
+    }, 300);
 });
 
     // Reset filters
