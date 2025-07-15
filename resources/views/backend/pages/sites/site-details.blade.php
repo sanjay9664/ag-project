@@ -127,12 +127,20 @@
                                             <form id="start-form" class="m-0 p-0">
                                                 <!-- Hidden Inputs -->
                                                 <input type="hidden" name="argValue" value="1">
+                                                @if(isset($sitejsonData->start_md->md))
                                                 <input type="hidden" name="moduleId"
                                                     value="{{ $sitejsonData->start_md->md }}">
+                                                @endif
+
+                                                @if(isset($sitejsonData->start_md->add))
                                                 <input type="hidden" name="cmdField"
                                                     value="{{ $sitejsonData->start_md->add }}">
+                                                @endif
+
+                                                @if(isset($sitejsonData->start_md->argument))
                                                 <input type="hidden" name="cmdArg"
                                                     value="{{ $sitejsonData->start_md->argument }}">
+                                                @endif
 
                                                 <!-- START Button -->
                                                 <button type="button" class="control-btn start-btn btn btn-success">
@@ -144,12 +152,20 @@
                                             <form id="stop-form" class="m-0 p-0">
                                                 <!-- Hidden Inputs -->
                                                 <input type="hidden" name="argValue" value="1">
+                                                @if(isset($sitejsonData->stop_md->md))
                                                 <input type="hidden" name="moduleId"
                                                     value="{{ $sitejsonData->stop_md->md }}">
+                                                @endif
+
+                                                @if(isset($sitejsonData->stop_md->add))
                                                 <input type="hidden" name="cmdField"
                                                     value="{{ $sitejsonData->stop_md->add }}">
+                                                @endif
+
+                                                @if(isset($sitejsonData->stop_md->argument))
                                                 <input type="hidden" name="cmdArg"
                                                     value="{{ $sitejsonData->stop_md->argument }}">
+                                                @endif
 
                                                 <!-- STOP Button -->
                                                 <button type="button" class="control-btn stop-btn btn btn-danger">
@@ -174,12 +190,21 @@
                                                 <form id="auto-form" class="m-0 p-0">
                                                     <!-- Hidden Inputs -->
                                                     <input type="hidden" name="argValue" value="1">
+
+                                                    @if(isset($sitejsonData->auto_md->md))
                                                     <input type="hidden" name="moduleId"
                                                         value="{{ $sitejsonData->auto_md->md }}">
+                                                    @endif
+
+                                                    @if(isset($sitejsonData->auto_md->add))
                                                     <input type="hidden" name="cmdField"
                                                         value="{{ $sitejsonData->auto_md->add }}">
+                                                    @endif
+
+                                                    @if(isset($sitejsonData->auto_md->argument))
                                                     <input type="hidden" name="cmdArg"
                                                         value="{{ $sitejsonData->auto_md->argument }}">
+                                                    @endif
 
                                                     <!-- AUTO Button -->
                                                     <button class="control-btn auto-btn active">
@@ -190,12 +215,21 @@
                                                 <form id="manual-form" class="m-0 p-0">
                                                     <!-- Hidden Inputs -->
                                                     <input type="hidden" name="argValue" value="1">
+
+                                                    @if(isset($sitejsonData->manual_md->md))
                                                     <input type="hidden" name="moduleId"
                                                         value="{{ $sitejsonData->manual_md->md }}">
+                                                    @endif
+
+                                                    @if(isset($sitejsonData->manual_md->add))
                                                     <input type="hidden" name="cmdField"
                                                         value="{{ $sitejsonData->manual_md->add }}">
+                                                    @endif
+
+                                                    @if(isset($sitejsonData->manual_md->argument))
                                                     <input type="hidden" name="cmdArg"
                                                         value="{{ $sitejsonData->manual_md->argument }}">
+                                                    @endif
 
                                                     <!-- MANUAL Button -->
                                                     <button class="control-btn manual-btn">
@@ -207,7 +241,7 @@
 
                                             <div class="mode-display-box">
                                                 <div class="mode-label">CURRENT MODE</div>
-                                                <div class="mode-value">AUTO</div>
+                                                <div class="mode-value" id="current-mode">AUTO</div>
                                             </div>
 
                                             <div class="status-box">
@@ -529,9 +563,20 @@
                                                                     <form id="start-form" class="m-0 p-0">
                                                                         <!-- Hidden Inputs -->
                                                                         <input type="hidden" name="argValue" value="1">
-                                                                        <input type="hidden" name="moduleId" value="{{ $sitejsonData->start_md->md }}">
-                                                                        <input type="hidden" name="cmdField" value="{{ $sitejsonData->start_md->add }}">
-                                                                        <input type="hidden" name="cmdArg" value="{{ $sitejsonData->start_md->argument }}">
+                                                                        @if(isset($sitejsonData->start_md->md))
+                                                                        <input type="hidden" name="moduleId"
+                                                                            value="{{ $sitejsonData->start_md->md }}">
+                                                                        @endif
+
+                                                                        @if(isset($sitejsonData->start_md->add))
+                                                                        <input type="hidden" name="cmdField"
+                                                                            value="{{ $sitejsonData->start_md->add }}">
+                                                                        @endif
+
+                                                                        @if(isset($sitejsonData->start_md->argument))
+                                                                        <input type="hidden" name="cmdArg"
+                                                                            value="{{ $sitejsonData->start_md->argument }}">
+                                                                        @endif
 
                                                                         <!-- START Button -->
                                                                         <button type="button" class="control-btn start-btn btn btn-success">
@@ -543,12 +588,20 @@
                                                                     <form id="stop-form" class="m-0 p-0">
                                                                         <!-- Hidden Inputs -->
                                                                         <input type="hidden" name="argValue" value="1">
+                                                                        @if(isset($sitejsonData->stop_md->md))
                                                                         <input type="hidden" name="moduleId"
                                                                             value="{{ $sitejsonData->stop_md->md }}">
+                                                                        @endif
+
+                                                                        @if(isset($sitejsonData->stop_md->add))
                                                                         <input type="hidden" name="cmdField"
                                                                             value="{{ $sitejsonData->stop_md->add }}">
+                                                                        @endif
+
+                                                                        @if(isset($sitejsonData->stop_md->argument))
                                                                         <input type="hidden" name="cmdArg"
                                                                             value="{{ $sitejsonData->stop_md->argument }}">
+                                                                        @endif
 
                                                                         <!-- STOP Button -->
                                                                         <button type="button" class="control-btn stop-btn btn btn-danger">
@@ -573,12 +626,18 @@
                                                                         <form id="auto-form" class="m-0 p-0">
                                                                             <!-- Hidden Inputs -->
                                                                             <input type="hidden" name="argValue" value="1">
-                                                                            <input type="hidden" name="moduleId"
-                                                                                value="{{ $sitejsonData->auto_md->md }}">
-                                                                            <input type="hidden" name="cmdField"
-                                                                                value="{{ $sitejsonData->auto_md->add }}">
-                                                                            <input type="hidden" name="cmdArg"
-                                                                                value="{{ $sitejsonData->auto_md->argument }}">
+
+                                                                            @if(isset($sitejsonData->auto_md->md))
+                                                                                <input type="hidden" name="moduleId" value="{{ $sitejsonData->auto_md->md }}">
+                                                                            @endif
+
+                                                                            @if(isset($sitejsonData->auto_md->add))
+                                                                                <input type="hidden" name="cmdField" value="{{ $sitejsonData->auto_md->add }}">
+                                                                            @endif
+
+                                                                            @if(isset($sitejsonData->auto_md->argument))
+                                                                                <input type="hidden" name="cmdArg" value="{{ $sitejsonData->auto_md->argument }}">
+                                                                            @endif
 
                                                                             <!-- AUTO Button -->
                                                                             <button class="control-btn auto-btn active">
@@ -589,12 +648,17 @@
                                                                         <form id="manual-form" class="m-0 p-0">
                                                                             <!-- Hidden Inputs -->
                                                                             <input type="hidden" name="argValue" value="1">
-                                                                            <input type="hidden" name="moduleId"
-                                                                                value="{{ $sitejsonData->manual_md->md }}">
-                                                                            <input type="hidden" name="cmdField"
-                                                                                value="{{ $sitejsonData->manual_md->add }}">
-                                                                            <input type="hidden" name="cmdArg"
-                                                                                value="{{ $sitejsonData->manual_md->argument }}">
+                                                                            @if(isset($sitejsonData->manual_md->md))
+                                                                                <input type="hidden" name="moduleId" value="{{ $sitejsonData->manual_md->md }}">
+                                                                            @endif
+
+                                                                            @if(isset($sitejsonData->manual_md->add))
+                                                                                <input type="hidden" name="cmdField" value="{{ $sitejsonData->manual_md->add }}">
+                                                                            @endif
+
+                                                                            @if(isset($sitejsonData->manual_md->argument))
+                                                                                <input type="hidden" name="cmdArg" value="{{ $sitejsonData->manual_md->argument }}">
+                                                                            @endif
 
                                                                             <!-- MANUAL Button -->
                                                                             <button class="control-btn manual-btn">
@@ -605,7 +669,7 @@
                                                                     
                                                                     <div class="mode-display-box">
                                                                         <div class="mode-label">CURRENT MODE</div>
-                                                                        <div class="mode-value">AUTO</div>
+                                                                        <div class="mode-value" id="current-mode">AUTO</div>
                                                                     </div>
                                                                     
                                                                     <div class="status-box">
@@ -870,7 +934,9 @@
         } else if ($(this).hasClass('manual-btn')) {
             actionType = 'manual';
         }
+  $('#current-mode').text(actionType.toUpperCase());
 
+   
         let argValue = form.find('input[name="argValue"]').val();
         let moduleId = form.find('input[name="moduleId"]').val();
         let cmdField = form.find('input[name="cmdField"]').val();
