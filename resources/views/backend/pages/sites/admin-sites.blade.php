@@ -17,43 +17,53 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <style>
-    .pdf-wrapper {
-        width: 1123px; /* A3 landscape */
-        padding: 20px;
-        background: white;
-        color: black;
-        font-size: 14px;
-        overflow-x: auto;
-        word-break: break-word;
-    }
+  .pdf-wrapper {
+    width: 1400px; /* Increased width for more content */
+    padding: 30px;
+    background: #fff;
+    color: #000;
+    font-size: 14px;
+    font-family: 'Arial', sans-serif;
+    overflow-x: auto;
+    word-break: break-word;
+  }
 
-    .pdf-wrapper h3 {
-        margin-bottom: 20px;
-        font-size: 18px;
-        font-weight: bold;
-        text-align: center;
-    }
+  .pdf-wrapper h3 {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    white-space: pre-line; /* Supports \n in innerText */
+  }
 
-    .pdf-wrapper table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-        page-break-inside: auto;
-    }
+  .pdf-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    page-break-inside: auto;
+    margin-top: 20px;
+  }
 
-    .pdf-wrapper tr {
-        page-break-inside: avoid;
-        page-break-after: auto;
-    }
+  .pdf-wrapper thead {
+    background: #f0f0f0;
+  }
 
-    .pdf-wrapper th, .pdf-wrapper td {
-        border: 1px solid #000;
-        padding: 4px;
-        word-wrap: break-word;
-        font-size: 12px;
-        text-align: left;
-    }
+  .pdf-wrapper th, .pdf-wrapper td {
+    border: 1px solid #333;
+    padding: 6px 8px;
+    font-size: 12px;
+    text-align: left;
+    word-wrap: break-word;
+  }
+
+  .pdf-wrapper tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
 </style>
+
+
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
@@ -431,12 +441,14 @@ document.getElementById('downloadPdf').addEventListener('click', function () {
     const originalTable = document.getElementById('siteTable');
     const clonedTable = originalTable.cloneNode(true);
 
+    // Remove hidden rows
     $(clonedTable).find('tr').each(function () {
         if ($(this).css('display') === 'none') {
             $(this).remove();
         }
     });
 
+    // Build wrapper
     const wrapper = document.createElement('div');
     wrapper.classList.add('pdf-wrapper');
 
@@ -454,40 +466,44 @@ document.getElementById('downloadPdf').addEventListener('click', function () {
     heading.innerText = `DGMS Site Overview Report\nGenerated on: ${formattedDateTime}`;
     wrapper.appendChild(heading);
     wrapper.appendChild(clonedTable);
-    document.body.appendChild(wrapper); // ⬅️ append to DOM for rendering
+
+    document.body.appendChild(wrapper); // attach to DOM for rendering
 
     const opt = {
-        margin: 10,
+        margin: [10, 10, 10, 10],
         filename: 'DGMS_Site_Overview_' + now.toISOString().slice(0, 10) + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
+        image: { type: 'jpeg', quality: 1 }, // highest quality
         html2canvas: {
-            scale: 3,
+            scale: 4, // very high resolution
+            useCORS: true,
             scrollX: 0,
-            scrollY: 0,
-            useCORS: true
+            scrollY: 0
         },
-        jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
+        jsPDF: {
+            unit: 'px',
+            format: [1400, 1000], // wider than A3
+            orientation: 'landscape'
+        }
     };
 
-    // Add slight delay before rendering
+    // Delay helps rendering accuracy
     setTimeout(() => {
         html2pdf()
-            .from(wrapper)
             .set(opt)
-            .toPdf()
-            .get('pdf')
-            .then(function (pdf) {
+            .from(wrapper)
+            .save()
+            .then(() => {
                 document.getElementById('loader').style.display = 'none';
-                pdf.save(opt.filename);
-                document.body.removeChild(wrapper); // clean up
+                document.body.removeChild(wrapper);
             })
-            .catch(function (error) {
+            .catch((error) => {
                 document.getElementById('loader').style.display = 'none';
                 alert('PDF generation failed: ' + error.message);
-                document.body.removeChild(wrapper); // clean up on error too
+                document.body.removeChild(wrapper);
             });
     }, 300);
 });
+
 
     // Reset filters
     document.getElementById('resetFilters').addEventListener('click', function() {

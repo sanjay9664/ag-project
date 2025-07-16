@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="{{url('backend/assets/css/site-details.css')}}">
 </head>
 
+
+
 <body>
     <div class="header-container">
         <a class="navbar-brand" href="#">
