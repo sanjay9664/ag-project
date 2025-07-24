@@ -12,8 +12,6 @@
     <link rel="stylesheet" href="{{url('backend/assets/css/site-details.css')}}">
 </head>
 
-
-
 <body>
     <div class="header-container">
         <a class="navbar-brand" href="#">
@@ -238,11 +236,12 @@
                                                         <i class="fas fa-hand-paper"></i> MANUAL
                                                     </button>
                                                 </form>
+
                                             </div>
 
                                             <?php
                                                 $keyaa = $sitejsonData->mode_md->add ?? null;
-                                                $addValueModestatus = 0;
+                                                $addValueModestatus = null;
 
                                                 foreach ($eventData as $event) {
                                                     $eventArraya = $event->getArrayCopy();
@@ -260,13 +259,14 @@
                                                     }
                                                 }
                                             ?>
-                                            
                                             <div class="mode-display-box">
                                                 <div class="mode-label">CURRENT MODE</div>
-                                                 @if($addValueModestatus > 0)
+                                                @if($addValueModestatus == "1")
                                                <div class="mode-value" id="current-mode">MANUAL</div>
+                                                @elseif($addValueModestatus == "0")
+                                                    <div class="mode-value" id="current-mode">AUTO</div>
                                                 @else
-                                                <div class="mode-value" id="current-mode">AUTO</div>
+                                                <div class="mode-value" id="current-mode">-</div>
                                                 @endif
                                             </div>
 
@@ -695,7 +695,7 @@
                                                                     
                                                                     <?php
                                                                         $keyaa = $sitejsonData->mode_md->add ?? null;
-                                                                        $addValueModestatus = 0;
+                                                                        $addValueModestatus = null;
 
                                                                         foreach ($eventData as $event) {
                                                                             $eventArraya = $event->getArrayCopy();
@@ -713,12 +713,15 @@
                                                                             }
                                                                         }
                                                                     ?>
+                                                                    
                                                                     <div class="mode-display-box">
                                                                         <div class="mode-label">CURRENT MODE</div>
-                                                                        @if($addValueModestatus > 0)
+                                                                        @if($addValueModestatus == "1")
                                                                     <div class="mode-value" id="current-mode">MANUAL</div>
+                                                                        @elseif($addValueModestatus == "0")
+                                                                            <div class="mode-value" id="current-mode">AUTO</div>
                                                                         @else
-                                                                        <div class="mode-value" id="current-mode">AUTO</div>
+                                                                        <div class="mode-value" id="current-mode">-</div>
                                                                         @endif
                                                                     </div>
                                                                     
@@ -968,7 +971,7 @@
     setInterval(fetchSiteData, 10000000);
     </script>
 
-<!-- <script>
+    <script>
     $(document).on('click', '.start-btn, .stop-btn, .auto-btn, .manual-btn', function(e) {
         e.preventDefault();
 
@@ -1052,114 +1055,7 @@
             ajaxCall();
         }
     });
-</script> -->
-
-<script>
-    function isServiceActive(form) {
-        return form.find('input[name="argValue"]').val() &&
-               form.find('input[name="moduleId"]').val() &&
-               form.find('input[name="cmdField"]').val() &&
-               form.find('input[name="cmdArg"]').val();
-    }
-
-    function updateCurrentMode(mode) {
-        $('#current-mode').text(mode ? mode.toUpperCase() : '-');
-    }
-
-    $(document).ready(function () {
-        // On page load check service status
-        let isAutoActive = isServiceActive($('#auto-form'));
-        let isManualActive = isServiceActive($('#manual-form'));
-
-        if (!isAutoActive && !isManualActive) {
-            updateCurrentMode('-');
-        } else {
-            // updateCurrentMode('AUTO');
-
-        $(document).on('click', '.start-btn, .stop-btn, .auto-btn, .manual-btn', function (e) {
-            e.preventDefault();
-
-            let form = $(this).closest('form');
-            let actionType = '';
-
-            if ($(this).hasClass('start-btn')) actionType = 'start';
-            else if ($(this).hasClass('stop-btn')) actionType = 'stop';
-            else if ($(this).hasClass('auto-btn')) actionType = 'auto';
-            else if ($(this).hasClass('manual-btn')) actionType = 'manual';
-
-            let argValue = form.find('input[name="argValue"]').val();
-            let moduleId = form.find('input[name="moduleId"]').val();
-            let cmdField = form.find('input[name="cmdField"]').val();
-            let cmdArg = form.find('input[name="cmdArg"]').val();
-
-            // Check if service is active
-            if (!argValue || !moduleId || !cmdField || !cmdArg) {
-                updateCurrentMode('-');
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Service Not Active',
-                    text: 'Service is not active for this site, kindly contact the team!',
-                    confirmButtonText: 'OK'
-                });
-                return;
-            }
-
-            updateCurrentMode(actionType); // Update mode only when service is active
-
-            const ajaxCall = () => {
-                $.ajax({
-                    url: '/admin/start-process',
-                    method: 'POST',
-                    data: {
-                        argValue,
-                        moduleId,
-                        cmdField,
-                        cmdArg,
-                        actionType,
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function (response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: `${actionType.charAt(0).toUpperCase() + actionType.slice(1)}ed!`,
-                            text: response.message
-                        });
-                        console.log('External Response:', response.external_response);
-                    },
-                    error: function (xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Something went wrong. Please try again.'
-                        });
-                        console.error(xhr.responseText);
-                    }
-                });
-            };
-
-            if (actionType === 'start') {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: `Are you sure you want to START this genset?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, Start',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        ajaxCall();
-                    }
-                });
-            } else {
-                ajaxCall();
-            }
-        });
-    });
-
-
-    
-</script>
-
+    </script>
 </body>
 
 </html>
