@@ -130,6 +130,11 @@ class SiteController extends Controller
                 'add' => $request->input('manual_add'),
                 'argument' => $request->input('manual_arg1'),
             ],
+             'mode_md' => [
+                'md' => $request->input('mode_md'),
+                'add' => $request->input('mode_add'),
+                
+            ],
             'parameters' => [
                 'coolant_temperature' => [
                     'md' => $request->input('coolant_temperature_md'),
@@ -287,6 +292,7 @@ class SiteController extends Controller
         return redirect()->route('admin.sites.index');
     }      
 
+
     public function edit(int $id): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['site.edit']);
@@ -362,6 +368,11 @@ class SiteController extends Controller
                 'md' => $request->input('manual_md'),
                 'add' => $request->input('manual_add'),
                 'argument' => $request->input('manual_arg1'),
+            ],
+            'mode_md' => [
+                'md' => $request->input('mode_md'),
+                'add' => $request->input('mode_add'),
+                
             ],
             'parameters' => [
                 'coolant_temperature' => [
@@ -606,6 +617,7 @@ class SiteController extends Controller
         }
 
         if ($role == 'admin') {
+            // return $events;
             return view('backend.pages.sites.site-details', [
                 'siteData' => $siteData,
                 'sitejsonData' => $sitejsonData,

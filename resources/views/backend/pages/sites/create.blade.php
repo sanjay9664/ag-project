@@ -123,7 +123,7 @@ input {
                             <div class="container mt-2 ml-5 d-flex">
                                 <div class="col-md-3">
                                     <div class="card shadow-lg g-5"
-                                        style="width: 100%; height: 1480px; overflow: hidden;">
+                                        style="width: 100%; height: 1600px; overflow: hidden;">
                                         <div class="card-header bg-light text-start text-center">
                                             <!-- site Name -->
                                             <div class="d-flex justify-content-between align-items-center mb-2"
@@ -311,6 +311,18 @@ input {
                                                         <input type="text" name="manual_arg1" class="form-control ms-2"
                                                             placeholder="ARGUMENT">
                                                     </div>
+                                                </div>
+                                            </div>
+                                            <div class="card mb-2 shadow-lg border-0;">
+                                                <div class="card-body text-center">
+                                                    <div class="text-secondary fw-bold">MODE_DISPLAY</div>
+                                                    <div class="d-flex">
+                                                        <input type="text" name="mode_md" class="form-control ms-2"
+                                                            style="width: 50%;" placeholder="MD">
+                                                        <input type="text" name="mode_add" class="form-control ms-2"
+                                                            style="width: 50%;" placeholder="ADD">
+                                                    </div>
+                                                    
                                                 </div>
                                             </div>
                                         </div>

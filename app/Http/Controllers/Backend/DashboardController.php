@@ -116,6 +116,13 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function getModeStatus()
+{
+    return response()->json([
+        "3,1106" => 1 // or 0
+    ]);
+}
+
     private function extractMdFields($data)
     {
         $mdFields = [];
