@@ -239,36 +239,38 @@
 
                                             </div>
 
-                                            <?php
-                                                $keyaa = $sitejsonData->mode_md->add ?? null;
-                                                $addValueModestatus = null;
+        <?php
+    $keyaa = $sitejsonData->mode_md->add ?? null;
+    $addValueModestatus = null;
 
-                                                foreach ($eventData as $event) {
-                                                    $eventArraya = $event->getArrayCopy();
-                                                    if (
-                                                        isset($eventArraya['module_id']) &&
-                                                        $eventArraya['module_id'] == ($sitejsonData->mode_md->md ?? null)
-                                                    ) {
-                                                        if ($keyaa && array_key_exists($keyaa, $eventArraya)) {
-                                                            $value = $eventArraya[$keyaa];
-                                                            if (is_numeric($value)) {
-                                                                $addValueModestatus = (float) $value;
-                                                            }
-                                                        }
-                                                        break;
-                                                    }
-                                                }
-                                            ?>
-                                            <div class="mode-display-box">
-                                                <div class="mode-label">CURRENT MODE</div>
-                                                @if($addValueModestatus == "1")
-                                               <div class="mode-value" id="current-mode">MANUAL</div>
-                                                @elseif($addValueModestatus == "0")
-                                                    <div class="mode-value" id="current-mode">AUTO</div>
-                                                @else
-                                                <div class="mode-value" id="current-mode">-</div>
-                                                @endif
-                                            </div>
+    foreach ($eventData as $event) {
+        $eventArraya = $event->getArrayCopy();
+        if (
+            isset($eventArraya['module_id']) &&
+            $eventArraya['module_id'] == ($sitejsonData->mode_md->md ?? null)
+        ) {
+            if ($keyaa && array_key_exists($keyaa, $eventArraya)) {
+                $value = $eventArraya[$keyaa];
+                if (is_numeric($value)) {
+                    $addValueModestatus = (float) $value;
+                }
+            }
+            break;
+        }
+    }
+?>
+<div class="mode-display-box">
+    <div class="mode-label">CURRENT MODE</div>
+    @if($addValueModestatus === 1.0)
+        <div class="mode-value" id="current-mode">MANUAL</div>
+    @elseif($addValueModestatus === 0.0)
+        <div class="mode-value" id="current-mode">AUTO</div>
+    @else
+        <div class="mode-value" id="current-mode">-</div>
+    @endif
+</div>
+
+
 
                                             <div class="status-box">
                                                 <i class="fas fa-running text-primary" style="font-size: 24px;"></i>
@@ -693,37 +695,38 @@
                                                                         </form>
                                                                     </div>
                                                                     
-                                                                    <?php
-                                                                        $keyaa = $sitejsonData->mode_md->add ?? null;
-                                                                        $addValueModestatus = null;
+      <?php
+    $keyaa = $sitejsonData->mode_md->add ?? null;
+    $addValueModestatus = null;
 
-                                                                        foreach ($eventData as $event) {
-                                                                            $eventArraya = $event->getArrayCopy();
-                                                                            if (
-                                                                                isset($eventArraya['module_id']) &&
-                                                                                $eventArraya['module_id'] == ($sitejsonData->mode_md->md ?? null)
-                                                                            ) {
-                                                                                if ($keyaa && array_key_exists($keyaa, $eventArraya)) {
-                                                                                    $value = $eventArraya[$keyaa];
-                                                                                    if (is_numeric($value)) {
-                                                                                        $addValueModestatus = (float) $value;
-                                                                                    }
-                                                                                }
-                                                                                break;
-                                                                            }
-                                                                        }
-                                                                    ?>
-                                                                    
-                                                                    <div class="mode-display-box">
-                                                                        <div class="mode-label">CURRENT MODE</div>
-                                                                        @if($addValueModestatus == "1")
-                                                                    <div class="mode-value" id="current-mode">MANUAL</div>
-                                                                        @elseif($addValueModestatus == "0")
-                                                                            <div class="mode-value" id="current-mode">AUTO</div>
-                                                                        @else
-                                                                        <div class="mode-value" id="current-mode">-</div>
-                                                                        @endif
-                                                                    </div>
+    foreach ($eventData as $event) {
+        $eventArraya = $event->getArrayCopy();
+        if (
+            isset($eventArraya['module_id']) &&
+            $eventArraya['module_id'] == ($sitejsonData->mode_md->md ?? null)
+        ) {
+            if ($keyaa && array_key_exists($keyaa, $eventArraya)) {
+                $value = $eventArraya[$keyaa];
+                if (is_numeric($value)) {
+                    $addValueModestatus = (float) $value;
+                }
+            }
+            break;
+        }
+    }
+?>
+<div class="mode-display-box">
+    <div class="mode-label">CURRENT MODE</div>
+    @if($addValueModestatus === 1.0)
+        <div class="mode-value" id="current-mode">MANUAL</div>
+    @elseif($addValueModestatus === 0.0)
+        <div class="mode-value" id="current-mode">AUTO</div>
+    @else
+        <div class="mode-value" id="current-mode">-</div>
+    @endif
+</div>
+
+
                                                                     
                                                                     <div class="status-box">
                                                                             <i class="fas fa-running text-primary" style="font-size: 24px;"></i>
@@ -971,7 +974,8 @@
     setInterval(fetchSiteData, 10000000);
     </script>
 
-    <script>
+<!-- old one  -->
+<script>
     $(document).on('click', '.start-btn, .stop-btn, .auto-btn, .manual-btn', function(e) {
         e.preventDefault();
 
@@ -1055,7 +1059,107 @@
             ajaxCall();
         }
     });
-    </script>
+</script>
+
+<!-- final -->
+<!-- <script>
+    $(document).on('click', '.start-btn, .stop-btn, .auto-btn, .manual-btn', function(e) {
+        e.preventDefault();
+
+        let form = $(this).closest('form');
+        let actionType = '';
+
+        if ($(this).hasClass('start-btn')) actionType = 'start';
+        else if ($(this).hasClass('stop-btn')) actionType = 'stop';
+        else if ($(this).hasClass('auto-btn')) actionType = 'auto';
+        else if ($(this).hasClass('manual-btn')) actionType = 'manual';
+
+        let argValue = form.find('input[name="argValue"]').val();
+        let moduleId = form.find('input[name="moduleId"]').val();
+        let cmdField = form.find('input[name="cmdField"]').val();
+        let cmdArg = form.find('input[name="cmdArg"]').val();
+        let currentMode = $('#current-mode').text().trim(); // Get displayed mode
+
+        // CASE 1: No values present at all
+        if (!argValue && !moduleId && !cmdField && !cmdArg) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Service Not Active',
+                text: 'Service is not active for this site, kindly contact the team!',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // CASE 2: Values are present, but currentMode is '-' (means backend gave no mode)
+        if (currentMode === '-') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Service Not Active',
+                text: 'Service is not active for this site, kindly contact the team!',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // CASE 3: Proceed with AJAX (Only if values are present AND currentMode is valid)
+        const ajaxCall = () => {
+            $.ajax({
+                url: '/admin/start-process',
+                method: 'POST',
+                data: {
+                    argValue,
+                    moduleId,
+                    cmdField,
+                    cmdArg,
+                    actionType,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: `${actionType.charAt(0).toUpperCase() + actionType.slice(1)}ed!`,
+                        text: response.message
+                    });
+                    console.log('External Response:', response.external_response);
+                    // ❌ Do not touch #current-mode here!
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.'
+                    });
+                    console.error(xhr.responseText);
+                }
+            });
+        };
+
+        if (actionType === 'start') {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Are you sure you want to START this genset?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Start',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    ajaxCall();
+                }
+            });
+        } else {
+            ajaxCall();
+        }
+    });
+</script> -->
+
+
+
+
+
+
+
 </body>
 
 </html>

@@ -302,17 +302,17 @@ input {
                                                     <div class="text-secondary fw-bold">Auto</div>
                                                     <div class="d-flex">
                                                         <input type="text" name="auto_md" class="form-control ms-2"
-                                                        value="{{ old('auto_md', $siteData['stop_md']['md'] ?? '') }}"
+                                                        value="{{ old('auto_md', $siteData['auto_md']['md'] ?? '') }}"
                                                             style="width: 50%;" placeholder="MD">
                                                         <input type="text" name="auto_add"
                                                             class="form-control ms-2" style="width: 50%;"
-                                                            value="{{ old('auto_md', $siteData['stop_md']['add'] ?? '') }}"
+                                                            value="{{ old('auto_md', $siteData['auto_md']['add'] ?? '') }}"
                                                             placeholder="ADD">
                                                     </div>
                                                     <div class="d-flex">
                                                         <input type="text" name="auto_arg"
                                                             class="form-control ms-2" 
-                                                            value="{{ old('stop_md', $siteData['stop_md']['argument'] ?? '') }}"
+                                                            value="{{ old('auto_md', $siteData['auto_md']['argument'] ?? '') }}"
                                                             placeholder="ARGUMENT">
                                                     </div>
                                                 </div>
