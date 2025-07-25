@@ -1062,7 +1062,7 @@
 </script> -->
 
 <!-- FINAL THIS IS WORKING NOW  -->
-<script>
+<!-- <script>
     $(document).on('click', '.start-btn, .stop-btn, .auto-btn, .manual-btn', function(e) {
         e.preventDefault();
 
@@ -1147,8 +1147,99 @@
             ajaxCall();
         }
     });
-</script>
+</script> -->
 
+<script>
+    $(document).on('click', '.start-btn, .stop-btn, .auto-btn, .manual-btn', function(e) {
+        e.preventDefault();
+
+        let form = $(this).closest('form');
+        let actionType = '';
+
+        if ($(this).hasClass('start-btn')) {
+            actionType = 'start';
+        } else if ($(this).hasClass('stop-btn')) {
+            actionType = 'stop';
+        } else if ($(this).hasClass('auto-btn')) {
+            actionType = 'auto';
+        } else if ($(this).hasClass('manual-btn')) {
+            actionType = 'manual';
+        }
+
+        let argValue = form.find('input[name="argValue"]').val();
+        let moduleId = form.find('input[name="moduleId"]').val();
+        let cmdField = form.find('input[name="cmdField"]').val();
+        let cmdArg = form.find('input[name="cmdArg"]').val();
+
+        if (!argValue || !moduleId || !cmdField || !cmdArg) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Service Not Active',
+                text: 'Service is not active for this site, kindly contact the team!',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        const ajaxCall = () => {
+            $.ajax({
+                url: '/admin/start-process',
+                method: 'POST',
+                data: {
+                    argValue,
+                    moduleId,
+                    cmdField,
+                    cmdArg,
+                    actionType,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: `${actionType.charAt(0).toUpperCase() + actionType.slice(1)}ed!`,
+                        text: response.message
+                    });
+
+                    console.log('External Response:', response.external_response);
+
+                    // ✅ Backend confirmed mode change — only update UI now
+                    if (actionType === 'auto' || actionType === 'manual') {
+                        if (response.mode_status === 0) {
+                            $('#current-mode').text('AUTO');
+                        } else if (response.mode_status === 1) {
+                            $('#current-mode').text('MANUAL');
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.'
+                    });
+                    console.error(xhr.responseText);
+                }
+            });
+        };
+
+        if (actionType === 'start') {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Are you sure you want to START this genset?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Start',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    ajaxCall();
+                }
+            });
+        } else {
+            ajaxCall();
+        }
+    });
+</script>
 
 
 <!-- final -->
