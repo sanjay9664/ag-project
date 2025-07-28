@@ -140,24 +140,28 @@ class DashboardController extends Controller
         $request->validate([
             'running_hours_admin' => 'nullable|string|max:255',
             'increase_running_hours' => 'nullable|numeric',
+            'actual_running_hour' => 'required',
             'site_id' => 'required|integer',
         ]);
     
         $existingData = DB::table('running_hours')->where('site_id', $request->site_id)->first();
     
         $newRunningHours = $request->increase_running_hours;
-        // dd($request->all());
+        $actualRunningHours = $request->actual_running_hour;
+        
         if ($existingData) {
             $newRunningHours += $existingData->increase_running_hours;
     
             DB::table('running_hours')->where('site_id', $request->site_id)->update([
                 'increase_running_hours' => $newRunningHours,
+                'actual_running_hour' => $actualRunningHours,
                 'updated_at' => now()
             ]);
         } else {
             DB::table('running_hours')->insert([
                 'site_id' => $request->site_id,
                 'increase_running_hours' => $newRunningHours,
+                'actual_running_hour' => $actualRunningHours,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);

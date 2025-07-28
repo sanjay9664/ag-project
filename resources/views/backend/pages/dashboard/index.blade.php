@@ -178,8 +178,8 @@ Dashboard Page - Admin Panel
                                     ?>
 
                                     @php
-                                        $present_site = $sites->firstWhere('id', $login->site_id);
-                                        $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
+                                    $present_site = $sites->firstWhere('id', $login->site_id);
+                                    $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
                                     @endphp
 
                                     @if($present_site == true)
@@ -189,7 +189,8 @@ Dashboard Page - Admin Panel
                                             @csrf
                                             <input type="hidden" name="site_id" class="site_id"
                                                 value="{{ $present_site->id ?? '' }}">
-
+                                            <input type="hidden" name="actual_running_hour"
+                                                value="{{ $addValuerun ?? '' }}">
                                             <td>
                                                 <input type="text" class="form-control running_hours_admin"
                                                     value="{{ $addValuerun }}" readonly
@@ -218,7 +219,7 @@ Dashboard Page - Admin Panel
                                                             name="increase_running_hours"
                                                             data-site-id="{{ $present_site->id ?? '' }}"
                                                             style="outline: none; box-shadow: none; background: #e9ecef; border-radius: 5px; width: 70px; font-size: 14px; margin:10px">
-
+                                                
                                                         <button style="
                                                             padding: 3px 8px; 
                                                             font-size: 13px; 
@@ -411,6 +412,7 @@ $(document).ready(function() {
             data: {
                 site_id: site_id,
                 increase_running_hours: increase_running_hours,
+                 actual_running_hour: actual_running_hour,
                 _token: "{{ csrf_token() }}"
             },
             success: function(response) {
