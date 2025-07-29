@@ -178,8 +178,8 @@ Dashboard Page - Admin Panel
                                     ?>
 
                                     @php
-                                        $present_site = $sites->firstWhere('id', $login->site_id);
-                                        $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
+                                    $present_site = $sites->firstWhere('id', $login->site_id);
+                                    $runningHours = DB::table('running_hours')->get()->keyBy('site_id');
                                     @endphp
 
                                     @if($present_site == true)
@@ -189,7 +189,8 @@ Dashboard Page - Admin Panel
                                             @csrf
                                             <input type="hidden" name="site_id" class="site_id"
                                                 value="{{ $present_site->id ?? '' }}">
-
+                                            <input type="hidden" name="actual_running_hour"
+                                                value="{{ $addValuerun ?? '' }}">
                                             <td>
                                                 <input type="text" class="form-control running_hours_admin"
                                                     value="{{ $addValuerun }}" readonly
@@ -396,7 +397,7 @@ $(document).ready(function() {
         let site_id = $(element).data("site-id");
         let increase_running_hours = $(element).val();
         increase_running_hours = parseInt(increase_running_hours, 10) || 0;
-
+        let actual_running_hour = $("input[name='actual_running_hour']").val();
         if (increase_running_hours > 15) {
             if (!confirm("Are you sure you want to increase this value?")) {
                 return;
@@ -411,6 +412,7 @@ $(document).ready(function() {
             data: {
                 site_id: site_id,
                 increase_running_hours: increase_running_hours,
+                actual_running_hour: actual_running_hour,
                 _token: "{{ csrf_token() }}"
             },
             success: function(response) {
