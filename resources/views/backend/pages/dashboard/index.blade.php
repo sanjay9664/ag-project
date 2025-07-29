@@ -219,7 +219,7 @@ Dashboard Page - Admin Panel
                                                             name="increase_running_hours"
                                                             data-site-id="{{ $present_site->id ?? '' }}"
                                                             style="outline: none; box-shadow: none; background: #e9ecef; border-radius: 5px; width: 70px; font-size: 14px; margin:10px">
-                                                
+
                                                         <button style="
                                                             padding: 3px 8px; 
                                                             font-size: 13px; 
@@ -397,7 +397,7 @@ $(document).ready(function() {
         let site_id = $(element).data("site-id");
         let increase_running_hours = $(element).val();
         increase_running_hours = parseInt(increase_running_hours, 10) || 0;
-
+        let actual_running_hour = $("input[name='actual_running_hour']").val();
         if (increase_running_hours > 15) {
             if (!confirm("Are you sure you want to increase this value?")) {
                 return;
@@ -412,7 +412,7 @@ $(document).ready(function() {
             data: {
                 site_id: site_id,
                 increase_running_hours: increase_running_hours,
-                 actual_running_hour: actual_running_hour,
+                actual_running_hour: actual_running_hour,
                 _token: "{{ csrf_token() }}"
             },
             success: function(response) {
