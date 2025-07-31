@@ -300,7 +300,7 @@
             <td>{{ $sitejsonData['group'] ?? 'N/A' }}</td>
             <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
 
-            <td>
+            <!-- <td>
                 @php
                 $increased_running_hours = DB::table('running_hours')->where('site_id', $site->id)->first();
                 $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
@@ -319,16 +319,91 @@
                 }
                 }
                 }
-
                 $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
                 $inc_addValue = $increaseMinutes > 0 ? $addValue / $increaseMinutes : $addValue;
                 $inc_addValueFormatted = round($inc_addValue + $increaseRunningHours, 2);
                 $hours = floor($inc_addValueFormatted);
                 $minutes = round(($inc_addValueFormatted - $hours) * 60);
                 @endphp
-
                 {{ $hours }} hrs {{ $minutes }} mins
-            </td>
+            </td> -->
+
+ <!-- <td>
+    @php
+    $increased_running_hours = DB::table('running_hours')->where('site_id', $site->id)->first();
+    $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
+    $addValue = 0;
+    $key = $sitejsonData['running_hours']['add'] ?? null;
+    $md = $sitejsonData['running_hours']['md'] ?? null;
+
+    if ($key && $md) {
+        foreach ($eventData as $event) {
+            $eventArray = $event->getArrayCopy();
+            if (isset($eventArray['module_id']) && $eventArray['module_id'] == $md) {
+                if (array_key_exists($key, $eventArray)) {
+                    $addValue = (float) $eventArray[$key];
+                }
+                break;
+            }
+        }
+    }
+
+    $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
+    $inc_addValue = $increaseMinutes > 0 ? $addValue / $increaseMinutes : $addValue;
+    $inc_addValueFormatted = round($inc_addValue + $increaseRunningHours, 2);
+
+    // Prevent negative value
+    if ($inc_addValueFormatted < 0) {
+        $inc_addValueFormatted = 0;
+    }
+
+    $hours = floor($inc_addValueFormatted);
+    $minutes = round(($inc_addValueFormatted - $hours) * 60);
+    @endphp
+    {{ $hours }} hrs {{ $minutes }} mins
+</td> -->
+
+<td>
+    @php
+    $increased_running_hours = DB::table('running_hours')->where('site_id', $site->id)->first();
+    $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
+
+    $addValue = 0;
+    $key = $sitejsonData['running_hours']['add'] ?? null;
+    $md = $sitejsonData['running_hours']['md'] ?? null;
+
+    if ($key && $md) {
+        foreach ($eventData as $event) {
+            $eventArray = $event->getArrayCopy();
+            if (isset($eventArray['module_id']) && $eventArray['module_id'] == $md) {
+                if (array_key_exists($key, $eventArray)) {
+                    $addValue = (float) $eventArray[$key];
+                }
+                break;
+            }
+        }
+    }
+
+    $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
+    $inc_addValue = $increaseMinutes > 0 ? $addValue / $increaseMinutes : $addValue;
+
+    // Total running hours including DB value
+    $inc_addValueFormatted = $inc_addValue + $increaseRunningHours;
+
+    // Prevent negative value
+    if ($inc_addValueFormatted < 0) {
+        $inc_addValueFormatted = 0;
+    }
+
+    // Convert to total minutes first to avoid "60 mins" edge case
+    $totalMinutes = round($inc_addValueFormatted * 60);
+    $hours = floor($totalMinutes / 60);
+    $minutes = $totalMinutes % 60;
+    @endphp
+
+    {{ $hours }} hrs {{ $minutes }} mins
+</td>
+
 
             <td>{{ $formattedUpdatedAt }}</td>
 
@@ -361,6 +436,7 @@
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
+            second: '2-digit', // optional
             hour12: true
         };
         const formattedTime = now.toLocaleString('en-IN', options);
@@ -372,8 +448,14 @@
         updateRefreshTime();
         setTimeout(() => {
             location.reload();
-        }, 500);
+        }, 500); 
     }
+
+
+    setInterval(handleRefresh, 5 * 60 * 1000); 
+
+    
+    document.addEventListener('DOMContentLoaded', updateRefreshTime);
 
     // PDF Download Functionality
 //  document.getElementById('downloadPdf').addEventListener('click', function () {
@@ -606,6 +688,7 @@ document.getElementById('downloadPdf').addEventListener('click', function () {
             });
         }
     }
+    
     </script>
 </body>
 
