@@ -132,8 +132,7 @@ class SendDailySiteReport extends Command
             $pdf->save($pdfPath);
 
         \Mail::send([], [], function ($message) use ($pdfPath, $fileName) {
-            //   $message->to('agpower.solution20@gmail.com')
-            $message->to('Amarsinghnikumbh@gmail.com')
+            $message->to('agpower.solution20@gmail.com')
                     ->subject('DGMS Site Overview Report - ' . now()->format('d M Y'))
                     ->attach($pdfPath, ['as' => $fileName, 'mime' => 'application/pdf']);
         });
