@@ -331,8 +331,8 @@
                 $inc_addValueFormatted = $inc_addValue + $increaseRunningHours;
 
                 // Prevent negative value
-                if ($inc_addValueFormatted < 0) { $inc_addValueFormatted=0; } // Convert to total minutes first to
-                    avoid "60 mins" edge case $totalMinutes=round($inc_addValueFormatted * 60);
+                if ($inc_addValueFormatted < 0) { $inc_addValueFormatted=0; } 
+                $totalMinutes=round($inc_addValueFormatted * 60);
                     $hours=floor($totalMinutes / 60); $minutes=$totalMinutes % 60; @endphp {{ $hours }} hrs
                     {{ $minutes }} mins </td>
 
