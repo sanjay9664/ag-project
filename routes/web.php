@@ -38,6 +38,10 @@ Route::get('/clear-cache', function () {
         'output' => Artisan::output(),
     ]);
 });
+Route::get('/send-daily-report', function () {
+    Artisan::call('report:send-daily');
+    return "Daily report command executed!";
+});
 
 /**
  * Admin routes

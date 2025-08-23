@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
         "guzzlehttp/guzzle": "^7.9",
         "jenssegers/mongodb": "^5.1",
         "laravel/framework": "^11.0",
@@ -16,6 +17,7 @@
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
         "mongodb/mongodb": "^1.20",
+        "php-amqplib/php-amqplib": "^3.7",
         "spatie/laravel-permission": "^6.4",
         "twilio/sdk": "^8.5"
     },
