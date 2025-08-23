@@ -651,7 +651,7 @@ class SiteController extends Controller
         }
     }
 
-    public function AdminSites(Request $request, SiteService $service)     
+    public function AdminSites(Request $request)     
     {
         $role = $request->query('role');
         $bankName = $request->query('bank_name');
