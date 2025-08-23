@@ -20,13 +20,13 @@ use MongoDB\Client;
 // use MongoDB\Client;
 class DashboardController extends Controller
 {
- public function index()
+    public function index()
     {
         $this->checkAuthorization(auth()->user(), ['dashboard.view']);
         
         $adminEmail = auth()->user()->email;
         $total_sites = Site::where('email', $adminEmail)->count();
-      
+
         $logins = DB::table('sites')
             ->leftJoin('admins', 'sites.email', '=', 'admins.email') 
             ->leftJoin('logins', 'admins.id', '=', 'logins.user_id') 
@@ -43,9 +43,8 @@ class DashboardController extends Controller
             if (!empty($login->created_at)) {
                 $login->created_at = Carbon::parse($login->created_at);
             }
-        }
+        } 
 
-        // Fetch site details with associated admins
         $sites = DB::table('sites')
             ->leftJoin('admins', 'sites.email', '=', 'admins.email')
             ->select(
@@ -70,35 +69,19 @@ class DashboardController extends Controller
                 'admins.name'
             )
             ->get();
-      
+
         $events = [];
 
         foreach ($sites as $site) {
             $data = json_decode($site->data, true);
+            $mdValues = $this->extractMdFields($data);
+            $siteEvents = MongodbData::where('site_id', $site->id)->get();
 
-            if (!empty($data)) {
-                $mdValues = $this->extractMdFields($data);
-
-                $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
-                $client = new \MongoDB\Client($mongoUri);
-                $database = $client->isa_qa;
-                $collection = $database->device_events;
-
-                $uniqueMdValues = array_unique(array_filter(array_map('intval', (array) $mdValues)));
-
-                if (!empty($uniqueMdValues)) {
-                    foreach ($uniqueMdValues as $moduleId) {
-                        $event = $collection->findOne(
-                            ['module_id' => $moduleId],
-                            ['sort' => ['createdAt' => -1]]  
-                        );
-
-                        if ($event) {
-                            $eventData = (array) $event;
-                            $eventData['admin_id'] = $site->id;
-                            $events[] = $eventData;
-                        }
-                    }
+            foreach ($siteEvents as $eventRecord) {
+                $eventData = json_decode($eventRecord->data, true); 
+                if (!empty($eventData)) {
+                    $eventData['admin_id'] = $site->id ?? null;
+                    $events[] = $eventData;
                 }
             }
         }
@@ -115,85 +98,6 @@ class DashboardController extends Controller
             'events' => $events
         ]);
     }
-
-    // public function index()
-    // {
-    //     $this->checkAuthorization(auth()->user(), ['dashboard.view']);
-        
-    //     $adminEmail = auth()->user()->email;
-    //     $total_sites = Site::where('email', $adminEmail)->count();
-
-    //     $logins = DB::table('sites')
-    //         ->leftJoin('admins', 'sites.email', '=', 'admins.email') 
-    //         ->leftJoin('logins', 'admins.id', '=', 'logins.user_id') 
-    //         ->select(
-    //             'sites.*', 
-    //             'admins.name', 
-    //             'admins.email', 
-    //             'logins.*',
-    //             'sites.id AS site_id'
-    //         )
-    //         ->get();
-
-    //     foreach ($logins as $login) {
-    //         if (!empty($login->created_at)) {
-    //             $login->created_at = Carbon::parse($login->created_at);
-    //         }
-    //     } 
-
-    //     $sites = DB::table('sites')
-    //         ->leftJoin('admins', 'sites.email', '=', 'admins.email')
-    //         ->select(
-    //             'sites.id', 
-    //             'sites.site_name', 
-    //             'sites.slug', 
-    //             'sites.email', 
-    //             'sites.data', 
-    //             'sites.increase_running_hours_status', 
-    //             'admins.id as admin_id', 
-    //             'admins.name as admin_name'
-    //         )
-    //         ->groupBy(
-    //             'sites.id', 
-    //             'sites.email', 
-    //             'sites.site_name', 
-    //             'sites.slug', 
-    //             'sites.data', 
-    //             'sites.increase_running_hours_status', 
-    //             'admins.email', 
-    //             'admins.id', 
-    //             'admins.name'
-    //         )
-    //         ->get();
-
-    //     $events = [];
-
-    //     foreach ($sites as $site) {
-    //         $data = json_decode($site->data, true);
-    //         $mdValues = $this->extractMdFields($data);
-    //         $siteEvents = MongodbData::where('site_id', $site->id)->get();
-
-    //         foreach ($siteEvents as $eventRecord) {
-    //             $eventData = json_decode($eventRecord->data, true); 
-    //             if (!empty($eventData)) {
-    //                 $eventData['admin_id'] = $site->id ?? null;
-    //                 $events[] = $eventData;
-    //             }
-    //         }
-    //     }
-
-        // return $events;
-
-    //     return view('backend.pages.dashboard.index', [
-    //         'total_admins' => Admin::count(),
-    //         'total_roles' => Role::count(),
-    //         'total_permissions' => Permission::count(),
-    //         'logins' => $logins,
-    //         'sites' => $sites,
-    //         'total_sites' => $total_sites,
-    //         'events' => $events
-    //     ]);
-    // }
 
     private function extractMdFields($data)
     {
@@ -446,32 +350,32 @@ class DashboardController extends Controller
                             ->format('Y-m-d H:i:s');
                     }
                     if (!$mongoUpdatedAt && isset($latestDevice['updatedAt']) && $latestDevice['updatedAt'] instanceof \MongoDB\BSON\UTCDateTime) {
-        $mongoUpdatedAt = Carbon::parse($latestDevice['updatedAt']->toDateTime())
-            ->setTimezone('Asia/Kolkata')
-            ->format('Y-m-d H:i:s');
-    }
-            }
+                        $mongoUpdatedAt = Carbon::parse($latestDevice['updatedAt']->toDateTime())
+                            ->setTimezone('Asia/Kolkata')
+                            ->format('Y-m-d H:i:s');
+                    }
+                }
 
             $filteredData[] = [
-    'deviceName'     => $event->deviceName ?? '',
-    'deviceId'       => $event->deviceId ?? '',
-    'moduleId'       => $event->moduleId ?? '',
-    'siteId'         => $event->actualSiteId ?? '',
-    'lowerLimit'     => $event->lowerLimit ?? null,
-    'upperLimit'     => $event->upperLimit ?? null,
-    'lowerLimitMsg'  => $event->lowerLimitMsg ?? '',
-    'upperLimitMsg'  => $event->upperLimitMsg ?? '',
-    'batteryValue'   => $batteryValue,
-    'batteryStatus'  => $batteryStatus,
-    'deviceValue'    => $deviceValue,
-    'deviceStatus'   => $deviceStatus,
-    'userEmail'      => is_array(json_decode($event->userEmail, true)) 
-                        ? json_decode($event->userEmail, true)
-                        : explode(',', $event->userEmail ?? ''),
-    'ownerEmail'     => $event->owner_email ?? '',
-    'created_at'     => $mongoCreatedAt,
-    'updated_at'     => $mongoUpdatedAt
-];
+                'deviceName'     => $event->deviceName ?? '',
+                'deviceId'       => $event->deviceId ?? '',
+                'moduleId'       => $event->moduleId ?? '',
+                'siteId'         => $event->actualSiteId ?? '',
+                'lowerLimit'     => $event->lowerLimit ?? null,
+                'upperLimit'     => $event->upperLimit ?? null,
+                'lowerLimitMsg'  => $event->lowerLimitMsg ?? '',
+                'upperLimitMsg'  => $event->upperLimitMsg ?? '',
+                'batteryValue'   => $batteryValue,
+                'batteryStatus'  => $batteryStatus,
+                'deviceValue'    => $deviceValue,
+                'deviceStatus'   => $deviceStatus,
+                'userEmail'      => is_array(json_decode($event->userEmail, true)) 
+                                    ? json_decode($event->userEmail, true)
+                                    : explode(',', $event->userEmail ?? ''),
+                'ownerEmail'     => $event->owner_email ?? '',
+                'created_at'     => $mongoCreatedAt,
+                'updated_at'     => $mongoUpdatedAt
+            ];
 
 
         } catch (\Exception $e) {

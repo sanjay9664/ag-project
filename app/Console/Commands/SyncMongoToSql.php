@@ -65,46 +65,51 @@ class SyncMongoToSql extends Command
 
                 if ($event) {
                     $eventArray = json_decode(json_encode($event), true);
-
                     $eventArray['admin_id'] = $site->id;
 
-                    // $exists = MongodbData::where('site_id', $site->id)
-                    //     ->where('data', json_encode($eventArray))
-                    //     ->exists();
+                    $deviceId = $eventArray['device_id'] ?? null;
+                    $moduleId = $eventArray['module_id'] ?? null;
 
-                    // if (!$exists) {
-                    //     MongodbData::create([
-                    //         'site_id' => $site->id,
-                    //         'data' => json_encode($eventArray),
-                    //         'created_at' => now(),
-                    //         'updated_at' => now(),
-                    //     ]);
-                    //     $this->info("Synced data for site '{$site->site_name}' - module ID {$moduleId}");
-                    // } else {
-                    //     $this->line("Duplicate skipped for site '{$site->site_name}' - module ID {$moduleId}");
-                    // }
+                    if ($deviceId && $moduleId) {
+                        DB::transaction(function () use ($site, $deviceId, $moduleId, $eventArray) {
+                            // Fetch records for this site and filter by device_id + module_id
+                            $records = MongodbData::where('site_id', $site->id)->get();
 
- $existingRow = MongodbData::where('site_id', $site->id)->first();
+                            $toDelete = $records->filter(function ($item) use ($deviceId, $moduleId) {
+                                $json = json_decode($item->data, true);
 
+                                return !empty($json['device_id']) 
+                                    && !empty($json['module_id']) 
+                                    && $json['device_id'] == $deviceId 
+                                    && $json['module_id'] == $moduleId;
+                            });
 
-if (!$existingRow) {
-    // Row doesn't exist, so create it
-    MongodbData::create([
-        'site_id' => $site->id,
+                            $deletedCount = $toDelete->count();
 
-        'data' => json_encode($eventArray),
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
-    $this->info("Synced data for site '{$site->site_name}' - module ID {$moduleId}");
-} else {
-    // Row exists, so update it
-    $existingRow->update([
-        'data' => json_encode($eventArray),  
-        'updated_at' => now(),
-    ]);
-    $this->info("Updated data for site '{$site->site_name}' - module ID {$moduleId}");
-}
+                            // Delete matching old records
+                            if ($deletedCount > 0) {
+                                foreach ($toDelete as $row) {
+                                    $row->delete();
+                                }
+
+                                echo "Deleted {$deletedCount} old rows for site '{$site->site_name}' - device {$deviceId}, module {$moduleId}\n";
+                            } else {
+                                echo "No matching rows found for site '{$site->site_name}' - device {$deviceId}, module {$moduleId}\n";
+                            }
+
+                            // Insert new record
+                            MongodbData::create([
+                                'site_id' => $site->id,
+                                'data' => json_encode($eventArray),
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
+
+                            echo "Inserted fresh data for site '{$site->site_name}' - device {$deviceId}, module {$moduleId}\n";
+                        });
+                    } else {
+                        $this->warn("Skipped site '{$site->site_name}' because device_id/module_id missing in event");
+                    }
                 }
             }
         }

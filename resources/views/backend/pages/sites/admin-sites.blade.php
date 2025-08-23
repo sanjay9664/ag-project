@@ -17,8 +17,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <style>
-  .pdf-wrapper {
-    width: 1400px; /* Increased width for more content */
+.pdf-wrapper {
+    width: 1400px;
+    /* Increased width for more content */
     padding: 30px;
     background: #fff;
     color: #000;
@@ -26,40 +27,42 @@
     font-family: 'Arial', sans-serif;
     overflow-x: auto;
     word-break: break-word;
-  }
+}
 
-  .pdf-wrapper h3 {
+.pdf-wrapper h3 {
     font-size: 20px;
     font-weight: bold;
     text-align: center;
     margin-bottom: 20px;
-    white-space: pre-line; /* Supports \n in innerText */
-  }
+    white-space: pre-line;
+    /* Supports \n in innerText */
+}
 
-  .pdf-wrapper table {
+.pdf-wrapper table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
     page-break-inside: auto;
     margin-top: 20px;
-  }
+}
 
-  .pdf-wrapper thead {
+.pdf-wrapper thead {
     background: #f0f0f0;
-  }
+}
 
-  .pdf-wrapper th, .pdf-wrapper td {
+.pdf-wrapper th,
+.pdf-wrapper td {
     border: 1px solid #333;
     padding: 6px 8px;
     font-size: 12px;
     text-align: left;
     word-wrap: break-word;
-  }
+}
 
-  .pdf-wrapper tr {
+.pdf-wrapper tr {
     page-break-inside: avoid;
     page-break-after: auto;
-  }
+}
 </style>
 
 
@@ -258,7 +261,8 @@
                                 @endphp
 
                                 <td>
-                                    <span class="controller-status-text {{ $statusClass }}"><strong>{{ $statusText }}</strong></span>
+                                    <span
+                                        class="controller-status-text {{ $statusClass }}"><strong>{{ $statusText }}</strong></span>
                                 </td>
 
                                 <td class="status-cell">
@@ -295,15 +299,15 @@
                                         @endif
             </div>
             </td>
-
             <td>{{ $sitejsonData['generator'] ?? 'N/A' }}</td>
             <td>{{ $sitejsonData['group'] ?? 'N/A' }}</td>
             <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
 
-            <!-- <td>
+            <td>
                 @php
                 $increased_running_hours = DB::table('running_hours')->where('site_id', $site->id)->first();
                 $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
+
                 $addValue = 0;
                 $key = $sitejsonData['running_hours']['add'] ?? null;
                 $md = $sitejsonData['running_hours']['md'] ?? null;
@@ -319,90 +323,18 @@
                 }
                 }
                 }
+
                 $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
                 $inc_addValue = $increaseMinutes > 0 ? $addValue / $increaseMinutes : $addValue;
-                $inc_addValueFormatted = round($inc_addValue + $increaseRunningHours, 2);
-                $hours = floor($inc_addValueFormatted);
-                $minutes = round(($inc_addValueFormatted - $hours) * 60);
-                @endphp
-                {{ $hours }} hrs {{ $minutes }} mins
-            </td> -->
 
- <!-- <td>
-    @php
-    $increased_running_hours = DB::table('running_hours')->where('site_id', $site->id)->first();
-    $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
-    $addValue = 0;
-    $key = $sitejsonData['running_hours']['add'] ?? null;
-    $md = $sitejsonData['running_hours']['md'] ?? null;
+                // Total running hours including DB value
+                $inc_addValueFormatted = $inc_addValue + $increaseRunningHours;
 
-    if ($key && $md) {
-        foreach ($eventData as $event) {
-            $eventArray = $event->getArrayCopy();
-            if (isset($eventArray['module_id']) && $eventArray['module_id'] == $md) {
-                if (array_key_exists($key, $eventArray)) {
-                    $addValue = (float) $eventArray[$key];
-                }
-                break;
-            }
-        }
-    }
-
-    $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
-    $inc_addValue = $increaseMinutes > 0 ? $addValue / $increaseMinutes : $addValue;
-    $inc_addValueFormatted = round($inc_addValue + $increaseRunningHours, 2);
-
-    // Prevent negative value
-    if ($inc_addValueFormatted < 0) {
-        $inc_addValueFormatted = 0;
-    }
-
-    $hours = floor($inc_addValueFormatted);
-    $minutes = round(($inc_addValueFormatted - $hours) * 60);
-    @endphp
-    {{ $hours }} hrs {{ $minutes }} mins
-</td> -->
-
-<td>
-    @php
-    $increased_running_hours = DB::table('running_hours')->where('site_id', $site->id)->first();
-    $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
-
-    $addValue = 0;
-    $key = $sitejsonData['running_hours']['add'] ?? null;
-    $md = $sitejsonData['running_hours']['md'] ?? null;
-
-    if ($key && $md) {
-        foreach ($eventData as $event) {
-            $eventArray = $event->getArrayCopy();
-            if (isset($eventArray['module_id']) && $eventArray['module_id'] == $md) {
-                if (array_key_exists($key, $eventArray)) {
-                    $addValue = (float) $eventArray[$key];
-                }
-                break;
-            }
-        }
-    }
-
-    $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
-    $inc_addValue = $increaseMinutes > 0 ? $addValue / $increaseMinutes : $addValue;
-
-    // Total running hours including DB value
-    $inc_addValueFormatted = $inc_addValue + $increaseRunningHours;
-
-    // Prevent negative value
-    if ($inc_addValueFormatted < 0) {
-        $inc_addValueFormatted = 0;
-    }
-
-    // Convert to total minutes first to avoid "60 mins" edge case
-    $totalMinutes = round($inc_addValueFormatted * 60);
-    $hours = floor($totalMinutes / 60);
-    $minutes = $totalMinutes % 60;
-    @endphp
-
-    {{ $hours }} hrs {{ $minutes }} mins
-</td>
+                // Prevent negative value
+                if ($inc_addValueFormatted < 0) { $inc_addValueFormatted=0; } // Convert to total minutes first to
+                    avoid "60 mins" edge case $totalMinutes=round($inc_addValueFormatted * 60);
+                    $hours=floor($totalMinutes / 60); $minutes=$totalMinutes % 60; @endphp {{ $hours }} hrs
+                    {{ $minutes }} mins </td>
 
 
             <td>{{ $formattedUpdatedAt }}</td>
@@ -436,7 +368,7 @@
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
-            second: '2-digit', // optional
+            second: '2-digit',
             hour12: true
         };
         const formattedTime = now.toLocaleString('en-IN', options);
@@ -448,143 +380,84 @@
         updateRefreshTime();
         setTimeout(() => {
             location.reload();
-        }, 500); 
+        }, 500);
     }
 
-
-    setInterval(handleRefresh, 5 * 60 * 1000); 
-
+    setInterval(handleRefresh, 5 * 60 * 1000);
     
     document.addEventListener('DOMContentLoaded', updateRefreshTime);
 
-    // PDF Download Functionality
-//  document.getElementById('downloadPdf').addEventListener('click', function () {
-//     document.getElementById('loader').style.display = 'block';
+    document.getElementById('downloadPdf').addEventListener('click', function() {
+        document.getElementById('loader').style.display = 'block';
 
-//     const originalTable = document.getElementById('siteTable');
-//     const clonedTable = originalTable.cloneNode(true);
+        const originalTable = document.getElementById('siteTable');
+        const clonedTable = originalTable.cloneNode(true);
 
-//     $(clonedTable).find('tr').each(function () {
-//         if ($(this).css('display') === 'none') {
-//             $(this).remove();
-//         }
-//     });
+        // Remove hidden rows
+        $(clonedTable).find('tr').each(function() {
+            if ($(this).css('display') === 'none') {
+                $(this).remove();
+            }
+        });
 
-//     const wrapper = document.createElement('div');
-//     wrapper.classList.add('pdf-wrapper');
+        // Build wrapper
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('pdf-wrapper');
 
-//     const now = new Date();
-//     const formattedDateTime = now.toLocaleString('en-IN', {
-//         day: '2-digit',
-//         month: 'short',
-//         year: 'numeric',
-//         hour: '2-digit',
-//         minute: '2-digit',
-//         hour12: true
-//     });
+        const now = new Date();
+        const formattedDateTime = now.toLocaleString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
 
-//     const heading = document.createElement('h3');
-//     heading.innerText = `DGMS Site Overview Report\nGenerated on: ${formattedDateTime}`;
-//     wrapper.appendChild(heading);
-//     wrapper.appendChild(clonedTable);
+        const heading = document.createElement('h3');
+        heading.innerText = `DGMS Site Overview Report\nGenerated on: ${formattedDateTime}`;
+        wrapper.appendChild(heading);
+        wrapper.appendChild(clonedTable);
 
-//     const opt = {
-//         margin: 10,
-//         filename: 'DGMS_Site_Overview_' + now.toISOString().slice(0, 10) + '.pdf',
-//         image: { type: 'jpeg', quality: 0.98 },
-//         html2canvas: {
-//             scale: 2,
-//             scrollX: 0,
-//             scrollY: 0,
-//             windowWidth: wrapper.scrollWidth,
-//             windowHeight: wrapper.scrollHeight,
-//             useCORS: true
-//         },
-//         jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
-//     };
+        document.body.appendChild(wrapper); // attach to DOM for rendering
 
-//     html2pdf()
-//         .from(wrapper)
-//         .set(opt)
-//         .toPdf()
-//         .get('pdf')
-//         .then(function (pdf) {
-//             document.getElementById('loader').style.display = 'none';
-//             pdf.save(opt.filename);
-//         })
-//         .catch(function (error) {
-//             document.getElementById('loader').style.display = 'none';
-//             alert('PDF generation failed: ' + error.message);
-//         });
-// });
-document.getElementById('downloadPdf').addEventListener('click', function () {
-    document.getElementById('loader').style.display = 'block';
+        const opt = {
+            margin: [10, 10, 10, 10],
+            filename: 'DGMS_Site_Overview_' + now.toISOString().slice(0, 10) + '.pdf',
+            image: {
+                type: 'jpeg',
+                quality: 1
+            }, // highest quality
+            html2canvas: {
+                scale: 4, // very high resolution
+                useCORS: true,
+                scrollX: 0,
+                scrollY: 0
+            },
+            jsPDF: {
+                unit: 'px',
+                format: [1400, 1000], // wider than A3
+                orientation: 'landscape'
+            }
+        };
 
-    const originalTable = document.getElementById('siteTable');
-    const clonedTable = originalTable.cloneNode(true);
-
-    // Remove hidden rows
-    $(clonedTable).find('tr').each(function () {
-        if ($(this).css('display') === 'none') {
-            $(this).remove();
-        }
+        // Delay helps rendering accuracy
+        setTimeout(() => {
+            html2pdf()
+                .set(opt)
+                .from(wrapper)
+                .save()
+                .then(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.body.removeChild(wrapper);
+                })
+                .catch((error) => {
+                    document.getElementById('loader').style.display = 'none';
+                    alert('PDF generation failed: ' + error.message);
+                    document.body.removeChild(wrapper);
+                });
+        }, 300);
     });
-
-    // Build wrapper
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('pdf-wrapper');
-
-    const now = new Date();
-    const formattedDateTime = now.toLocaleString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-    });
-
-    const heading = document.createElement('h3');
-    heading.innerText = `DGMS Site Overview Report\nGenerated on: ${formattedDateTime}`;
-    wrapper.appendChild(heading);
-    wrapper.appendChild(clonedTable);
-
-    document.body.appendChild(wrapper); // attach to DOM for rendering
-
-    const opt = {
-        margin: [10, 10, 10, 10],
-        filename: 'DGMS_Site_Overview_' + now.toISOString().slice(0, 10) + '.pdf',
-        image: { type: 'jpeg', quality: 1 }, // highest quality
-        html2canvas: {
-            scale: 4, // very high resolution
-            useCORS: true,
-            scrollX: 0,
-            scrollY: 0
-        },
-        jsPDF: {
-            unit: 'px',
-            format: [1400, 1000], // wider than A3
-            orientation: 'landscape'
-        }
-    };
-
-    // Delay helps rendering accuracy
-    setTimeout(() => {
-        html2pdf()
-            .set(opt)
-            .from(wrapper)
-            .save()
-            .then(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.body.removeChild(wrapper);
-            })
-            .catch((error) => {
-                document.getElementById('loader').style.display = 'none';
-                alert('PDF generation failed: ' + error.message);
-                document.body.removeChild(wrapper);
-            });
-    }, 300);
-});
 
 
     // Reset filters
@@ -688,7 +561,6 @@ document.getElementById('downloadPdf').addEventListener('click', function () {
             });
         }
     }
-    
     </script>
 </body>
 
