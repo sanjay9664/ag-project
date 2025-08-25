@@ -582,10 +582,15 @@ class SiteController extends Controller
             return redirect()->back()->withErrors('No data found for the specified module_id values.');
         }
     
+        // usort($events, function ($a, $b) {
+        //     $createdAtA = new UTCDateTime($a['created_at_timestamp']);
+        //     $createdAtB = new UTCDateTime($b['created_at_timestamp']);
+        //     return $createdAtB <=> $createdAtA; 
+        // });
         usort($events, function ($a, $b) {
-            $createdAtA = new UTCDateTime($a['created_at_timestamp']);
-            $createdAtB = new UTCDateTime($b['created_at_timestamp']);
-            return $createdAtB <=> $createdAtA; 
+            $createdAtA = new UTCDateTime((int) round($a['created_at_timestamp'] * 1000));
+            $createdAtB = new UTCDateTime((int) round($b['created_at_timestamp'] * 1000));
+            return $createdAtB <=> $createdAtA;
         });
         
         $latestCreatedAt = $events[0]['createdAt'];
