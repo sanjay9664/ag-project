@@ -20,19 +20,17 @@ class SyncFrontendData extends Command
 
         $start = microtime(true);
 
-        // 🔹 Fetch all sites
         $sites = Site::select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get();
 
-        // $mdValues = $this->extractMdFields(
-        //     $sites->pluck('data')->map(fn($data) => json_decode($data, true))->toArray()
-        // );
+        $mdValues = $this->extractMdFields(
+            $sites->pluck('data')->map(fn($data) => json_decode($data, true))->toArray()
+        );
 
         if ($sites->isEmpty()) {
             $this->warn("No sites found.");
             return;
         }
-        // dd($mdValues);
-        // 🔹 MongoDB setup
+
         $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
         $mongoClient = new \MongoDB\Client($mongoUri);
         $collection = $mongoClient->isa_qa->device_events;
@@ -40,7 +38,9 @@ class SyncFrontendData extends Command
         $dateThreshold = new \MongoDB\BSON\UTCDateTime((new \DateTime('-48 hours'))->getTimestamp() * 1000);
 
         $totalInserted = 0;
-        $totalDeleted = 0;
+        $totalUpdated = 0;
+
+        $moduleLatest = []; 
 
         foreach ($sites as $site) {
             $siteData = json_decode($site->data, true);
@@ -56,57 +56,62 @@ class SyncFrontendData extends Command
 
             foreach ($uniqueMdValues as $moduleId) {
                 $event = $collection->findOne(
-                [
-                    'device_id' => $deviceId,
-                    'module_id' => $moduleId,
-                    'createdAt' => ['$gte' => $dateThreshold]
-                ],
-                [
-                    'sort' => ['createdAt' => -1]
-                ]
-            );
-            // dd($event);
-            if (!$event) {
-                $this->warn("No events found in MongoDB for site '{$site->site_name}' (device {$deviceId}, module {$moduleId})");
-                continue;
-            }
+                    [
+                        'device_id' => $deviceId,
+                        'module_id' => $moduleId,
+                        'createdAt' => ['$gte' => $dateThreshold]
+                    ],
+                    [
+                        'sort' => ['createdAt' => -1]
+                    ]
+                );
 
-            $eventArray = json_decode(json_encode($event), true);
-
-            // 🔹 Sync into mysql: delete + insert
-            DB::transaction(function () use ($site, $eventArray, $deviceId, $moduleId, &$totalDeleted, &$totalInserted) {
-                // Delete old rows
-                $deletedCount = DB::table('mongodb_frontend')
-                    ->where('site_id', $site->id)
-                    ->where('data', 'LIKE', '%"device_id":"' . $deviceId . '"%')
-                    ->where(function ($q) use ($moduleId) {
-                        $q->where('data', 'LIKE', '%"module_id":' . $moduleId . '%')
-                        ->orWhere('data', 'LIKE', '%"module_id":"' . $moduleId . '"%');
-                    })
-                    ->delete();
-
-                $totalDeleted += $deletedCount;
-
-                if ($deletedCount > 0) {
-                    $this->line("Deleted {$deletedCount} old rows for site '{$site->site_name}' (device {$deviceId}, module {$moduleId})");
+                if ($event) {
+                    $eventArray = json_decode(json_encode($event), true);
+                    if (!isset($moduleLatest[$moduleId]) ||
+                        $eventArray['createdAt'] > $moduleLatest[$moduleId]['createdAt']) {
+                        $moduleLatest[$moduleId] = $eventArray;
+                    }
                 }
+            }
+        }
 
-                // Insert fresh
-                DB::table('mongodb_frontend')->insert([
-                    'site_id'    => $site->id,
-                    'data'       => json_encode($eventArray),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+        $this->info("Collected " . count($moduleLatest) . " latest events across all modules.");
 
-                $totalInserted++;
-                $this->info("Inserted fresh data for site '{$site->site_name}' (device {$deviceId}, module {$moduleId})");
+        // 🔹 Sync into MySQL
+        foreach ($moduleLatest as $moduleId => $eventArray) {
+            DB::transaction(function () use ($sites, $eventArray, $moduleId, &$totalUpdated, &$totalInserted) {
+                $deviceId = $eventArray['device_id'];
+                $site = $sites->firstWhere('device_id', $deviceId);
+
+                $updatedCount = DB::table('mongodb_frontend')
+                    ->where('site_id', $site->id)
+                    ->whereJsonContains('data->device_id', $deviceId)
+                    ->where(function ($q) use ($moduleId) {
+                        $q->whereJsonContains('data->module_id', (int)$moduleId)
+                        ->orWhereJsonContains('data->module_id', (string)$moduleId);
+                    })
+                    ->update([
+                        'data'       => json_encode($eventArray),
+                        'updated_at' => now(),
+                    ]);
+
+                if ($updatedCount > 0) {
+                    $totalUpdated += $updatedCount;
+                } else {
+                    DB::table('mongodb_frontend')->insert([
+                        'site_id'    => $site->id,
+                        'data'       => json_encode($eventArray),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    $totalInserted++;
+                }
             });
         }
-    }
-
-    $duration = microtime(true) - $start;
-    $this->info("Sync complete. Inserted {$totalInserted}, deleted {$totalDeleted} in {$duration} seconds.");
+        
+        $duration = microtime(true) - $start;
+        $this->info("Sync complete. Inserted {$totalInserted}, updated {$totalUpdated} in {$duration} seconds.");
     }
 
     private function extractMdFields($data)

@@ -11,6 +11,7 @@ use App\Models\Site;
 use App\User;
 use App\Models\Admin;
 use App\Models\MongodbData;
+use App\Models\MongodbFrontend;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
@@ -656,6 +657,204 @@ class SiteController extends Controller
         }
     }
 
+    // public function AdminSites(Request $request)     
+    // {
+    //     $role = $request->query('role');
+    //     $bankName = $request->query('bank_name');
+    //     $location = $request->query('location');
+
+    //     $siteData = collect();
+    //     $eventData = [];
+    //     $latestCreatedAt = null;
+
+    //     $user = Auth::user();
+    //     if (!$user) {
+    //         return redirect()->route('admin.login')->withErrors('You must be logged in.');
+    //     }
+
+    //     $userEmail = $user->email;
+
+    //     if (!empty($location)) {
+    //         $query = DB::table('sites')->where('email', $userEmail);
+
+    //         if (!empty($bankName) && $bankName !== 'Select Bank') {
+    //             $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.generator')) = ?", [$bankName]);
+    //         }
+    //         if (!empty($location) && $location !== 'Select Location') {
+    //             $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.group')) = ?", [$location]);
+    //         }
+            
+    //         $siteData = $query->get();
+
+    //         $decodedSiteData = $siteData->map(function ($site) {
+    //             return json_decode($site->data, true);
+    //         });
+
+    //         $mdValues = $this->extractMdFields($decodedSiteData->toArray());
+
+    //         $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+    //         $client = new MongoClient($mongoUri);
+    //         $database = $client->isa_qa;
+    //         $collection = $database->device_events;
+
+    //         if (!empty($mdValues)) {
+    //             $uniqueMdValues = array_unique(array_filter(array_map('intval', (array) $mdValues)));
+
+    //             foreach ($uniqueMdValues as $moduleId) {
+    //                 $event = $collection->findOne(
+    //                     ['module_id' => $moduleId],
+    //                     ['sort' => ['createdAt' => -1]]
+    //                 );
+
+    //                 if ($event) {
+    //                     $eventData[] = $event;
+    //                 }
+    //             }
+    //         }
+
+    //         usort($eventData, function ($a, $b) {
+    //             return ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0);
+    //         });
+
+    //         $latestCreatedAt = !empty($eventData) ? $eventData[0]['createdAt']->toDateTime()
+    //             ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+    //             ->format('d-m-Y H:i:s') : 'N/A';
+
+    //         foreach ($eventData as &$event) {
+    //             $event['createdAt'] = $event['createdAt']->toDateTime()
+    //                 ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+    //                 ->format('d-m-Y H:i:s');
+    //             $event['latestCreatedAt'] = $latestCreatedAt;
+    //         }
+
+    //         foreach ($siteData as $site) {
+    //             $matchingEvent = collect($eventData)->first(function ($event) use ($site) {
+    //                 return isset($event['device_id'], $site->device_id) &&
+    //                     trim(strtolower($event['device_id'])) === trim(strtolower($site->device_id));
+    //             });
+
+    //             $site->updatedAt = isset($matchingEvent['updatedAt']) ? $matchingEvent['updatedAt']->toDateTime()
+    //                 ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+    //                 ->format('d-m-Y H:i:s') : 'N/A';
+    //         }
+
+    //         if ($request->ajax()) {
+    //             return response()->json([
+    //                 'html' => view('backend.pages.sites.partials.site-table', compact('siteData', 'decodedSiteData', 'eventData', 'latestCreatedAt'))->render()
+    //             ]);
+    //         }
+
+    //         return view('backend.pages.sites.admin-sites', compact('siteData', 'decodedSiteData', 'eventData', 'latestCreatedAt'));
+    //     } else {
+    //         ini_set('max_execution_time', 120);
+    //         $start = microtime(true);
+
+    //         $user = Auth::guard('admin')->user();
+    //         $userEmail = $user->email;
+
+    //         $siteData = $user->hasRole('superadmin')
+    //             ? Site::select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get()
+    //             : Site::where('email', $userEmail)->select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get();
+
+    //         $mdValues = $this->extractMdFields(
+    //             $siteData->pluck('data')->map(fn($data) => json_decode($data, true))->toArray()
+    //         );
+
+    //         // $eventData = [];
+    //         // if (!empty($mdValues)) {
+    //         //     $uniqueMdValues = array_unique(array_filter(array_map('intval', (array) $mdValues)));
+
+    //         //     if (!empty($uniqueMdValues)) {
+    //         //         $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+    //         //         $mongoClient = new \MongoDB\Client($mongoUri);
+    //         //         $collection = $mongoClient->isa_qa->device_events;
+
+    //         //         $dateThreshold = new \MongoDB\BSON\UTCDateTime((new \DateTime('-48 hours'))->getTimestamp() * 1000);
+    //         //         $cacheKey = 'event_data_' . sha1(implode(',', $uniqueMdValues));
+
+    //         //         $eventData = Cache::remember($cacheKey, 300, function () use ($collection, $uniqueMdValues, $dateThreshold) {
+    //         //             $cursor = $collection->find([
+    //         //                 'module_id' => ['$in' => array_values($uniqueMdValues)],
+    //         //                 'createdAt' => ['$gte' => $dateThreshold]
+    //         //             ], [
+    //         //                 'sort' => ['createdAt' => -1]
+    //         //             ]);
+
+    //         //             $moduleLatest = [];
+    //         //             foreach ($cursor as $event) {
+    //         //                 $moduleId = $event['module_id'];
+    //         //                 if (!isset($moduleLatest[$moduleId])) {
+    //         //                     $moduleLatest[$moduleId] = $event;
+    //         //                 }
+    //         //             }
+    //         //             return array_values($moduleLatest);
+    //         //         });
+    //         //     }
+    //         // }
+            
+    //         // $eventData = MongodbFrontend::get()->pluck('data');
+    //         $eventData = MongodbFrontend::pluck('data')->toArray();
+
+    //         // return $eventData;
+            
+    //         usort($eventData, fn($a, $b) => ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0));
+
+    //         // $latestCreatedAt = !empty($eventData)
+    //         //     ? $eventData[0]['createdAt']->toDateTime()
+    //         //         ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+    //         //         ->format('d-m-Y H:i:s')
+    //         //     : 'N/A';
+    //         if (!empty($eventData)) {
+    //             $timestamp = (int) ($eventData[0]['createdAt']['$date']['$numberLong'] ?? 0);
+    //             $latestCreatedAt = $timestamp
+    //                 ? (new \DateTime('@' . ($timestamp / 1000)))
+    //                     ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+    //                     ->format('d-m-Y H:i:s')
+    //                 : 'N/A';
+    //         } else {
+    //             $latestCreatedAt = 'N/A';
+    //         }
+            
+    //         foreach ($eventData as &$event) {
+    //             $event['createdAt'] = $event['createdAt']->toDateTime()
+    //                 ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+    //                 ->format('d-m-Y H:i:s');
+    //             $event['latestCreatedAt'] = $latestCreatedAt;
+    //         }
+
+    //         $eventMap = collect($eventData)->mapWithKeys(function ($event) {
+    //             $key = strtolower(trim($event['device_id'] ?? ''));
+    //             return [$key => $event];
+    //         });
+
+    //         foreach ($siteData as $site) {
+    //             $deviceId = strtolower(trim($site->device_id ?? ''));
+    //             $matchingEvent = $eventMap[$deviceId] ?? null;
+
+    //             $updatedAt = 'N/A';
+
+    //             if (
+    //                 $matchingEvent &&
+    //                 isset($matchingEvent['updatedAt']) &&
+    //                 $matchingEvent['updatedAt'] instanceof \MongoDB\BSON\UTCDateTime
+    //             ) {
+    //                 $updatedAt = $matchingEvent['updatedAt']
+    //                     ->toDateTime()
+    //                     ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+    //                     ->format('d-m-Y H:i:s');
+    //             }
+
+    //             $site->updatedAt = $updatedAt;
+    //         }
+
+    //         $sitejsonData = json_decode($siteData->first()->data ?? '{}', true);
+    //         // return $eventData;
+       
+    //         return view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'));
+    //     }
+
+    // }
+
     public function AdminSites(Request $request)     
     {
         $role = $request->query('role');
@@ -759,51 +958,32 @@ class SiteController extends Controller
                 $siteData->pluck('data')->map(fn($data) => json_decode($data, true))->toArray()
             );
 
-            $eventData = [];
-            if (!empty($mdValues)) {
-                $uniqueMdValues = array_unique(array_filter(array_map('intval', (array) $mdValues)));
+            $eventData = MongodbFrontend::pluck('data')->toArray();
 
-                if (!empty($uniqueMdValues)) {
-                    $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
-                    $mongoClient = new \MongoDB\Client($mongoUri);
-                    $collection = $mongoClient->isa_qa->device_events;
-
-                    $dateThreshold = new \MongoDB\BSON\UTCDateTime((new \DateTime('-48 hours'))->getTimestamp() * 1000);
-                    $cacheKey = 'event_data_' . sha1(implode(',', $uniqueMdValues));
-
-                    $eventData = Cache::remember($cacheKey, 300, function () use ($collection, $uniqueMdValues, $dateThreshold) {
-                        $cursor = $collection->find([
-                            'module_id' => ['$in' => array_values($uniqueMdValues)],
-                            'createdAt' => ['$gte' => $dateThreshold]
-                        ], [
-                            'sort' => ['createdAt' => -1]
-                        ]);
-
-                        $moduleLatest = [];
-                        foreach ($cursor as $event) {
-                            $moduleId = $event['module_id'];
-                            if (!isset($moduleLatest[$moduleId])) {
-                                $moduleLatest[$moduleId] = $event;
-                            }
-                        }
-                        return array_values($moduleLatest);
-                    });
-                }
-            }
             // return $eventData;
             
             usort($eventData, fn($a, $b) => ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0));
 
-            $latestCreatedAt = !empty($eventData)
-                ? $eventData[0]['createdAt']->toDateTime()
-                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                    ->format('d-m-Y H:i:s')
-                : 'N/A';
-
+            if (!empty($eventData)) {
+                $timestamp = (int) ($eventData[0]['createdAt']['$date']['$numberLong'] ?? 0);
+                $latestCreatedAt = $timestamp
+                    ? (new \DateTime('@' . ($timestamp / 1000)))
+                        ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                        ->format('d-m-Y H:i:s')
+                    : 'N/A';
+            } else {
+                $latestCreatedAt = 'N/A';
+            }
+            
             foreach ($eventData as &$event) {
-                $event['createdAt'] = $event['createdAt']->toDateTime()
-                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                    ->format('d-m-Y H:i:s');
+                $timestamp = (int) ($event['createdAt']['$date']['$numberLong'] ?? 0);
+
+                $event['createdAt'] = $timestamp
+                    ? (new \DateTime('@' . ($timestamp / 1000)))
+                        ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                        ->format('d-m-Y H:i:s')
+                    : 'N/A';
+
                 $event['latestCreatedAt'] = $latestCreatedAt;
             }
 
@@ -818,15 +998,20 @@ class SiteController extends Controller
 
                 $updatedAt = 'N/A';
 
-                if (
-                    $matchingEvent &&
-                    isset($matchingEvent['updatedAt']) &&
-                    $matchingEvent['updatedAt'] instanceof \MongoDB\BSON\UTCDateTime
-                ) {
-                    $updatedAt = $matchingEvent['updatedAt']
-                        ->toDateTime()
-                        ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                        ->format('d-m-Y H:i:s');
+                if ($matchingEvent && isset($matchingEvent['updatedAt'])) {
+                    if ($matchingEvent['updatedAt'] instanceof \MongoDB\BSON\UTCDateTime) {
+                        $updatedAt = $matchingEvent['updatedAt']
+                            ->toDateTime()
+                            ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                            ->format('d-m-Y H:i:s');
+                    } elseif (is_array($matchingEvent['updatedAt']['$date'] ?? null)) {
+                        $timestamp = (int) ($matchingEvent['updatedAt']['$date']['$numberLong'] ?? 0);
+                        if ($timestamp) {
+                            $updatedAt = (new \DateTime('@' . ($timestamp / 1000)))
+                                ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                                ->format('d-m-Y H:i:s');
+                        }
+                    }
                 }
 
                 $site->updatedAt = $updatedAt;
