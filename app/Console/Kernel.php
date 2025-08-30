@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('sync:frontend-data')->everyFiveMinutes();
         $schedule->command('sync:mongodb')->everyFiveMinutes();
         $schedule->command('report:send-daily')->dailyAt('19:00');
     }

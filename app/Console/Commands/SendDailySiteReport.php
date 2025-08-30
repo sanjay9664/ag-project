@@ -68,7 +68,6 @@ class SendDailySiteReport extends Command
                 });
             }
         }
-        // dd($eventData);
         
         usort($eventData, fn($a, $b) => ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0));
 

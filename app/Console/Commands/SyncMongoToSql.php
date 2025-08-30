@@ -72,10 +72,9 @@ class SyncMongoToSql extends Command
 
                     if ($deviceId && $moduleId) {
                         DB::transaction(function () use ($site, $deviceId, $moduleId, $eventArray) {
-                            // Fetch records for this site and filter by device_id + module_id
                             $records = MongodbData::where('site_id', $site->id)->get();
 
-                            $toDelete = $records->filter(function ($item) use ($deviceId, $moduleId) {
+                            $toUpdate = $records->filter(function ($item) use ($deviceId, $moduleId) {
                                 $json = json_decode($item->data, true);
 
                                 return !empty($json['device_id']) 
@@ -84,28 +83,25 @@ class SyncMongoToSql extends Command
                                     && $json['module_id'] == $moduleId;
                             });
 
-                            $deletedCount = $toDelete->count();
-
-                            // Delete matching old records
-                            if ($deletedCount > 0) {
-                                foreach ($toDelete as $row) {
-                                    $row->delete();
+                            if ($toUpdate->isNotEmpty()) {
+                                foreach ($toUpdate as $row) {
+                                    $row->update([
+                                        'data' => json_encode($eventArray),
+                                        'updated_at' => now(),
+                                    ]);
                                 }
 
-                                echo "Deleted {$deletedCount} old rows for site '{$site->site_name}' - device {$deviceId}, module {$moduleId}\n";
+                                echo "Updated {$toUpdate->count()} existing rows for site '{$site->site_name}' - device {$deviceId}, module {$moduleId}\n";
                             } else {
-                                echo "No matching rows found for site '{$site->site_name}' - device {$deviceId}, module {$moduleId}\n";
+                                MongodbData::create([
+                                    'site_id' => $site->id,
+                                    'data' => json_encode($eventArray),
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
+                                ]);
+
+                                echo "Inserted fresh data for site '{$site->site_name}' - device {$deviceId}, module {$moduleId}\n";
                             }
-
-                            // Insert new record
-                            MongodbData::create([
-                                'site_id' => $site->id,
-                                'data' => json_encode($eventArray),
-                                'created_at' => now(),
-                                'updated_at' => now(),
-                            ]);
-
-                            echo "Inserted fresh data for site '{$site->site_name}' - device {$deviceId}, module {$moduleId}\n";
                         });
                     } else {
                         $this->warn("Skipped site '{$site->site_name}' because device_id/module_id missing in event");

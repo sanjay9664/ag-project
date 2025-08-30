@@ -205,14 +205,14 @@
 
                         if (!empty($site->updatedAt) && $site->updatedAt !== 'N/A') {
                         try {
-                        $updatedAt = Carbon\Carbon::parse($site->updatedAt)->timezone('Asia/Kolkata');
-                        $now = Carbon\Carbon::now('Asia/Kolkata');
-                        $isRecent = $updatedAt->diffInHours($now) < 24; $formattedUpdatedAt=$updatedAt->format("d M Y
-                            h:i A");
-                            } catch (\Exception $e) {
+                            $updatedAt = Carbon\Carbon::parse($site->updatedAt)->timezone('Asia/Kolkata');
+                            $now = Carbon\Carbon::now('Asia/Kolkata');
+                            $isRecent = $updatedAt->diffInHours($now) < 24; 
+                            $formattedUpdatedAt=$updatedAt->format("d M Y h:i A");
+                        } catch (\Exception $e) {
                             \Log::error('Date Parsing Error: ' . $e->getMessage());
-                            }
-                            }
+                        }
+                        }
 
                             $gatewayStatus = $isRecent ? 'online' : 'offline';
                             $controllerStatus = $isRecent ? 'online' : 'offline';
@@ -305,7 +305,10 @@
 
             <td>
                 @php
-                $increased_running_hours = DB::table('running_hours')->where('site_id', $site->id)->first();
+                $increased_running_hours = DB::table('running_hours')
+                    ->where('site_id', $site->id)
+                    ->first();
+
                 $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
 
                 $addValue = 0;
@@ -313,15 +316,15 @@
                 $md = $sitejsonData['running_hours']['md'] ?? null;
 
                 if ($key && $md) {
-                foreach ($eventData as $event) {
-                $eventArray = $event->getArrayCopy();
-                if (isset($eventArray['module_id']) && $eventArray['module_id'] == $md) {
-                if (array_key_exists($key, $eventArray)) {
-                $addValue = (float) $eventArray[$key];
-                }
-                break;
-                }
-                }
+                    foreach ($eventData as $event) {
+                        // $event is already an array
+                        if (isset($event['module_id']) && $event['module_id'] == $md) {
+                            if (array_key_exists($key, $event)) {
+                                $addValue = (float) $event[$key];
+                            }
+                            break;
+                        }
+                    }
                 }
 
                 $increaseMinutes = $sitejsonData['running_hours']['increase_minutes'] ?? 1;
