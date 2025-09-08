@@ -141,7 +141,7 @@ Dashboard Page - Admin Panel
                                     </td>
 
                                     <?php
-                                        $addValuerun = 0;
+                                        $addValuerunTotals = 0;
                                         foreach ($sites as $site) {
                                             $data = json_decode($site->data);
                                             if ($data && isset($data->running_hours)) {
@@ -163,12 +163,12 @@ Dashboard Page - Admin Panel
                                                                 continue;
                                                             }
 
-                                                            $addValuerun = (float) $event[$fieldValue];
+                                                            $addValuerunTotals = (float) $event[$fieldValue];
 
                                                             if ($increaseMinutes > 0) {
-                                                                $addValuerun /= $increaseMinutes;
+                                                                $addValuerunTotals /= $increaseMinutes;
                                                             }
-                                                            $addValuerun = number_format($addValuerun, 2, '.', '');
+                                                            $addValuerunTotals = number_format($addValuerunTotals, 2, '.', '');
                                                             break 2; 
                                                         }
                                                     }
@@ -189,11 +189,9 @@ Dashboard Page - Admin Panel
                                             @csrf
                                             <input type="hidden" name="site_id" class="site_id"
                                                 value="{{ $present_site->id ?? '' }}">
-                                            <input type="hidden" name="actual_running_hour"
-                                                value="{{ $addValuerun ?? '' }}">
                                             <td>
                                                 <input type="text" class="form-control running_hours_admin"
-                                                    value="{{ $addValuerun }}" readonly
+                                                    value="{{ $addValuerunTotals }}" readonly
                                                     style="outline: none; box-shadow: none;">
                                             </td>
 
@@ -214,6 +212,11 @@ Dashboard Page - Admin Panel
 
                                                 <div class="inputButtonDiv" style="display: none; margin-top: 10px;">
                                                     <div class="d-flex align-items-center gap-2 w-100">
+
+                                                        <input type="hidden"
+                                                            name="actual_running_hour_{{$present_site->id}}"
+                                                            value="{{ $addValuerunTotals ?? '' }}">
+
                                                         <input type="text"
                                                             class="form-control border-1 px-2 py-1 increase_running_hours"
                                                             name="increase_running_hours"
@@ -252,7 +255,7 @@ Dashboard Page - Admin Panel
                                     <td>
                                         @php
                                         $siteData = $runningHours[$present_site->id ?? ''] ?? null;
-                                        $totalAddrunValue = $addValuerun +
+                                        $totalAddrunValue = $addValuerunTotals +
                                         ($siteData->increase_running_hours ?? 0);
 
                                         $hours = floor($totalAddrunValue); // Get whole hours
@@ -394,10 +397,11 @@ document.getElementById('downloadReport').addEventListener('click', function() {
 <script>
 $(document).ready(function() {
     function sendData(element) {
-        let site_id = $(element).data("site-id");
-        let increase_running_hours = $(element).val();
-        increase_running_hours = parseInt(increase_running_hours, 10) || 0;
-        let actual_running_hour = $("input[name='actual_running_hour']").val();
+        let $element = $(element);
+        let site_id = $element.data("site-id");
+        let increase_running_hours = parseInt($element.val(), 10) || 0;
+        let actual_running_hour = $("input[name='actual_running_hour_" + site_id + "']").val();
+        // console.log("actual_running_hour:", actual_running_hour);
         if (increase_running_hours > 15) {
             if (!confirm("Are you sure you want to increase this value?")) {
                 return;

@@ -9,6 +9,7 @@ use MongoDB\Client;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Site;
 use App\Models\Admin;
+use App\Models\MongodbFrontend;
 use App\Http\Controllers\Backend\SiteController;
 
 class SendDailySiteReport extends Command
@@ -32,55 +33,30 @@ class SendDailySiteReport extends Command
             $siteData->pluck('data')->map(fn($data) => json_decode($data, true))->toArray()
         );
 
-        $eventData = [];
-        if (!empty($mdValues)) {
-            $uniqueMdValues = array_unique(array_filter(array_map('intval', (array) $mdValues)));
-
-            if (!empty($uniqueMdValues)) {
-                $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
-                $mongoClient = new \MongoDB\Client($mongoUri);
-                $collection = $mongoClient->isa_qa->device_events;
-
-                $dateThreshold = new \MongoDB\BSON\UTCDateTime((new \DateTime('-48 hours'))->getTimestamp() * 1000);
-                $cacheKey = 'event_data_' . sha1(implode(',', $uniqueMdValues));
-
-                $eventData = Cache::remember($cacheKey, 300, function () use ($collection, $uniqueMdValues, $dateThreshold) {
-                   $cursor = $collection->find(
-                        [
-                            'module_id' => ['$in' => array_values($uniqueMdValues)],
-                            'createdAt' => ['$gte' => $dateThreshold],
-                        ],
-                        [
-                            'sort' => ['createdAt' => -1],
-                            'limit' => 1000,
-                            'noCursorTimeout' => true,
-                        ]
-                    );
-
-                    $moduleLatest = [];
-                    foreach ($cursor as $event) {
-                        $moduleId = $event['module_id'];
-                        if (!isset($moduleLatest[$moduleId])) {
-                            $moduleLatest[$moduleId] = $event;
-                        }
-                    }
-                    return array_values($moduleLatest);
-                });
-            }
-        }
+        $eventData = MongodbFrontend::pluck('data')->toArray();
         
         usort($eventData, fn($a, $b) => ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0));
 
-        $latestCreatedAt = !empty($eventData)
-            ? $eventData[0]['createdAt']->toDateTime()
-                ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                ->format('d-m-Y H:i:s')
-            : 'N/A';
-
+        if (!empty($eventData)) {
+            $timestamp = (int) ($eventData[0]['createdAt']['$date']['$numberLong'] ?? 0);
+            $latestCreatedAt = $timestamp
+                ? (new \DateTime('@' . ($timestamp / 1000)))
+                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                    ->format('d-m-Y H:i:s')
+                : 'N/A';
+        } else {
+            $latestCreatedAt = 'N/A';
+        }
+        
         foreach ($eventData as &$event) {
-            $event['createdAt'] = $event['createdAt']->toDateTime()
-                ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                ->format('d-m-Y H:i:s');
+            $timestamp = (int) ($event['createdAt']['$date']['$numberLong'] ?? 0);
+
+            $event['createdAt'] = $timestamp
+                ? (new \DateTime('@' . ($timestamp / 1000)))
+                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                    ->format('d-m-Y H:i:s')
+                : 'N/A';
+
             $event['latestCreatedAt'] = $latestCreatedAt;
         }
 
@@ -95,19 +71,24 @@ class SendDailySiteReport extends Command
 
             $updatedAt = 'N/A';
 
-            if (
-                $matchingEvent &&
-                isset($matchingEvent['updatedAt']) &&
-                $matchingEvent['updatedAt'] instanceof \MongoDB\BSON\UTCDateTime
-            ) {
-                $updatedAt = $matchingEvent['updatedAt']
-                    ->toDateTime()
-                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                    ->format('d-m-Y H:i:s');
+            if ($matchingEvent && isset($matchingEvent['updatedAt'])) {
+                if ($matchingEvent['updatedAt'] instanceof \MongoDB\BSON\UTCDateTime) {
+                    $updatedAt = $matchingEvent['updatedAt']
+                        ->toDateTime()
+                        ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                        ->format('d-m-Y H:i:s');
+                } elseif (is_array($matchingEvent['updatedAt']['$date'] ?? null)) {
+                    $timestamp = (int) ($matchingEvent['updatedAt']['$date']['$numberLong'] ?? 0);
+                    if ($timestamp) {
+                        $updatedAt = (new \DateTime('@' . ($timestamp / 1000)))
+                            ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                            ->format('d-m-Y H:i:s');
+                    }
+                }
             }
 
             $site->updatedAt = $updatedAt;
-        }    
+        }  
 
         // 🔹 Fetch DG & Controller Statuses
         $statuses = $this->getStatusesForSites($siteData->pluck('id')->toArray());
@@ -122,16 +103,23 @@ class SendDailySiteReport extends Command
         $pdf = \PDF::loadView('pdf.site_report', compact('siteData','sitejsonData','eventData','latestCreatedAt'))
                 ->setPaper('a4', 'landscape');
 
-        $fileName = 'DGMS_Site_Overview_' . now()->format('Y-m-d') . '.pdf';
-    
-        $pdfPath = public_path("daily-pdf/{$fileName}");
-            if (!file_exists(public_path('daily-pdf'))) {
-                mkdir(public_path('daily-pdf'), 0777, true);
+            $fileName = 'DGMS_Site_Overview_' . now()->format('Y-m-d') . '.pdf';
+            $pdfDir = public_path('daily-pdf');
+            $pdfPath = $pdfDir . '/' . $fileName;
+
+            if (!file_exists($pdfDir)) {
+                mkdir($pdfDir, 0777, true);
             }
+
+            foreach (glob($pdfDir . '/*.pdf') as $oldFile) {
+                @unlink($oldFile);
+            }
+            
             $pdf->save($pdfPath);
 
         \Mail::send([], [], function ($message) use ($pdfPath, $fileName) {
-            $message->to('agpower.solution20@gmail.com')
+            // $message->to('agpower.solution20@gmail.com')
+            $message->to('Amarsinghnikumbh@gmail.com')
                     ->subject('DGMS Site Overview Report - ' . now()->format('d M Y'))
                     ->attach($pdfPath, ['as' => $fileName, 'mime' => 'application/pdf']);
         });

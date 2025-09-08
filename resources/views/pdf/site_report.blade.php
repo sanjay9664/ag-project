@@ -60,7 +60,7 @@
                 $runValue = 0;
 
                 foreach ($eventData as $event) {
-                $eventArray = $event instanceof \ArrayObject ? $event->getArrayCopy() : (array)$event;
+                $eventArray = $event instanceof \ArrayObject ? $event->getArrayCopy() : (array) $event;
                 if ($runMd && isset($eventArray['module_id']) && $eventArray['module_id'] == $runMd) {
                 if ($runKey && array_key_exists($runKey, $eventArray)) {
                 $runValue = $eventArray[$runKey];
@@ -78,14 +78,14 @@
                 $addValue = 0;
 
                 foreach ($eventData as $event) {
-                $eventArray = $event instanceof \ArrayObject ? $event->getArrayCopy() : (array)$event;
+                $eventArray = $event instanceof \ArrayObject ? $event->getArrayCopy() : (array) $event;
                 if ($fuelMd && isset($eventArray['module_id']) && $eventArray['module_id'] == $fuelMd) {
                 if ($fuelKey && array_key_exists($fuelKey, $eventArray)) {
                 $addValue = $eventArray[$fuelKey];
                 }
                 break;
                 }
-                }
+                }               
 
                 $percentage = is_numeric($addValue) ? floatval($addValue) : 0;
                 $fuelBarColor = $percentage > 50 ? '#4caf50' : ($percentage > 20 ? '#ff9800' : '#f44336');
@@ -142,16 +142,20 @@
                         $md = $sitejsonData['running_hours']['md'] ?? null;
 
                         if ($key && $md && !empty($eventData)) {
-                        foreach ($eventData as $event) {
-                        $eventArray = $event->getArrayCopy();
+                            foreach ($eventData as $event) {
+                                if ($event instanceof \ArrayObject) {
+                                    $eventArray = $event->getArrayCopy();
+                                } else {
+                                    $eventArray = (array) $event;
+                                }
 
-                        if (isset($eventArray['module_id']) && $eventArray['module_id'] == $md) {
-                        if (array_key_exists($key, $eventArray)) {
-                        $addValue = (float) $eventArray[$key];
-                        }
-                        break;
-                        }
-                        }
+                                if (isset($eventArray['module_id']) && $eventArray['module_id'] == $md) {
+                                    if (array_key_exists($key, $eventArray)) {
+                                        $addValue = (float) $eventArray[$key];
+                                    }
+                                    break;
+                                }
+                            }
                         }
 
                         $increaseMinutes = (float) ($sitejsonData['running_hours']['increase_minutes'] ?? 1);

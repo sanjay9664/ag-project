@@ -205,14 +205,14 @@
 
                         if (!empty($site->updatedAt) && $site->updatedAt !== 'N/A') {
                         try {
-                            $updatedAt = Carbon\Carbon::parse($site->updatedAt)->timezone('Asia/Kolkata');
-                            $now = Carbon\Carbon::now('Asia/Kolkata');
-                            $isRecent = $updatedAt->diffInHours($now) < 24; 
-                            $formattedUpdatedAt=$updatedAt->format("d M Y h:i A");
-                        } catch (\Exception $e) {
+                        $updatedAt = Carbon\Carbon::parse($site->updatedAt)->timezone('Asia/Kolkata');
+                        $now = Carbon\Carbon::now('Asia/Kolkata');
+                        $isRecent = $updatedAt->diffInHours($now) < 24; $formattedUpdatedAt=$updatedAt->format("d M Y
+                            h:i A");
+                            } catch (\Exception $e) {
                             \Log::error('Date Parsing Error: ' . $e->getMessage());
-                        }
-                        }
+                            }
+                            }
 
                             $gatewayStatus = $isRecent ? 'online' : 'offline';
                             $controllerStatus = $isRecent ? 'online' : 'offline';
@@ -304,10 +304,10 @@
             <td>{{ $sitejsonData['serial_number'] ?? 'N/A' }}</td>
 
             <td>
-                @php
+                <?php
                 $increased_running_hours = DB::table('running_hours')
-                    ->where('site_id', $site->id)
-                    ->first();
+                ->where('site_id', $site->id)
+                ->first();
 
                 $increaseRunningHours = (float) ($increased_running_hours->increase_running_hours ?? 0);
 
@@ -316,13 +316,13 @@
                 $md = $sitejsonData['running_hours']['md'] ?? null;
 
                 if ($key && $md) {
-                    foreach ($eventData as $event) {
-                        // $event is already an array
-                        if (isset($event['module_id']) && $event['module_id'] == $md) {
-                            if (array_key_exists($key, $event)) {
-                                $addValue = (float) $event[$key];
-                            }
-                            break;
+                foreach ($eventData as $event) {
+                // $event is already an array
+                if (isset($event['module_id']) && $event['module_id'] == $md) {
+                        if (array_key_exists($key, $event)) {
+                            $addValue = (float) $event[$key];
+                        }
+                        break;
                         }
                     }
                 }
@@ -334,10 +334,15 @@
                 $inc_addValueFormatted = $inc_addValue + $increaseRunningHours;
 
                 // Prevent negative value
-                if ($inc_addValueFormatted < 0) { $inc_addValueFormatted=0; } 
-                $totalMinutes=round($inc_addValueFormatted * 60);
-                    $hours=floor($totalMinutes / 60); $minutes=$totalMinutes % 60; @endphp {{ $hours }} hrs
-                    {{ $minutes }} mins </td>
+                if ($inc_addValueFormatted < 0) { 
+                    $inc_addValueFormatted=0; 
+                } 
+                $totalMinutes=round($inc_addValueFormatted * 60); 
+                $hours=floor($totalMinutes / 60); 
+                $minutes=$totalMinutes % 60; 
+                ?>
+                {{ $hours }} hrs {{ $minutes }} mins
+            </td>
 
 
             <td>{{ $formattedUpdatedAt }}</td>
@@ -387,7 +392,7 @@
     }
 
     setInterval(handleRefresh, 5 * 60 * 1000);
-    
+
     document.addEventListener('DOMContentLoaded', updateRefreshTime);
 
     document.getElementById('downloadPdf').addEventListener('click', function() {

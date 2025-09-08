@@ -127,7 +127,7 @@ class DashboardController extends Controller
             'actual_running_hour' => 'required',
             'site_id' => 'required|integer',
         ]);
-    
+        // dd($request->all());
         $existingData = DB::table('running_hours')->where('site_id', $request->site_id)->first();
     
         $newRunningHours = $request->increase_running_hours;
