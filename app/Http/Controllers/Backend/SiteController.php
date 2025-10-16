@@ -998,25 +998,49 @@ class SiteController extends Controller
 
                 $updatedAt = 'N/A';
 
-                if ($matchingEvent && isset($matchingEvent['updatedAt'])) {
-                    if ($matchingEvent['updatedAt'] instanceof \MongoDB\BSON\UTCDateTime) {
-                        $updatedAt = $matchingEvent['updatedAt']
-                            ->toDateTime()
+                // Decode JSON safely
+                $siteJson = json_decode($site->data ?? '{}', true);
+                $siteMd   = $siteJson['parameters']['battery_voltage']['md'] ?? null;
+                $siteAdd  = $siteJson['parameters']['battery_voltage']['add'] ?? null;
+
+                // Debugging - show values being checked
+                // echo "<pre>DeviceID: {$deviceId}, Md: {$siteMd}, Add: {$siteAdd}</pre>";
+
+                if (
+                    $matchingEvent &&
+                    isset($matchingEvent['module_id']) &&
+                    (string) $matchingEvent['module_id'] === (string) $siteMd
+                ) {
+                    // convert all keys to strings for comparison
+                    $eventKeys = array_map('strval', array_keys($matchingEvent));
+
+                    if (in_array((string) $siteAdd, $eventKeys, true)) {
+                        $batUpdated = $matchingEvent['updatedAt'] ?? null;
+
+                        if (is_array($batUpdated) && isset($batUpdated['$date']['$numberLong'])) {
+                            $timestamp = (int) $batUpdated['$date']['$numberLong'];
+                            $timestamp = (int)$batUpdated['$date']['$numberLong'];
+                            if ($timestamp > 0) {
+                                $updatedAt = (new \DateTime('@' . ($timestamp / 1000)))
+                                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                                    ->format('d-m-Y H:i:s');
+                            }
+                        } elseif ($batUpdated instanceof \MongoDB\BSON\UTCDateTime) {
+                            $updatedAt = $batUpdated->toDateTime()
                             ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
                             ->format('d-m-Y H:i:s');
-                    } elseif (is_array($matchingEvent['updatedAt']['$date'] ?? null)) {
-                        $timestamp = (int) ($matchingEvent['updatedAt']['$date']['$numberLong'] ?? 0);
-                        if ($timestamp) {
-                            $updatedAt = (new \DateTime('@' . ($timestamp / 1000)))
-                                ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                                ->format('d-m-Y H:i:s');
                         }
+
+                        echo "<pre style='color:green;'>✅ Matched {$siteAdd} — UpdatedAt: {$updatedAt}</pre>";
+                    } else {
+                        echo "<pre style='color:red;'>❌ Add key '{$siteAdd}' not found in event keys: "
+                            . implode(', ', $eventKeys) . "</pre>";
                     }
+
+                    $site->updatedAt = $updatedAt;
                 }
-
-                $site->updatedAt = $updatedAt;
             }
-
+            
             $sitejsonData = json_decode($siteData->first()->data ?? '{}', true);
             // return $eventData;
        
