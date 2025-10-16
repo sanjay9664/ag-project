@@ -855,201 +855,818 @@ class SiteController extends Controller
 
     // }
 
-    public function AdminSites(Request $request)     
-    {
-        $role = $request->query('role');
-        $bankName = $request->query('bank_name');
-        $location = $request->query('location');
 
-        $siteData = collect();
-        $eventData = [];
-        $latestCreatedAt = null;
+    // old code 
+//  public function AdminSites(Request $request)     
+//     {
+//         $role = $request->query('role');
+//         $bankName = $request->query('bank_name');
+//         $location = $request->query('location');
 
-        $user = Auth::user();
-        if (!$user) {
-            return redirect()->route('admin.login')->withErrors('You must be logged in.');
+//         $siteData = collect();
+//         $eventData = [];
+//         $latestCreatedAt = null;
+
+//         $user = Auth::user();
+//         if (!$user) {
+//             return redirect()->route('admin.login')->withErrors('You must be logged in.');
+//         }
+
+//         $userEmail = $user->email;
+
+//         if (!empty($location)) {
+//             $query = DB::table('sites')->where('email', $userEmail);
+
+//             if (!empty($bankName) && $bankName !== 'Select Bank') {
+//                 $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.generator')) = ?", [$bankName]);
+//             }
+//             if (!empty($location) && $location !== 'Select Location') {
+//                 $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.group')) = ?", [$location]);
+//             }
+            
+//             $siteData = $query->get();
+
+//             $decodedSiteData = $siteData->map(function ($site) {
+//                 return json_decode($site->data, true);
+//             });
+
+//             $mdValues = $this->extractMdFields($decodedSiteData->toArray());
+
+//             $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+//             $client = new MongoClient($mongoUri);
+//             $database = $client->isa_qa;
+//             $collection = $database->device_events;
+
+//             if (!empty($mdValues)) {
+//                 $uniqueMdValues = array_unique(array_filter(array_map('intval', (array) $mdValues)));
+
+//                 foreach ($uniqueMdValues as $moduleId) {
+//                     $event = $collection->findOne(
+//                         ['module_id' => $moduleId],
+//                         ['sort' => ['createdAt' => -1]]
+//                     );
+
+//                     if ($event) {
+//                         $eventData[] = $event;
+//                     }
+//                 }
+//             }
+
+//             usort($eventData, function ($a, $b) {
+//                 return ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0);
+//             });
+
+//             $latestCreatedAt = !empty($eventData) ? $eventData[0]['createdAt']->toDateTime()
+//                 ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+//                 ->format('d-m-Y H:i:s') : 'N/A';
+
+//             foreach ($eventData as &$event) {
+//                 $event['createdAt'] = $event['createdAt']->toDateTime()
+//                     ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+//                     ->format('d-m-Y H:i:s');
+//                 $event['latestCreatedAt'] = $latestCreatedAt;
+//             }
+
+//             foreach ($siteData as $site) {
+//                 $matchingEvent = collect($eventData)->first(function ($event) use ($site) {
+//                     return isset($event['device_id'], $site->device_id) &&
+//                         trim(strtolower($event['device_id'])) === trim(strtolower($site->device_id));
+//                 });
+
+//                 $site->updatedAt = isset($matchingEvent['updatedAt']) ? $matchingEvent['updatedAt']->toDateTime()
+//                     ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+//                     ->format('d-m-Y H:i:s') : 'N/A';
+//             }
+
+//             if ($request->ajax()) {
+//                 return response()->json([
+//                     'html' => view('backend.pages.sites.partials.site-table', compact('siteData', 'decodedSiteData', 'eventData', 'latestCreatedAt'))->render()
+//                 ]);
+//             }
+
+//             return view('backend.pages.sites.admin-sites', compact('siteData', 'decodedSiteData', 'eventData', 'latestCreatedAt'));
+//         } else {
+//             ini_set('max_execution_time', 120);
+//             $start = microtime(true);
+
+//             $user = Auth::guard('admin')->user();
+//             $userEmail = $user->email;
+
+//             $siteData = $user->hasRole('superadmin')
+//                 ? Site::select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get()
+//                 : Site::where('email', $userEmail)->select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get();
+
+//             $mdValues = $this->extractMdFields(
+//                 $siteData->pluck('data')->map(fn($data) => json_decode($data, true))->toArray()
+//             );
+
+//             $eventData = MongodbFrontend::pluck('data')->toArray();
+
+//             // return $eventData;
+            
+//             usort($eventData, fn($a, $b) => ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0));
+
+//             if (!empty($eventData)) {
+//                 $timestamp = (int) ($eventData[0]['createdAt']['$date']['$numberLong'] ?? 0);
+//                 $latestCreatedAt = $timestamp
+//                     ? (new \DateTime('@' . ($timestamp / 1000)))
+//                         ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+//                         ->format('d-m-Y H:i:s')
+//                     : 'N/A';
+//             } else {
+//                 $latestCreatedAt = 'N/A';
+//             }
+            
+//             foreach ($eventData as &$event) {
+//                 $timestamp = (int) ($event['createdAt']['$date']['$numberLong'] ?? 0);
+
+//                 $event['createdAt'] = $timestamp
+//                     ? (new \DateTime('@' . ($timestamp / 1000)))
+//                         ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+//                         ->format('d-m-Y H:i:s')
+//                     : 'N/A';
+
+//                 $event['latestCreatedAt'] = $latestCreatedAt;
+//             }
+
+//             $eventMap = collect($eventData)->mapWithKeys(function ($event) {
+//                 $key = strtolower(trim($event['device_id'] ?? ''));
+//                 return [$key => $event];
+//             });
+
+//             foreach ($siteData as $site) {
+//                 $deviceId = strtolower(trim($site->device_id ?? ''));
+//                 $matchingEvent = $eventMap[$deviceId] ?? null;
+
+//                 $updatedAt = 'N/A';
+
+//                 // Decode JSON safely
+//                 $siteJson = json_decode($site->data ?? '{}', true);
+//                 $siteMd   = $siteJson['parameters']['battery_voltage']['md'] ?? null;
+//                 $siteAdd  = $siteJson['parameters']['battery_voltage']['add'] ?? null;
+
+//                 // Debugging - show values being checked
+//                 // echo "<pre>DeviceID: {$deviceId}, Md: {$siteMd}, Add: {$siteAdd}</pre>";
+
+//                 if (
+//                     $matchingEvent &&
+//                     isset($matchingEvent['module_id']) &&
+//                     (string) $matchingEvent['module_id'] === (string) $siteMd
+//                 ) {
+//                     // convert all keys to strings for comparison
+//                     $eventKeys = array_map('strval', array_keys($matchingEvent));
+
+//                     if (in_array((string) $siteAdd, $eventKeys, true)) {
+//                         $batUpdated = $matchingEvent['updatedAt'] ?? null;
+
+//                         if (is_array($batUpdated) && isset($batUpdated['$date']['$numberLong'])) {
+//                             $timestamp = (int) $batUpdated['$date']['$numberLong'];
+//                             $timestamp = (int)$batUpdated['$date']['$numberLong'];
+//                             if ($timestamp > 0) {
+//                                 $updatedAt = (new \DateTime('@' . ($timestamp / 1000)))
+//                                     ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+//                                     ->format('d-m-Y H:i:s');
+//                             }
+//                         } elseif ($batUpdated instanceof \MongoDB\BSON\UTCDateTime) {
+//                             $updatedAt = $batUpdated->toDateTime()
+//                             ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+//                             ->format('d-m-Y H:i:s');
+//                         }
+
+//                         echo "<pre style='color:green;'>✅ Matched {$siteAdd} — UpdatedAt: {$updatedAt}</pre>";
+//                     } else {
+//                         echo "<pre style='color:red;'>❌ Add key '{$siteAdd}' not found in event keys: "
+//                             . implode(', ', $eventKeys) . "</pre>";
+//                     }
+
+//                     $site->updatedAt = $updatedAt;
+//                 }
+//             }
+            
+//             $sitejsonData = json_decode($siteData->first()->data ?? '{}', true);
+//             // return $eventData;
+       
+//             return view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'));
+//         }
+
+//     }
+
+//     public function fetchStatuses(Request $request)
+//     {
+//         $siteIds = $request->input('site_ids', []);
+//         $sites = Site::whereIn('id', $siteIds)->select('id', 'device_id', 'clusterID')->get();
+
+//         $httpClient = new Client();
+//         $dgRequests = [];
+//         $controllerRequests = [];
+//         $dgResults = [];
+//         $controllerResults = [];
+
+//         foreach ($sites as $site) {
+//             if ($site->device_id) {
+//                 $dgRequests[$site->id] = new GuzzleRequest('GET', "http://app.sochiot.com/api/config-engine/device/status/uuid/{$site->device_id}");
+//             }
+//             if ($site->clusterID) {
+//                 $controllerRequests[$site->id] = new GuzzleRequest('GET', "http://app.sochiot.com/api/config-engine/gateway/status/uuid/{$site->clusterID}");
+//             }
+//         }
+
+//         // Pool for DG
+//         $dgPool = new Pool($httpClient, $dgRequests, [
+//             'concurrency' => 10,
+//             'fulfilled' => function ($response, $siteId) use (&$dgResults) {
+//                 $dgResults[$siteId] = strtoupper(trim($response->getBody()->getContents()));
+//             },
+//             'rejected' => function () {}
+//         ]);
+
+//         // Pool for Controller
+//         $ctrlPool = new Pool($httpClient, $controllerRequests, [
+//             'concurrency' => 10,
+//             'fulfilled' => function ($response, $siteId) use (&$controllerResults) {
+//                 $controllerResults[$siteId] = strtoupper(trim($response->getBody()->getContents()));
+//             },
+//             'rejected' => function () {}
+//         ]);
+
+//         $dgPool->promise()->wait();
+//         $ctrlPool->promise()->wait();
+
+//         $statuses = [];
+//         foreach ($siteIds as $siteId) {
+//             $statuses[$siteId] = [
+//                 'dg_status' => $dgResults[$siteId] ?? 'OFFLINE',
+//                 'controller_status' => $controllerResults[$siteId] ?? 'OFFLINE',
+//             ];
+//         }
+
+//         return response()->json($statuses);
+//     }
+
+//     public function fetchLatestData($slug)
+//     {
+//         $siteData = Site::where('slug', $slug)->first();
+        
+//         if (!$siteData) {
+//             return response()->json(['error' => 'Site not found or module_id is missing.'], 404);
+//         }
+    
+//         $data = json_decode($siteData->data, true);
+//         $mdValues = $this->extractMdFields($data);
+//         $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+//         $client = new MongoClient($mongoUri);
+//         $database = $client->isa_qa;
+//         $collection = $database->device_events;
+    
+//         $events = [];
+//         if (!empty($mdValues)) {
+//             $uniqueMdValues = array_unique((array) $mdValues);
+//             $uniqueMdValues = array_filter($uniqueMdValues, function ($value) {
+//                 return !empty($value);
+//             });
+//             $uniqueMdValues = array_map('intval', $uniqueMdValues);
+//             $uniqueMdValues = array_values($uniqueMdValues);
+        
+//             foreach ($uniqueMdValues as $moduleId) {
+//                 $event = $collection->findOne(
+//                     ['module_id' => $moduleId],
+//                     ['sort' => ['createdAt' => -1]]
+//                 );
+//                 if ($event) {
+//                     $events[] = $event;
+//                 }
+//             }
+//         }
+    
+//         $eventsData = json_encode($events, JSON_PRETTY_PRINT);
+       
+//         return response()->json(['eventData' => $events]);
+//     }    
+
+//     private function extractMdFields($data)
+//     {
+//         $mdFields = [];
+
+//         array_walk_recursive($data, function ($value, $key) use (&$mdFields) {
+//             if ($key === 'md' && !is_null($value)) {
+//                 $mdFields[] = $value;
+//             }
+//         });
+
+//         return $mdFields;
+//     }
+
+//     // For Api
+//     public function apiSites()
+//     {
+//         $user = Auth::guard('admin_api')->user();
+
+//         if (!$user) {
+//             return response()->json(['message' => 'Unauthorized'], 401);
+//         }
+
+//         if ($user->hasRole('superadmin')) {
+//             $sites = Site::all();
+//         } else {
+//             $sites = Site::where('email', $user->email)->get();
+//         }
+
+//         return response()->json([
+//             'success' => true,
+//             'data' => $sites,
+//         ]);
+//     }
+
+//     public function apiStoreDevice(Request $request)
+//     {
+//         $emails = is_array($request->userEmail) 
+//             ? $request->userEmail 
+//             : explode(',', $request->userEmail);
+
+//         $validator = Validator::make($request->all(), [
+//             'deviceName'       => 'required|string|max:255',
+//             'deviceId'         => 'required|string|max:255',
+//             'moduleId'         => 'required|string|max:255',
+//             'eventField'       => 'required|string|max:255',
+//             'siteId'           => 'required|string|max:255',
+//             'lowerLimit'       => 'nullable|numeric',
+//             'upperLimit'       => 'nullable|numeric',
+//             'lowerLimitMsg'    => 'nullable|string|max:255',
+//             'upperLimitMsg'    => 'nullable|string|max:255',
+//             'userEmail'        => ['required', function ($attribute, $value, $fail) use ($emails) {
+//                 foreach ($emails as $email) {
+//                     if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL)) {
+//                         $fail('One or more email addresses are invalid.');
+//                         break;
+//                     }
+//                 }
+//             }],
+//             'userPassword'     => 'required|string|min:8',
+//             'userPassword'     => 'required|string|min:8',
+//             'owner_email'      => 'nullable|email|max:255',
+//         ]);
+
+//         if ($validator->fails()) {
+//             return response()->json(['errors' => $validator->errors()], 422);
+//         }
+
+//         // Check for existing device
+//         $exists = DB::table('device_events')
+//             ->where('deviceName', $request->deviceName)
+//             ->where('deviceId', $request->deviceId)
+//             ->exists();
+
+//         if ($exists) {
+//             return response()->json([
+//                 'message' => 'Device with this name and ID already exists.'
+//             ], 409);
+//         }
+
+//         // Insert device record
+//         DB::table('device_events')->insert([
+//             'deviceName'     => $request->deviceName,
+//             'deviceId'       => $request->deviceId,
+//             'moduleId'       => $request->moduleId,
+//             'eventField'     => $request->eventField,
+//             'siteId'         => $request->siteId,
+//             'lowerLimit'     => $request->lowerLimit,
+//             'upperLimit'     => $request->upperLimit,
+//             'lowerLimitMsg'  => $request->lowerLimitMsg,
+//             'upperLimitMsg'  => $request->upperLimitMsg,
+//             'userEmail'      => is_array($request->userEmail) 
+//                 ? implode(',', $request->userEmail) 
+//                 : $request->userEmail,
+//             'userPassword'   => Hash::make($request->userPassword),
+//             'owner_email'    => $request->owner_email,
+//             'created_at'     => now(),
+//             'updated_at'     => now()
+//         ]);
+
+//         return response()->json([
+//             'message' => 'Device event saved successfully'
+//         ], 201);
+//     }
+
+//     public function apiFetchDevice(Request $request)
+//     {
+//         $data = DB::table('device_events')->get();
+//          return view('backend.pages.notification.dg-list', ['data' => $data]);
+//     }
+
+//     public function NotificationCreate(Request $request)
+//     {
+//          $data = DB::table('device_events')->get();
+//         return view('backend.pages.notification.create-site', ['data' => $data]);
+//     }
+
+//     public function NotificationEdit(Request $request)
+//     {
+//         return view('backend.pages.notification.edit-site');
+//     }
+    
+//     public function apiUpdateDevice(Request $request)
+//     {
+//         $device = DeviceEvent::find($request->id);
+
+//         if (!$device) {
+//             return response()->json(['message' => 'Device not found.'], 404);
+//         }
+
+//         $emails = is_array($request->userEmail)
+//             ? $request->userEmail
+//             : explode(',', $request->userEmail);
+
+//         // Update fields
+//         $device->deviceName      = $request->deviceName;
+//         $device->deviceId        = $request->deviceId;
+//         $device->moduleId        = $request->moduleId;
+//         $device->eventField      = $request->eventField;
+//         $device->siteId          = $request->siteId;
+//         $device->lowerLimit      = $request->lowerLimit;
+//         $device->upperLimit      = $request->upperLimit;
+//         $device->lowerLimitMsg   = $request->lowerLimitMsg;
+//         $device->upperLimitMsg   = $request->upperLimitMsg;
+//         $device->userEmail       = json_encode($emails); // ✅ Save as JSON array
+//         $device->userPassword    = $request->userPassword;
+//         $device->owner_email     = $request->owner_email;
+
+//         $device->save();
+
+//         return response()->json(['message' => 'Device updated successfully.']);
+//     }
+
+//     public function showDeviceForm()
+//     {
+//         $data = DB::table('device_events')->get();
+//         return view('device-update', compact('data'));
+//     }
+
+//     public function startProcess(Request $request)
+//     {
+//         $data = $request->only(['argValue', 'moduleId', 'cmdField', 'cmdArg', 'actionType']);
+//         $action = $data['actionType'] ?? 'unknown';
+
+//         try {
+//             $apiUrl = 'http://app.sochiot.com:8082/api/config-engine/device/command/push/remote';
+
+//             $response = Http::post($apiUrl, [
+//                 'argValue' => $data['argValue'],
+//                 'moduleId' => $data['moduleId'],
+//                 'cmdField' => $data['cmdField'],
+//                 'cmdArg' => $data['cmdArg'],
+//             ]);
+
+//             return response()->json([
+//                 'message' => ucfirst($action) . ' process completed successfully.',
+//                 'external_response' => $response->json(),
+//             ]);
+//         } catch (\Exception $e) {
+//             return response()->json([
+//                 'message' => ucfirst($action) . ' process failed.',
+//                 'error' => $e->getMessage(),
+//             ], 500);
+//         }
+//     }
+// }
+
+// start code here 
+
+public function AdminSites(Request $request)     
+{
+    $role = $request->query('role');
+    $bankName = $request->query('bank_name');
+    $location = $request->query('location');
+
+    $siteData = collect();
+    $eventData = [];
+    $latestCreatedAt = null;
+
+    $user = Auth::user();
+    if (!$user) {
+        return redirect()->route('admin.login')->withErrors('You must be logged in.');
+    }
+
+    $userEmail = $user->email;
+
+    if (!empty($location)) {
+        $query = DB::table('sites')->where('email', $userEmail);
+
+        if (!empty($bankName) && $bankName !== 'Select Bank') {
+            $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.generator')) = ?", [$bankName]);
+        }
+        if (!empty($location) && $location !== 'Select Location') {
+            $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.group')) = ?", [$location]);
+        }
+        
+        $siteData = $query->get();
+
+        $decodedSiteData = $siteData->map(function ($site) {
+            return json_decode($site->data, true);
+        });
+
+        // Get ALL events without filtering by module_id
+        $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
+        $client = new MongoClient($mongoUri);
+        $database = $client->isa_qa;
+        $collection = $database->device_events;
+
+        // Fetch all events with limit to prevent memory issues
+        $allEvents = $collection->find([], [
+            'sort' => ['createdAt' => -1],
+            'limit' => 5000
+        ]);
+        
+        foreach ($allEvents as $event) {
+            $eventData[] = $event;
         }
 
+        usort($eventData, function ($a, $b) {
+            return ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0);
+        });
+
+        $latestCreatedAt = !empty($eventData) ? $eventData[0]['createdAt']->toDateTime()
+            ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+            ->format('d-m-Y H:i:s') : 'N/A';
+
+        foreach ($eventData as &$event) {
+            $event['createdAt'] = $event['createdAt']->toDateTime()
+                ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+                ->format('d-m-Y H:i:s');
+            $event['latestCreatedAt'] = $latestCreatedAt;
+        }
+
+        // Set data for ALL sites - use SQL data as fallback
+        foreach ($siteData as $site) {
+            $this->setSiteDataWithFallback($site, $eventData);
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('backend.pages.sites.partials.site-table', compact('siteData', 'decodedSiteData', 'eventData', 'latestCreatedAt'))->render()
+            ]);
+        }
+
+        return view('backend.pages.sites.admin-sites', compact('siteData', 'decodedSiteData', 'eventData', 'latestCreatedAt'));
+    } else {
+        ini_set('max_execution_time', 180);
+
+        $user = Auth::guard('admin')->user();
         $userEmail = $user->email;
 
-        if (!empty($location)) {
-            $query = DB::table('sites')->where('email', $userEmail);
+        // Get ALL sites for the user
+        $siteData = $user->hasRole('superadmin')
+            ? Site::select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get()
+            : Site::where('email', $userEmail)->select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get();
 
-            if (!empty($bankName) && $bankName !== 'Select Bank') {
-                $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.generator')) = ?", [$bankName]);
-            }
-            if (!empty($location) && $location !== 'Select Location') {
-                $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.group')) = ?", [$location]);
-            }
-            
-            $siteData = $query->get();
+        \Log::info("Total sites found: " . $siteData->count());
 
-            $decodedSiteData = $siteData->map(function ($site) {
-                return json_decode($site->data, true);
-            });
+        // Get ALL event data without any filtering
+        $eventData = MongodbFrontend::get()
+            ->map(function ($doc) {
+                return $doc->data;
+            })->toArray();
 
-            $mdValues = $this->extractMdFields($decodedSiteData->toArray());
+        \Log::info("Total events found: " . count($eventData));
 
-            $mongoUri = 'mongodb://isaqaadmin:password@44.240.110.54:27017/isa_qa';
-            $client = new MongoClient($mongoUri);
-            $database = $client->isa_qa;
-            $collection = $database->device_events;
+        // Sort events by timestamp
+        usort($eventData, function ($a, $b) {
+            $timestampA = $this->extractTimestamp($a);
+            $timestampB = $this->extractTimestamp($b);
+            return $timestampB <=> $timestampA;
+        });
 
-            if (!empty($mdValues)) {
-                $uniqueMdValues = array_unique(array_filter(array_map('intval', (array) $mdValues)));
-
-                foreach ($uniqueMdValues as $moduleId) {
-                    $event = $collection->findOne(
-                        ['module_id' => $moduleId],
-                        ['sort' => ['createdAt' => -1]]
-                    );
-
-                    if ($event) {
-                        $eventData[] = $event;
-                    }
-                }
-            }
-
-            usort($eventData, function ($a, $b) {
-                return ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0);
-            });
-
-            $latestCreatedAt = !empty($eventData) ? $eventData[0]['createdAt']->toDateTime()
-                ->setTimezone(new DateTimeZone('Asia/Kolkata'))
-                ->format('d-m-Y H:i:s') : 'N/A';
-
-            foreach ($eventData as &$event) {
-                $event['createdAt'] = $event['createdAt']->toDateTime()
-                    ->setTimezone(new DateTimeZone('Asia/Kolkata'))
+        // Calculate latestCreatedAt
+        if (!empty($eventData)) {
+            $latestTimestamp = $this->extractTimestamp($eventData[0]);
+            if ($latestTimestamp > 0) {
+                $latestCreatedAt = (new \DateTime('@' . ($latestTimestamp / 1000)))
+                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
                     ->format('d-m-Y H:i:s');
-                $event['latestCreatedAt'] = $latestCreatedAt;
-            }
-
-            foreach ($siteData as $site) {
-                $matchingEvent = collect($eventData)->first(function ($event) use ($site) {
-                    return isset($event['device_id'], $site->device_id) &&
-                        trim(strtolower($event['device_id'])) === trim(strtolower($site->device_id));
-                });
-
-                $site->updatedAt = isset($matchingEvent['updatedAt']) ? $matchingEvent['updatedAt']->toDateTime()
-                    ->setTimezone(new DateTimeZone('Asia/Kolkata'))
-                    ->format('d-m-Y H:i:s') : 'N/A';
-            }
-
-            if ($request->ajax()) {
-                return response()->json([
-                    'html' => view('backend.pages.sites.partials.site-table', compact('siteData', 'decodedSiteData', 'eventData', 'latestCreatedAt'))->render()
-                ]);
-            }
-
-            return view('backend.pages.sites.admin-sites', compact('siteData', 'decodedSiteData', 'eventData', 'latestCreatedAt'));
-        } else {
-            ini_set('max_execution_time', 120);
-            $start = microtime(true);
-
-            $user = Auth::guard('admin')->user();
-            $userEmail = $user->email;
-
-            $siteData = $user->hasRole('superadmin')
-                ? Site::select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get()
-                : Site::where('email', $userEmail)->select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get();
-
-            $mdValues = $this->extractMdFields(
-                $siteData->pluck('data')->map(fn($data) => json_decode($data, true))->toArray()
-            );
-
-            $eventData = MongodbFrontend::pluck('data')->toArray();
-
-            // return $eventData;
-            
-            usort($eventData, fn($a, $b) => ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0));
-
-            if (!empty($eventData)) {
-                $timestamp = (int) ($eventData[0]['createdAt']['$date']['$numberLong'] ?? 0);
-                $latestCreatedAt = $timestamp
-                    ? (new \DateTime('@' . ($timestamp / 1000)))
-                        ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                        ->format('d-m-Y H:i:s')
-                    : 'N/A';
             } else {
                 $latestCreatedAt = 'N/A';
             }
-            
-            foreach ($eventData as &$event) {
-                $timestamp = (int) ($event['createdAt']['$date']['$numberLong'] ?? 0);
-
-                $event['createdAt'] = $timestamp
-                    ? (new \DateTime('@' . ($timestamp / 1000)))
-                        ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                        ->format('d-m-Y H:i:s')
-                    : 'N/A';
-
-                $event['latestCreatedAt'] = $latestCreatedAt;
+        } else {
+            $latestCreatedAt = 'N/A';
+        }
+        
+        // Process events for display
+        foreach ($eventData as &$event) {
+            $timestamp = $this->extractTimestamp($event);
+            if ($timestamp > 0) {
+                $event['createdAt'] = (new \DateTime('@' . ($timestamp / 1000)))
+                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                    ->format('d-m-Y H:i:s');
+            } else {
+                $event['createdAt'] = 'N/A';
             }
-
-            $eventMap = collect($eventData)->mapWithKeys(function ($event) {
-                $key = strtolower(trim($event['device_id'] ?? ''));
-                return [$key => $event];
-            });
-
-            foreach ($siteData as $site) {
-                $deviceId = strtolower(trim($site->device_id ?? ''));
-                $matchingEvent = $eventMap[$deviceId] ?? null;
-
-                $updatedAt = 'N/A';
-
-                // Decode JSON safely
-                $siteJson = json_decode($site->data ?? '{}', true);
-                $siteMd   = $siteJson['parameters']['battery_voltage']['md'] ?? null;
-                $siteAdd  = $siteJson['parameters']['battery_voltage']['add'] ?? null;
-
-                // Debugging - show values being checked
-                // echo "<pre>DeviceID: {$deviceId}, Md: {$siteMd}, Add: {$siteAdd}</pre>";
-
-                if (
-                    $matchingEvent &&
-                    isset($matchingEvent['module_id']) &&
-                    (string) $matchingEvent['module_id'] === (string) $siteMd
-                ) {
-                    // convert all keys to strings for comparison
-                    $eventKeys = array_map('strval', array_keys($matchingEvent));
-
-                    if (in_array((string) $siteAdd, $eventKeys, true)) {
-                        $batUpdated = $matchingEvent['updatedAt'] ?? null;
-
-                        if (is_array($batUpdated) && isset($batUpdated['$date']['$numberLong'])) {
-                            $timestamp = (int) $batUpdated['$date']['$numberLong'];
-                            $timestamp = (int)$batUpdated['$date']['$numberLong'];
-                            if ($timestamp > 0) {
-                                $updatedAt = (new \DateTime('@' . ($timestamp / 1000)))
-                                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                                    ->format('d-m-Y H:i:s');
-                            }
-                        } elseif ($batUpdated instanceof \MongoDB\BSON\UTCDateTime) {
-                            $updatedAt = $batUpdated->toDateTime()
-                            ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                            ->format('d-m-Y H:i:s');
-                        }
-
-                        echo "<pre style='color:green;'>✅ Matched {$siteAdd} — UpdatedAt: {$updatedAt}</pre>";
-                    } else {
-                        echo "<pre style='color:red;'>❌ Add key '{$siteAdd}' not found in event keys: "
-                            . implode(', ', $eventKeys) . "</pre>";
-                    }
-
-                    $site->updatedAt = $updatedAt;
-                }
-            }
-            
-            $sitejsonData = json_decode($siteData->first()->data ?? '{}', true);
-            // return $eventData;
-       
-            return view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'));
+            $event['latestCreatedAt'] = $latestCreatedAt;
         }
 
+        // Process ALL sites - ALWAYS show data from SQL as fallback
+        foreach ($siteData as $site) {
+            $this->setSiteDataWithFallback($site, $eventData);
+        }
+        
+        $sitejsonData = json_decode($siteData->first()->data ?? '{}', true);
+        
+        // Final debug log
+        \Log::info("AdminSites completed - Sites: " . $siteData->count() . ", Events: " . count($eventData));
+        
+        // Return ALL data to the view
+        return view('backend.pages.sites.admin-sites', compact('siteData', 'sitejsonData', 'eventData', 'latestCreatedAt'));
+    }
+}
+
+/**
+ * Set site data with SQL fallback - ALWAYS show data
+ */
+private function setSiteDataWithFallback($site, $eventData)
+{
+    // Always decode site data from SQL first
+    $siteJson = json_decode($site->data ?? '{}', true);
+    
+    // Set ALL data from SQL (this is always available)
+    $site->fuel_level = $this->getFuelLevelFromSQL($siteJson);
+    $site->running_hours = $siteJson['running_hours']['value'] ?? '0 hrs 0 mins';
+    $site->bank_name = $siteJson['generator'] ?? 'N/A';
+    $site->location = $siteJson['group'] ?? 'N/A';
+    $site->status = $this->getSiteStatusFromSQL($siteJson);
+    
+    // Try to get updatedAt from events, but if not available, use SQL data or default
+    $matchingEvent = $this->findMatchingEvent($site, $eventData);
+    if ($matchingEvent) {
+        $site->updatedAt = $this->extractUpdatedAt($matchingEvent);
+        \Log::info("✅ Event data used for: {$site->site_name}");
+    } else {
+        // If no event found, use SQL data or set default
+        $site->updatedAt = 'N/A';
+        \Log::info("ℹ️ Using SQL data for: {$site->site_name} (No event match)");
+    }
+    
+    // Debug: Log all sites to ensure they have data
+    \Log::debug("Site: {$site->site_name}, Fuel: {$site->fuel_level}, Hours: {$site->running_hours}, Bank: {$site->bank_name}, Location: {$site->location}");
+}
+
+/**
+ * Get fuel level from SQL data (ALWAYS available)
+ */
+private function getFuelLevelFromSQL($siteJson)
+{
+    $fuelLevel = $siteJson['parameters']['fuel']['add'] ?? '0%';
+    
+    // Format the fuel level properly
+    if (is_numeric($fuelLevel)) {
+        $fuelLevel = $fuelLevel . '%';
+    }
+    
+    // Extract numeric value for status check
+    $fuelValue = (int) preg_replace('/[^0-9]/', '', $fuelLevel);
+    
+    // Add Low Fuel warning if applicable
+    if ($fuelValue <= 20) {
+        return $fuelValue . '%<br><small style="color:red;">Low Fuel</small>';
+    }
+    
+    return $fuelValue . '%';
+}
+
+/**
+ * Get site status from SQL data (ALWAYS available)
+ */
+private function getSiteStatusFromSQL($siteJson)
+{
+    $fuelLevel = $siteJson['parameters']['fuel']['add'] ?? '0%';
+    $fuelValue = (int) preg_replace('/[^0-9]/', '', $fuelLevel);
+    
+    if ($fuelValue <= 20) {
+        return 'Low Fuel';
+    }
+    
+    // You can add more status checks from SQL data here
+    // For example, check running status, alarms, etc.
+    
+    return '—';
+}
+
+/**
+ * Find matching event (try to enhance with event data if available)
+ */
+private function findMatchingEvent($site, $eventData)
+{
+    $deviceId = strtolower(trim($site->device_id ?? ''));
+    $siteJson = json_decode($site->data ?? '{}', true);
+    $siteMd = $siteJson['parameters']['battery_voltage']['md'] ?? null;
+
+    // Strategy 1: Exact device_id match
+    if (!empty($deviceId)) {
+        foreach ($eventData as $event) {
+            $eventDeviceId = strtolower(trim($event['device_id'] ?? ''));
+            if ($eventDeviceId === $deviceId) {
+                return $event;
+            }
+        }
     }
 
-    public function fetchStatuses(Request $request)
+    // Strategy 2: Module ID match
+    if ($siteMd) {
+        foreach ($eventData as $event) {
+            $eventModuleId = $event['module_id'] ?? null;
+            if ($eventModuleId && (string)$eventModuleId === (string)$siteMd) {
+                return $event;
+            }
+        }
+    }
+
+    // Strategy 3: Partial device_id match
+    if (!empty($deviceId)) {
+        foreach ($eventData as $event) {
+            $eventDeviceId = strtolower(trim($event['device_id'] ?? ''));
+            if (!empty($eventDeviceId) && (
+                str_contains($eventDeviceId, $deviceId) || 
+                str_contains($deviceId, $eventDeviceId)
+            )) {
+                return $event;
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Extract updatedAt from event
+ */
+private function extractUpdatedAt($event)
+{
+    $batUpdated = $event['updatedAt'] ?? null;
+
+    if (is_array($batUpdated) && isset($batUpdated['$date']['$numberLong'])) {
+        $timestamp = (int) $batUpdated['$date']['$numberLong'];
+        if ($timestamp > 0) {
+            return (new \DateTime('@' . ($timestamp / 1000)))
+                ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                ->format('d-m-Y H:i:s');
+        }
+    } elseif ($batUpdated instanceof \MongoDB\BSON\UTCDateTime) {
+        return $batUpdated->toDateTime()
+            ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+            ->format('d-m-Y H:i:s');
+    } elseif (is_string($batUpdated)) {
+        try {
+            $date = new \DateTime($batUpdated);
+            return $date->setTimezone(new \DateTimeZone('Asia/Kolkata'))
+                ->format('d-m-Y H:i:s');
+        } catch (\Exception $e) {
+            return 'N/A';
+        }
+    }
+
+    return 'N/A';
+}
+
+/**
+ * Enhanced timestamp extraction
+ */
+private function extractTimestamp($event)
+{
+    if (isset($event['createdAt']['$date']['$numberLong'])) {
+        return (int) $event['createdAt']['$date']['$numberLong'];
+    }
+    if (isset($event['createdAt']['$date'])) {
+        $dateValue = $event['createdAt']['$date'];
+        if (is_numeric($dateValue)) {
+            return (int) $dateValue;
+        }
+    }
+    if (isset($event['created_at_timestamp']) && is_numeric($event['created_at_timestamp'])) {
+        return (int) $event['created_at_timestamp'];
+    }
+    if (isset($event['createdAt']) && $event['createdAt'] instanceof \MongoDB\BSON\UTCDateTime) {
+        return (int) $event['createdAt']->toDateTime()->getTimestamp() * 1000;
+    }
+    if (isset($event['createdAt']) && is_numeric($event['createdAt'])) {
+        $timestamp = (int) $event['createdAt'];
+        if ($timestamp < 10000000000) {
+            return $timestamp * 1000;
+        }
+        return $timestamp;
+    }
+    if (isset($event['createdAt']) && is_string($event['createdAt'])) {
+        try {
+            $date = new \DateTime($event['createdAt']);
+            return (int) $date->getTimestamp() * 1000;
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+    
+    return 0;
+}
+
+
+// end code time stram  
+
+  public function fetchStatuses(Request $request)
     {
         $siteIds = $request->input('site_ids', []);
         $sites = Site::whereIn('id', $siteIds)->select('id', 'device_id', 'clusterID')->get();
@@ -1325,5 +1942,5 @@ class SiteController extends Controller
             ], 500);
         }
     }
-}
 
+}

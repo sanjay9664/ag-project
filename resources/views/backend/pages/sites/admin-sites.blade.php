@@ -217,7 +217,6 @@
                             $gatewayStatus = $isRecent ? 'online' : 'offline';
                             $controllerStatus = $isRecent ? 'online' : 'offline';
                             @endphp
-
                             <tr class="site-row" data-site-id="{{ $site->id }}"
                                 data-bank="{{ $sitejsonData['generator'] ?? '' }}"
                                 data-location="{{ $sitejsonData['group'] ?? '' }}">
