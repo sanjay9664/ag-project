@@ -1380,24 +1380,39 @@ public function AdminSites(Request $request)
             $eventData[] = $event;
         }
 
+        // Sort events using enhanced timestamp extraction
         usort($eventData, function ($a, $b) {
-            return ($b['created_at_timestamp'] ?? 0) <=> ($a['created_at_timestamp'] ?? 0);
+            $timestampA = $this->extractTimestamp($a);
+            $timestampB = $this->extractTimestamp($b);
+            return $timestampB <=> $timestampA;
         });
 
-        $latestCreatedAt = !empty($eventData) ? $eventData[0]['createdAt']->toDateTime()
-            ->setTimezone(new DateTimeZone('Asia/Kolkata'))
-            ->format('d-m-Y H:i:s') : 'N/A';
+        // Calculate latestCreatedAt using enhanced method
+        if (!empty($eventData)) {
+            $latestTimestamp = $this->extractTimestamp($eventData[0]);
+            if ($latestTimestamp > 0) {
+                $latestCreatedAt = $this->formatDateTime($latestTimestamp);
+            } else {
+                $latestCreatedAt = 'N/A';
+            }
+        } else {
+            $latestCreatedAt = 'N/A';
+        }
 
+        // Process ALL events for display with perfect date formatting
         foreach ($eventData as &$event) {
-            $event['createdAt'] = $event['createdAt']->toDateTime()
-                ->setTimezone(new DateTimeZone('Asia/Kolkata'))
-                ->format('d-m-Y H:i:s');
+            $timestamp = $this->extractTimestamp($event);
+            if ($timestamp > 0) {
+                $event['createdAt'] = $this->formatDateTime($timestamp);
+            } else {
+                $event['createdAt'] = 'N/A';
+            }
             $event['latestCreatedAt'] = $latestCreatedAt;
         }
 
-        // Set data for ALL sites - use SQL data as fallback
+        // Set data for ALL sites - use actual SQL data
         foreach ($siteData as $site) {
-            $this->setSiteDataWithFallback($site, $eventData);
+            $this->setActualSiteData($site, $eventData);
         }
 
         if ($request->ajax()) {
@@ -1413,10 +1428,10 @@ public function AdminSites(Request $request)
         $user = Auth::guard('admin')->user();
         $userEmail = $user->email;
 
-        // Get ALL sites for the user
+        // Get ALL sites for the user with actual data
         $siteData = $user->hasRole('superadmin')
-            ? Site::select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get()
-            : Site::where('email', $userEmail)->select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID'])->get();
+            ? Site::select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID', 'created_at', 'updated_at'])->get()
+            : Site::where('email', $userEmail)->select(['id', 'site_name', 'slug', 'email', 'data', 'device_id', 'clusterID', 'created_at', 'updated_at'])->get();
 
         \Log::info("Total sites found: " . $siteData->count());
 
@@ -1428,20 +1443,18 @@ public function AdminSites(Request $request)
 
         \Log::info("Total events found: " . count($eventData));
 
-        // Sort events by timestamp
+        // Sort events by timestamp using enhanced method
         usort($eventData, function ($a, $b) {
             $timestampA = $this->extractTimestamp($a);
             $timestampB = $this->extractTimestamp($b);
             return $timestampB <=> $timestampA;
         });
 
-        // Calculate latestCreatedAt
+        // Calculate latestCreatedAt using enhanced method
         if (!empty($eventData)) {
             $latestTimestamp = $this->extractTimestamp($eventData[0]);
             if ($latestTimestamp > 0) {
-                $latestCreatedAt = (new \DateTime('@' . ($latestTimestamp / 1000)))
-                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                    ->format('d-m-Y H:i:s');
+                $latestCreatedAt = $this->formatDateTime($latestTimestamp);
             } else {
                 $latestCreatedAt = 'N/A';
             }
@@ -1449,22 +1462,20 @@ public function AdminSites(Request $request)
             $latestCreatedAt = 'N/A';
         }
         
-        // Process events for display
+        // Process ALL events for display with perfect date formatting
         foreach ($eventData as &$event) {
             $timestamp = $this->extractTimestamp($event);
             if ($timestamp > 0) {
-                $event['createdAt'] = (new \DateTime('@' . ($timestamp / 1000)))
-                    ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                    ->format('d-m-Y H:i:s');
+                $event['createdAt'] = $this->formatDateTime($timestamp);
             } else {
                 $event['createdAt'] = 'N/A';
             }
             $event['latestCreatedAt'] = $latestCreatedAt;
         }
 
-        // Process ALL sites - ALWAYS show data from SQL as fallback
+        // Process ALL sites - ALWAYS show actual SQL data
         foreach ($siteData as $site) {
-            $this->setSiteDataWithFallback($site, $eventData);
+            $this->setActualSiteData($site, $eventData);
         }
         
         $sitejsonData = json_decode($siteData->first()->data ?? '{}', true);
@@ -1478,79 +1489,301 @@ public function AdminSites(Request $request)
 }
 
 /**
- * Set site data with SQL fallback - ALWAYS show data
+ * Set actual site data from SQL database
  */
-private function setSiteDataWithFallback($site, $eventData)
+private function setActualSiteData($site, $eventData)
 {
-    // Always decode site data from SQL first
+    // Always decode site data from SQL first - this is the ACTUAL data
     $siteJson = json_decode($site->data ?? '{}', true);
     
-    // Set ALL data from SQL (this is always available)
-    $site->fuel_level = $this->getFuelLevelFromSQL($siteJson);
-    $site->running_hours = $siteJson['running_hours']['value'] ?? '0 hrs 0 mins';
-    $site->bank_name = $siteJson['generator'] ?? 'N/A';
-    $site->location = $siteJson['group'] ?? 'N/A';
-    $site->status = $this->getSiteStatusFromSQL($siteJson);
+    // Set ALL actual data from SQL database
+    $site->actual_fuel_level = $this->getActualFuelLevel($siteJson);
+    $site->actual_running_hours = $this->getActualRunningHours($siteJson);
+    $site->actual_bank_name = $this->getActualBankName($siteJson);
+    $site->actual_location = $this->getActualLocation($siteJson);
+    $site->actual_status = $this->getActualStatus($siteJson);
     
-    // Try to get updatedAt from events, but if not available, use SQL data or default
+    // For backward compatibility, also set the main fields
+    $site->fuel_level = $site->actual_fuel_level;
+    $site->running_hours = $site->actual_running_hours;
+    $site->bank_name = $site->actual_bank_name;
+    $site->location = $site->actual_location;
+    $site->status = $site->actual_status;
+    
+    // Try to get updatedAt from events with perfect date formatting
     $matchingEvent = $this->findMatchingEvent($site, $eventData);
     if ($matchingEvent) {
-        $site->updatedAt = $this->extractUpdatedAt($matchingEvent);
+        $site->updatedAt = $this->extractUpdatedAtWithPerfectFormat($matchingEvent);
         \Log::info("✅ Event data used for: {$site->site_name}");
     } else {
-        // If no event found, use SQL data or set default
-        $site->updatedAt = 'N/A';
-        \Log::info("ℹ️ Using SQL data for: {$site->site_name} (No event match)");
+        // If no event found, use SQL's updated_at or created_at
+        $site->updatedAt = $this->getSiteLastUpdated($site);
+        \Log::info("ℹ️ Using SQL data for: {$site->site_name}");
     }
     
-    // Debug: Log all sites to ensure they have data
-    \Log::debug("Site: {$site->site_name}, Fuel: {$site->fuel_level}, Hours: {$site->running_hours}, Bank: {$site->bank_name}, Location: {$site->location}");
+    // Debug: Log all actual data
+    \Log::debug("ACTUAL DATA - Site: {$site->site_name}, Fuel: {$site->actual_fuel_level}, Hours: {$site->actual_running_hours}, Bank: {$site->actual_bank_name}, Location: {$site->actual_location}");
 }
 
 /**
- * Get fuel level from SQL data (ALWAYS available)
+ * Get actual fuel level from SQL data
  */
-private function getFuelLevelFromSQL($siteJson)
+private function getActualFuelLevel($siteJson)
 {
-    $fuelLevel = $siteJson['parameters']['fuel']['add'] ?? '0%';
+    $fuelLevel = $siteJson['parameters']['fuel']['add'] ?? '0';
     
-    // Format the fuel level properly
+    // Handle different fuel level formats
     if (is_numeric($fuelLevel)) {
-        $fuelLevel = $fuelLevel . '%';
+        $fuelValue = (float) $fuelLevel;
+    } else {
+        // Extract numeric value from string
+        $fuelValue = (float) preg_replace('/[^0-9.]/', '', $fuelLevel);
     }
     
-    // Extract numeric value for status check
-    $fuelValue = (int) preg_replace('/[^0-9]/', '', $fuelLevel);
+    // Format as percentage
+    $formattedFuel = round($fuelValue) . '%';
     
     // Add Low Fuel warning if applicable
     if ($fuelValue <= 20) {
-        return $fuelValue . '%<br><small style="color:red;">Low Fuel</small>';
+        return $formattedFuel . '<br><small style="color:red;">Low Fuel</small>';
     }
     
-    return $fuelValue . '%';
+    return $formattedFuel;
 }
 
 /**
- * Get site status from SQL data (ALWAYS available)
+ * Get actual running hours from SQL data
  */
-private function getSiteStatusFromSQL($siteJson)
+private function getActualRunningHours($siteJson)
 {
-    $fuelLevel = $siteJson['parameters']['fuel']['add'] ?? '0%';
-    $fuelValue = (int) preg_replace('/[^0-9]/', '', $fuelLevel);
+    $runningHours = $siteJson['running_hours']['value'] ?? '0';
+    
+    // Handle different running hours formats
+    if (is_numeric($runningHours)) {
+        $hours = (int) $runningHours;
+        $minutes = round(($runningHours - $hours) * 60);
+        return $hours . ' hrs ' . $minutes . ' mins';
+    } else {
+        // Return as is if it's already formatted
+        return $runningHours;
+    }
+}
+
+/**
+ * Get actual bank name from SQL data
+ */
+private function getActualBankName($siteJson)
+{
+    return $siteJson['generator'] ?? 'N/A';
+}
+
+/**
+ * Get actual location from SQL data
+ */
+private function getActualLocation($siteJson)
+{
+    return $siteJson['group'] ?? 'N/A';
+}
+
+/**
+ * Get actual status from SQL data
+ */
+private function getActualStatus($siteJson)
+{
+    $fuelLevel = $siteJson['parameters']['fuel']['add'] ?? '0';
+    $fuelValue = (float) preg_replace('/[^0-9.]/', '', $fuelLevel);
     
     if ($fuelValue <= 20) {
         return 'Low Fuel';
     }
     
-    // You can add more status checks from SQL data here
-    // For example, check running status, alarms, etc.
+    // Check other status parameters
+    $runStatus = $siteJson['run_status']['add'] ?? null;
+    if ($runStatus === '1' || $runStatus === 1) {
+        return 'Running';
+    }
+    
+    $alarmStatus = $this->checkAlarmStatus($siteJson);
+    if ($alarmStatus !== '—') {
+        return $alarmStatus;
+    }
     
     return '—';
 }
 
 /**
- * Find matching event (try to enhance with event data if available)
+ * Check alarm status from SQL data
  */
+private function checkAlarmStatus($siteJson)
+{
+    $alarms = $siteJson['alarm_status'] ?? [];
+    
+    $activeAlarms = [];
+    
+    // Check each alarm status
+    $alarmChecks = [
+        'emergency_stop_status' => 'Emergency Stop',
+        'high_coolant_temperature_status' => 'High Coolant Temp',
+        'low_oil_pressure_status' => 'Low Oil Pressure',
+        'high_oil_temperature_status' => 'High Oil Temp',
+        'over_speed_status' => 'Over Speed',
+        'under_speed_status' => 'Under Speed',
+        'battery_level_status' => 'Low Battery',
+        'fail_to_start_status' => 'Fail to Start'
+    ];
+    
+    foreach ($alarmChecks as $alarmKey => $alarmName) {
+        $alarmValue = $alarms[$alarmKey]['add'] ?? null;
+        if ($alarmValue === '1' || $alarmValue === 1) {
+            $activeAlarms[] = $alarmName;
+        }
+    }
+    
+    if (!empty($activeAlarms)) {
+        return implode(', ', $activeAlarms);
+    }
+    
+    return '—';
+}
+
+/**
+ * Get site's last updated time from SQL
+ */
+/**
+ * Get site's last updated time from SQL
+ */
+private function getSiteLastUpdated($site)
+{
+    // Use SQL's updated_at if available (it's a Carbon instance)
+    if (!empty($site->updated_at)) {
+        return $this->formatDateTime($site->updated_at->getTimestamp() * 1000);
+    }
+    
+    // Fallback to created_at (also a Carbon instance)
+    if (!empty($site->created_at)) {
+        return $this->formatDateTime($site->created_at->getTimestamp() * 1000);
+    }
+    
+    return 'N/A';
+}
+
+/**
+ * Perfect date and time formatting
+ */
+private function formatDateTime($timestampMillis)
+{
+    try {
+        // Convert milliseconds to seconds
+        $timestampSeconds = $timestampMillis / 1000;
+        
+        $dateTime = new \DateTime('@' . intval($timestampSeconds));
+        $dateTime->setTimezone(new \DateTimeZone('Asia/Kolkata'));
+        
+        // Format: "16-10-2025 14:30:25"
+        return $dateTime->format('d-m-Y H:i:s');
+        
+    } catch (\Exception $e) {
+        \Log::error("Date formatting error for timestamp: " . $timestampMillis . " - " . $e->getMessage());
+        return 'N/A';
+    }
+}
+
+/**
+ * Extract updatedAt with perfect formatting
+ */
+private function extractUpdatedAtWithPerfectFormat($event)
+{
+    $batUpdated = $event['updatedAt'] ?? null;
+
+    if (is_array($batUpdated) && isset($batUpdated['$date']['$numberLong'])) {
+        $timestamp = (int) $batUpdated['$date']['$numberLong'];
+        return $this->formatDateTime($timestamp);
+    } elseif ($batUpdated instanceof \MongoDB\BSON\UTCDateTime) {
+        $timestamp = (int) $batUpdated->toDateTime()->getTimestamp() * 1000;
+        return $this->formatDateTime($timestamp);
+    } elseif (is_string($batUpdated)) {
+        try {
+            $date = new \DateTime($batUpdated);
+            $timestamp = $date->getTimestamp() * 1000;
+            return $this->formatDateTime($timestamp);
+        } catch (\Exception $e) {
+            return 'N/A';
+        }
+    } elseif (is_numeric($batUpdated)) {
+        $timestamp = (int) $batUpdated;
+        // Auto-detect if it's seconds or milliseconds
+        if ($timestamp < 10000000000) {
+            $timestamp = $timestamp * 1000; // Convert seconds to milliseconds
+        }
+        return $this->formatDateTime($timestamp);
+    }
+
+    return 'N/A';
+}
+
+/**
+ * Enhanced timestamp extraction for sorting
+ */
+private function extractTimestamp($event)
+{
+    // Check all possible timestamp fields and formats
+    $timestampFields = [
+        'createdAt',
+        'created_at_timestamp', 
+        'timestamp',
+        'created_at',
+        'updatedAt',
+        'updated_at',
+        'time',
+        'date'
+    ];
+    
+    foreach ($timestampFields as $field) {
+        if (isset($event[$field])) {
+            $value = $event[$field];
+            
+            // MongoDB Extended JSON format
+            if (is_array($value) && isset($value['$date'])) {
+                $dateValue = $value['$date'];
+                if (isset($dateValue['$numberLong'])) {
+                    return (int) $dateValue['$numberLong'];
+                }
+                if (is_numeric($dateValue)) {
+                    return (int) $dateValue;
+                }
+            }
+            
+            // MongoDB BSON UTCDateTime object
+            if ($value instanceof \MongoDB\BSON\UTCDateTime) {
+                return (int) $value->toDateTime()->getTimestamp() * 1000;
+            }
+            
+            // Numeric timestamp
+            if (is_numeric($value)) {
+                $timestamp = (int) $value;
+                // Auto-detect seconds vs milliseconds
+                if ($timestamp < 10000000000) {
+                    return $timestamp * 1000;
+                }
+                return $timestamp;
+            }
+            
+            // String date
+            if (is_string($value)) {
+                try {
+                    $date = new \DateTime($value);
+                    return (int) $date->getTimestamp() * 1000;
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
+        }
+    }
+    
+    return 0;
+}
+
+// Keep the existing findMatchingEvent method
 private function findMatchingEvent($site, $eventData)
 {
     $deviceId = strtolower(trim($site->device_id ?? ''));
@@ -1592,77 +1825,6 @@ private function findMatchingEvent($site, $eventData)
 
     return null;
 }
-
-/**
- * Extract updatedAt from event
- */
-private function extractUpdatedAt($event)
-{
-    $batUpdated = $event['updatedAt'] ?? null;
-
-    if (is_array($batUpdated) && isset($batUpdated['$date']['$numberLong'])) {
-        $timestamp = (int) $batUpdated['$date']['$numberLong'];
-        if ($timestamp > 0) {
-            return (new \DateTime('@' . ($timestamp / 1000)))
-                ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                ->format('d-m-Y H:i:s');
-        }
-    } elseif ($batUpdated instanceof \MongoDB\BSON\UTCDateTime) {
-        return $batUpdated->toDateTime()
-            ->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-            ->format('d-m-Y H:i:s');
-    } elseif (is_string($batUpdated)) {
-        try {
-            $date = new \DateTime($batUpdated);
-            return $date->setTimezone(new \DateTimeZone('Asia/Kolkata'))
-                ->format('d-m-Y H:i:s');
-        } catch (\Exception $e) {
-            return 'N/A';
-        }
-    }
-
-    return 'N/A';
-}
-
-/**
- * Enhanced timestamp extraction
- */
-private function extractTimestamp($event)
-{
-    if (isset($event['createdAt']['$date']['$numberLong'])) {
-        return (int) $event['createdAt']['$date']['$numberLong'];
-    }
-    if (isset($event['createdAt']['$date'])) {
-        $dateValue = $event['createdAt']['$date'];
-        if (is_numeric($dateValue)) {
-            return (int) $dateValue;
-        }
-    }
-    if (isset($event['created_at_timestamp']) && is_numeric($event['created_at_timestamp'])) {
-        return (int) $event['created_at_timestamp'];
-    }
-    if (isset($event['createdAt']) && $event['createdAt'] instanceof \MongoDB\BSON\UTCDateTime) {
-        return (int) $event['createdAt']->toDateTime()->getTimestamp() * 1000;
-    }
-    if (isset($event['createdAt']) && is_numeric($event['createdAt'])) {
-        $timestamp = (int) $event['createdAt'];
-        if ($timestamp < 10000000000) {
-            return $timestamp * 1000;
-        }
-        return $timestamp;
-    }
-    if (isset($event['createdAt']) && is_string($event['createdAt'])) {
-        try {
-            $date = new \DateTime($event['createdAt']);
-            return (int) $date->getTimestamp() * 1000;
-        } catch (\Exception $e) {
-            return 0;
-        }
-    }
-    
-    return 0;
-}
-
 
 // end code time stram  
 
