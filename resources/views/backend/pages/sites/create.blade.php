@@ -107,7 +107,7 @@ input {
                             </div>
 
                             <div class="form-group col-md-4 col-sm-12">
-                                <label for="name">Device ID</label>
+                                <label for="name">Default Device ID</label>
                                 <input type="text" class="form-control" id="device_id" name="device_id"
                                     placeholder="Enter Device Id" required autofocus MD="{{ old('device_id') }}">
                             </div>
@@ -116,6 +116,10 @@ input {
                                 <label for="name">Cluster ID</label>
                                 <input type="text" class="form-control" id="clusterID" name="clusterID"
                                     placeholder="Enter Device Id" required autofocus MD="{{ old('clusterID') }}">
+                            </div>
+                             <div class="form-group col-md-4 col-sm-12">
+                                <label for="name">Alternative Device ID</label>
+                                <input type="text" class="form-control" id="device_id" name="device_id">
                             </div>
                         </div>
 
@@ -454,6 +458,27 @@ input {
                                                         Hide/showing Increase Running Hours
                                                         <input type="checkbox" name="increase_running_hours_status"
                                                             value="1">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col text-center fw-bold">
+                                                    Read(On)
+                                                    <div class="d-flex justify-content-center align-items-center py-1">
+                                                        
+                                                        <input type="text" name="readOn_md" class="form-control me-2"
+                                                            style="width: 80px;" placeholder="MD">
+                                                        <input type="text" name="readOn_add" class="form-control"
+                                                            style="width: 80px;" placeholder="ADD">
+                                                    </div>
+                                                </div>
+                                                <div class="col text-center fw-bold">
+                                                    Read(Off)
+                                                    <div class="d-flex justify-content-center align-items-center py-1">
+                                                        
+                                                        <input type="text" name="readOff_md" class="form-control me-2"
+                                                            style="width: 80px;" placeholder="MD">
+                                                        <input type="text" name="readOff_add" class="form-control"
+                                                            style="width: 80px;" placeholder="ADD">
                                                     </div>
                                                 </div>
                                             </div>

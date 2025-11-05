@@ -174,6 +174,14 @@ class SiteController extends Controller
                 'admin_run_hours' => $request->input('admin_run_hours'),
                 'increase_minutes' => $request->input('increase_minutes'),
             ],
+            'readOn' => [
+                    'md' => $request->input('readOn_md'),
+                    'add' => $request->input('readOn_add'),
+                ],
+            'readOff' => [
+                    'md' => $request->input('readOff_md'),
+                    'add' => $request->input('readOff_add'),
+                ],
             'electric_parameters' => [
                 'voltage_l_l' => [
                     'a' => [
@@ -413,6 +421,14 @@ class SiteController extends Controller
                 'admin_run_hours' => $request->input('admin_run_hours'),
                 'increase_minutes' => $request->input('increase_minutes'),
             ],
+            'readOn' => [
+                    'md' => $request->input('readOn_md'),
+                    'add' => $request->input('readOn_add'),
+                ],
+            'readOff' => [
+                    'md' => $request->input('readOff_md'),
+                    'add' => $request->input('readOff_add'),
+                ],
             'electric_parameters' => [
                 'voltage_l_l' => [
                     'a' => [
