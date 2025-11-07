@@ -10,103 +10,111 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/react-circular-progressbar/2.0.3/styles.css" rel="stylesheet">
     <link rel="stylesheet" href="{{url('backend/assets/css/site-details.css')}}">
-    
-<style>
-/* Wrap both buttons and status together */
-.reading-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    height: 180px; /* fixed height to stop layout jumping */
-    position: relative;
-}
 
-/* Buttons section */
-.reading-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    align-items: center;
-}
+    <style>
+    /* Wrap both buttons and status together */
+    .reading-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        height: 180px;
+        /* fixed height to stop layout jumping */
+        position: relative;
+    }
 
-/* Common button design */
-.reading-btn {
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-weight: 600;
-    width: 130px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: all 0.2s ease;
-    font-size: 0.85rem;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
+    /* Buttons section */
+    .reading-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+    }
 
-.reading-on-btn {
-    background-color: #28a745;
-    color: #fff;
-    border: 1px solid #28a745;
-}
+    /* Common button design */
+    .reading-btn {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-weight: 600;
+        width: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        font-size: 0.85rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
 
-.reading-on-btn:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
-}
+    .reading-on-btn {
+        background-color: #28a745;
+        color: #fff;
+        border: 1px solid #28a745;
+    }
 
-.reading-off-btn {
-    background-color: #dc3545;
-    color: #fff;
-    border: 1px solid #dc3545;
-}
+    .reading-on-btn:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
 
-.reading-off-btn:hover {
-    background-color: #c82333;
-    border-color: #bd2130;
-}
+    .reading-off-btn {
+        background-color: #dc3545;
+        color: #fff;
+        border: 1px solid #dc3545;
+    }
 
-/* Status box */
-.reading-status-box {
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 6px 10px;
-    text-align: center;
-    border: 1px solid #dee2e6;
-    margin-top: -2px; /* slightly closer to buttons */
-    width: 160px;     /* increased width */
-    height: 70px; /* fixed height — prevents movement */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
+    .reading-off-btn:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
 
-/* Label */
-.reading-status-label {
-    font-weight: 600;
-    color: #6c757d;
-    font-size: 0.72rem;
-    letter-spacing: 0.3px;
-    margin-bottom: 2px;
-    text-transform: uppercase;
-}
+    /* Status box */
+    .reading-status-box {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 6px 10px;
+        text-align: center;
+        border: 1px solid #dee2e6;
+        margin-top: -2px;
+        /* slightly closer to buttons */
+        width: 160px;
+        /* increased width */
+        height: 70px;
+        /* fixed height — prevents movement */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
 
-/* Value */
-.reading-status-value {
-    font-size: 0.9rem;
-    font-weight: 700;
-}
+    /* Label */
+    .reading-status-label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.72rem;
+        letter-spacing: 0.3px;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+    }
 
-.status-increasing {
-    color: #28a745;
-}
+    /* Value */
+    .reading-status-value {
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
 
-.status-normal {
-    color: #17a2b8;
-}
-</style>
+    .status-increasing {
+        color: #28a745;
+    }
+
+    .status-increasing-off {
+        color: #de0c0cff;
+    }
+
+    .status-normal {
+        color: #17a2b8;
+    }
+    </style>
 
 </head>
 
@@ -360,11 +368,11 @@
                                             <div class="mode-display-box">
                                                 <div class="mode-label">CURRENT MODE</div>
                                                 @if($addValueModestatus === 1.0)
-                                                    <div class="mode-value" id="current-mode">MANUAL</div>
+                                                <div class="mode-value" id="current-mode">MANUAL</div>
                                                 @elseif($addValueModestatus === 0.0)
-                                                    <div class="mode-value" id="current-mode">AUTO</div>
+                                                <div class="mode-value" id="current-mode">AUTO</div>
                                                 @else
-                                                    <div class="mode-value" id="current-mode">-</div>
+                                                <div class="mode-value" id="current-mode">-</div>
                                                 @endif
                                             </div>
 
@@ -379,105 +387,115 @@
                                                 <p><strong>Updated At:</strong></p>
                                                 <h5 class="text-muted">{{ $latestCreatedAt }}</h5>
                                             </div>
+                                        </div>
 
-                                        
-                                            <!-- start reading control here -->
-                                            <!-- New Reading Controls -->
-                                         </div>
-                                                                    <div class="reading-controls">
-                                                               <form id="reading-on-form" class="m-0 p-0">
-                                                            <!-- Hidden Inputs -->
-                                                            <input type="hidden" name="argValue" value="1">
-                                                            @if(isset($sitejsonData->readOn_md->md))
-                                                            <input type="hidden" name="moduleId"
-                                                                value="{{ $sitejsonData->readOn_md->md }}">
-                                                            @endif
+                                        <!-- start reading control here -->
+                                        <div class="reading-controls">
+                                            <form id="reading-on-form" class="m-0 p-0">
+                                                <!-- Hidden Inputs -->
+                                                <input type="hidden" name="argValue" value="1">
+                                                @if(isset($sitejsonData->readOn->md))
+                                                <input type="hidden" name="moduleId"
+                                                    value="{{ $sitejsonData->readOn->md }}">
+                                                @endif
 
-                                                            @if(isset($sitejsonData->readOn_md->add))
-                                                            <input type="hidden" name="cmdField"
-                                                                value="{{ $sitejsonData->readOn_md->add }}">
-                                                            @endif
+                                                @if(isset($sitejsonData->readOn->add))
+                                                <input type="hidden" name="cmdField"
+                                                    value="{{ $sitejsonData->readOn->add }}">
+                                                @endif
 
-                                                            @if(isset($sitejsonData->readOn_md->argument))
-                                                            <input type="hidden" name="cmdArg"
-                                                                value="{{ $sitejsonData->readOn_md->argument }}">
-                                                            @endif
+                                                <input type="hidden" name="cmdArg" value="1">
 
-                                                            <!-- Reading On Button -->
-                                                            <button type="button" class="reading-btn reading-on-btn btn btn-sm px-2 py-1">
-                                                            <i class="fas fa-toggle-on"></i> Reading (On)
-                                                            </button>
+                                                <!-- Reading On Button -->
+                                                <button type="button"
+                                                    class="reading-btn reading-on-btn btn btn-sm px-2 py-1">
+                                                    <i class="fas fa-toggle-on"></i> Reading (On)
+                                                </button>
+                                            </form>
 
-                                                        </form>
+                                            <form id="reading-off-form" class="m-0 p-0">
+                                                <!-- Hidden Inputs -->
+                                                <input type="hidden" name="argValue" value="1">
+                                                @if(isset($sitejsonData->readOn->md))
+                                                <input type="hidden" name="moduleId"
+                                                    value="{{ $sitejsonData->readOn->md }}">
+                                                @endif
 
-                                                <form id="reading-off-form" class="m-0 p-0">
-                                                    <!-- Hidden Inputs -->
-                                                    <input type="hidden" name="argValue" value="1">
-                                                    @if(isset($sitejsonData->readOff_md->md))
-                                                    <input type="hidden" name="moduleId"
-                                                        value="{{ $sitejsonData->readOff_md->md }}">
-                                                    @endif
+                                                @if(isset($sitejsonData->readOn->add))
+                                                <input type="hidden" name="cmdField"
+                                                    value="{{ $sitejsonData->readOn->add }}">
+                                                @endif
 
-                                                    @if(isset($sitejsonData->readOff_md->add))
-                                                    <input type="hidden" name="cmdField"
-                                                        value="{{ $sitejsonData->readOff_md->add }}">
-                                                    @endif
+                                                <input type="hidden" name="cmdArg" value="0">
+                                                <!-- Reading Off Button -->
+                                                <button type="button"
+                                                    class="reading-btn reading-off-btn btn btn-sm px-2 py-1">
+                                                    <i class="fas fa-toggle-off"></i> Reading (Off)
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <!-- Reading Status Display -->
+                                        <div class="reading-status-box">
+                                            <div class="reading-status-label">READING STATUS</div>
+                                            <div class="reading-status-value" id="reading-status">
+                                               <?php
+                                                    $key = $sitejsonData->readstatus->add;
+                                                    $addValue = '_';
+                                                    $readingStatus = '';
+                                                    $state = '';
 
-                                                    @if(isset($sitejsonData->readOff_md->argument))
-                                                    <input type="hidden" name="cmdArg"
-                                                        value="{{ $sitejsonData->readOff_md->argument }}">
-                                                    @endif
+                                                    foreach ($eventData as $event) {
+                                                        $eventArray = $event->getArrayCopy();
 
-                                                    <!-- Reading Off Button -->
-                                                    <button type="button" class="reading-btn reading-off-btn btn btn-sm px-2 py-1">
-                                                      <i class="fas fa-toggle-off"></i> Reading (Off)
-                                                      </button>
+                                                        if ($eventArray['module_id'] == $sitejsonData->readstatus->md) {
+                                                            if (array_key_exists($key, $eventArray)) {
+                                                                $readingStatus = $eventArray[$key];
+                                                            }
 
-                                                </form>
-                                            </div>
-                                            <!-- Reading Status Display -->
-                                            <div class="reading-status-box">
-                                                <div class="reading-status-label">READING STATUS</div>
-                                                <div class="reading-status-value" id="reading-status">
-                                                    <?php
-                                                        // Determine reading status based on your logic
-                                                        // This is a placeholder - replace with your actual logic
-                                                        $readingStatus = "Increasing"; // or "Normal"
+                                                            // Capture the 'state' value (LOW or HIGH)
+                                                            if (array_key_exists('state', $eventArray)) {
+                                                                $state = $eventArray['state'];
+                                                            }
+
+                                                            break;
+                                                        }
+                                                    }
                                                     ?>
-                                                    @if($readingStatus == "Increasing")
-                                                        <span class="status-increasing">Increasing</span>
+                                                    @if($state == "LOW")
+                                                        <span class="status-increasing-off">Increasing Off</span>
+                                                    @elseif($state == "HIGH")
+                                                        <span class="status-increasing">Increasing On</span>
                                                     @else
-                                                        <span class="status-normal">Normal</span>
+                                                        <span class="status-increasing">Increasing</span>
                                                     @endif
-                                                </div>
                                             </div>
-                                                                </div>
-                                            
                                         </div>
                                     </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            <!-- Second Table for Engine Parameters -->
-            <div class="col-md-12 mt-4">
-                <div class="card">
-                    <div class="card-header text-center text-white fw-bold fs-5 p-3" style="background:#002E6E;">
-                        ENGINE PARAMETERS
-                    </div>
-                    <div class=" card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped table-hover m-0">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="parameter-box">
-                                                <i class="fas fa-thermometer-half parameter-icon text-primary"></i>
-                                                <span class="parameter-label">Coolant Temp</span>
-                                                <?php
+    <!-- Second Table for Engine Parameters -->
+    <div class="col-md-12 mt-4">
+        <div class="card">
+            <div class="card-header text-center text-white fw-bold fs-5 p-3" style="background:#002E6E;">
+                ENGINE PARAMETERS
+            </div>
+            <div class=" card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover m-0">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="parameter-box">
+                                        <i class="fas fa-thermometer-half parameter-icon text-primary"></i>
+                                        <span class="parameter-label">Coolant Temp</span>
+                                        <?php
                                                     $key = $sitejsonData->parameters->coolant_temperature->add;
                                                     $addValue = '_';
                                                     foreach ($eventData as $event) {
@@ -490,14 +508,14 @@
                                                         }
                                                     }
                                                 ?>
-                                                <span class="parameter-value">{{ $addValue }} °C</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="parameter-box">
-                                                <i class="fas fa-oil-can parameter-icon text-warning"></i>
-                                                <span class="parameter-label">Oil Temp</span>
-                                                <?php
+                                        <span class="parameter-value">{{ $addValue }} °C</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="parameter-box">
+                                        <i class="fas fa-oil-can parameter-icon text-warning"></i>
+                                        <span class="parameter-label">Oil Temp</span>
+                                        <?php
                                                     $key = $sitejsonData->parameters->oil_temperature->add;
                                                     $addValue = '_';
                                                     foreach ($eventData as $event) {
@@ -510,14 +528,14 @@
                                                         }
                                                     }
                                                 ?>
-                                                <span class="parameter-value">{{ $addValue }} °C</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="parameter-box">
-                                                <i class="fas fa-gas-pump parameter-icon text-danger"></i>
-                                                <span class="parameter-label">Oil Pressure</span>
-                                                <?php
+                                        <span class="parameter-value">{{ $addValue }} °C</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="parameter-box">
+                                        <i class="fas fa-gas-pump parameter-icon text-danger"></i>
+                                        <span class="parameter-label">Oil Pressure</span>
+                                        <?php
                                                     $key = $sitejsonData->parameters->oil_pressure->add;
                                                     $addValue = '_';
                                                     foreach ($eventData as $event) {
@@ -530,14 +548,14 @@
                                                         }
                                                     }
                                                 ?>
-                                                <span class="parameter-value">{{ $addValue }} psi</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="parameter-box">
-                                                <i class="fas fa-tachometer-alt parameter-icon text-danger"></i>
-                                                <span class="parameter-label">RPM</span>
-                                                <?php
+                                        <span class="parameter-value">{{ $addValue }} psi</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="parameter-box">
+                                        <i class="fas fa-tachometer-alt parameter-icon text-danger"></i>
+                                        <span class="parameter-label">RPM</span>
+                                        <?php
                                                     $key = $sitejsonData->parameters->rpm->add;
                                                     $addValue = '_';
                                                     foreach ($eventData as $event) {
@@ -550,21 +568,21 @@
                                                         }
                                                     }
                                                 ?>
-                                                <span class="parameter-value">{{ $addValue }}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="parameter-box">
-                                                <i class="fas fa-tint parameter-icon text-info"></i>
-                                                <span class="parameter-label">DEF</span>
-                                                <span class="parameter-value">-</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="parameter-box">
-                                                <i class="fas fa-battery-half parameter-icon text-info"></i>
-                                                <span class="parameter-label">Battery Voltage</span>
-                                                <?php
+                                        <span class="parameter-value">{{ $addValue }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="parameter-box">
+                                        <i class="fas fa-tint parameter-icon text-info"></i>
+                                        <span class="parameter-label">DEF</span>
+                                        <span class="parameter-value">-</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="parameter-box">
+                                        <i class="fas fa-battery-half parameter-icon text-info"></i>
+                                        <span class="parameter-label">Battery Voltage</span>
+                                        <?php
                                                     $key = $sitejsonData->parameters->battery_voltage->add;
                                                     $addValue = '_';
                                                     foreach ($eventData as $event) {
@@ -577,17 +595,17 @@
                                                         }
                                                     }
                                                 ?>
-                                                <span class="parameter-value">{{ $addValue }} V</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3">
-                                            <div class="parameter-box">
-                                                <i class="fas fa-bolt parameter-icon text-warning"></i>
-                                                <span class="parameter-label">Voltage (L-L)</span>
-                                                <div class="phase-values">
-                                                    <?php
+                                        <span class="parameter-value">{{ $addValue }} V</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <div class="parameter-box">
+                                        <i class="fas fa-bolt parameter-icon text-warning"></i>
+                                        <span class="parameter-label">Voltage (L-L)</span>
+                                        <div class="phase-values">
+                                            <?php
                                                         $keys = [
                                                             'a' => $sitejsonData->electric_parameters->voltage_l_l->a->add,
                                                             'b' => $sitejsonData->electric_parameters->voltage_l_l->b->add,
@@ -607,27 +625,27 @@
                                                             }
                                                         }
                                                     ?>
-                                                    <div class="phase-value">
-                                                        <span class="phase-label">R-Y</span>
-                                                        <span class="phase-number">{{ $values['R'] }} V</span>
-                                                    </div>
-                                                    <div class="phase-value">
-                                                        <span class="phase-label">Y-B</span>
-                                                        <span class="phase-number">{{ $values['Y'] }} V</span>
-                                                    </div>
-                                                    <div class="phase-value">
-                                                        <span class="phase-label">B-R</span>
-                                                        <span class="phase-number">{{ $values['B'] }} V</span>
-                                                    </div>
-                                                </div>
+                                            <div class="phase-value">
+                                                <span class="phase-label">R-Y</span>
+                                                <span class="phase-number">{{ $values['R'] }} V</span>
                                             </div>
-                                        </td>
-                                        <td colspan="3">
-                                            <div class="parameter-box">
-                                                <i class="fas fa-bolt parameter-icon text-success"></i>
-                                                <span class="parameter-label">Current</span>
-                                                <div class="phase-values">
-                                                    <?php
+                                            <div class="phase-value">
+                                                <span class="phase-label">Y-B</span>
+                                                <span class="phase-number">{{ $values['Y'] }} V</span>
+                                            </div>
+                                            <div class="phase-value">
+                                                <span class="phase-label">B-R</span>
+                                                <span class="phase-number">{{ $values['B'] }} V</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td colspan="3">
+                                    <div class="parameter-box">
+                                        <i class="fas fa-bolt parameter-icon text-success"></i>
+                                        <span class="parameter-label">Current</span>
+                                        <div class="phase-values">
+                                            <?php
                                                         $keys = [
                                                             'a' => $sitejsonData->electric_parameters->current->a->add,
                                                             'b' => $sitejsonData->electric_parameters->current->b->add,
@@ -647,29 +665,29 @@
                                                             }
                                                         }
                                                     ?>
-                                                    <div class="phase-value">
-                                                        <span class="phase-label">Phase R</span>
-                                                        <span class="phase-number">{{ $values['R'] }} A</span>
-                                                    </div>
-                                                    <div class="phase-value">
-                                                        <span class="phase-label">Phase Y</span>
-                                                        <span class="phase-number">{{ $values['Y'] }} A</span>
-                                                    </div>
-                                                    <div class="phase-value">
-                                                        <span class="phase-label">Phase B</span>
-                                                        <span class="phase-number">{{ $values['B'] }} A</span>
-                                                    </div>
-                                                </div>
+                                            <div class="phase-value">
+                                                <span class="phase-label">Phase R</span>
+                                                <span class="phase-number">{{ $values['R'] }} A</span>
                                             </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                            <div class="phase-value">
+                                                <span class="phase-label">Phase Y</span>
+                                                <span class="phase-number">{{ $values['Y'] }} A</span>
+                                            </div>
+                                            <div class="phase-value">
+                                                <span class="phase-label">Phase B</span>
+                                                <span class="phase-number">{{ $values['B'] }} A</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+    </div>
+    </div>
     </div>
 
     <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
@@ -840,8 +858,7 @@
                                                                             </button>
                                                                         </form>
                                                                     </div>
-                                                                    
-                                                                        <?php
+                                                                    <?php
                                                                         $keyaa = $sitejsonData->mode_md->add ?? null;
                                                                         $addValueModestatus = null;
 
@@ -861,18 +878,16 @@
                                                                             }
                                                                         }
                                                                     ?>
-                                                                                        <div class="mode-display-box">
-                                                                                            <div class="mode-label">CURRENT MODE</div>
-                                                                                            @if($addValueModestatus === 1.0)
-                                                                                                <div class="mode-value" id="current-mode">MANUAL</div>
-                                                                                            @elseif($addValueModestatus === 0.0)
-                                                                                                <div class="mode-value" id="current-mode">AUTO</div>
-                                                                                            @else
-                                                                                                <div class="mode-value" id="current-mode">-</div>
-                                                                                            @endif
-                                                                                        </div>
-
-
+                                                                    <div class="mode-display-box">
+                                                                        <div class="mode-label">CURRENT MODE</div>
+                                                                        @if($addValueModestatus === 1.0)
+                                                                            <div class="mode-value" id="current-mode">MANUAL</div>
+                                                                        @elseif($addValueModestatus === 0.0)
+                                                                            <div class="mode-value" id="current-mode">AUTO</div>
+                                                                        @else
+                                                                            <div class="mode-value" id="current-mode">-</div>
+                                                                        @endif
+                                                                    </div>
                                                                     
                                                                     <div class="status-box">
                                                                             <i class="fas fa-running text-primary" style="font-size: 24px;"></i>
@@ -884,85 +899,95 @@
                                                                             <p><strong>Updated At:</strong></p>
                                                                             <h5 class="text-muted">{{ $latestCreatedAt }}</h5>
                                                                         </div>
-
-                                                    <!-- start reading control here -->
-                                                    <!-- New Reading Controls -->
-                                                    </div>
-                                                                                <div class="reading-controls">
+                                                                    </div>
+                                                                    <!-- start reading control here -->
+                                                                    <div class="reading-controls">
                                                                     <form id="reading-on-form" class="m-0 p-0">
                                                                         <!-- Hidden Inputs -->
                                                                         <input type="hidden" name="argValue" value="1">
-                                                                        @if(isset($sitejsonData->readOn_md->md))
+                                                                        @if(isset($sitejsonData->readOn->md))
                                                                         <input type="hidden" name="moduleId"
-                                                                            value="{{ $sitejsonData->readOn_md->md }}">
+                                                                            value="{{ $sitejsonData->readOn->md }}">
                                                                         @endif
 
-                                                                        @if(isset($sitejsonData->readOn_md->add))
+                                                                        @if(isset($sitejsonData->readOn->add))
                                                                         <input type="hidden" name="cmdField"
-                                                                            value="{{ $sitejsonData->readOn_md->add }}">
+                                                                            value="{{ $sitejsonData->readOn->add }}">
                                                                         @endif
 
-                                                                        @if(isset($sitejsonData->readOn_md->argument))
-                                                                        <input type="hidden" name="cmdArg"
-                                                                            value="{{ $sitejsonData->readOn_md->argument }}">
-                                                                        @endif
+                                                                        <input type="hidden" name="cmdArg" value="1">
 
                                                                         <!-- Reading On Button -->
-                                                                        <button type="button" class="reading-btn reading-on-btn btn btn-sm px-2 py-1">
-                                                                        <i class="fas fa-toggle-on"></i> Reading (On)
+                                                                        <button type="button"
+                                                                            class="reading-btn reading-on-btn btn btn-sm px-2 py-1">
+                                                                            <i class="fas fa-toggle-on"></i> Reading (On)
                                                                         </button>
-
                                                                     </form>
 
-                                                            <form id="reading-off-form" class="m-0 p-0">
-                                                                <!-- Hidden Inputs -->
-                                                                <input type="hidden" name="argValue" value="1">
-                                                                @if(isset($sitejsonData->readOff_md->md))
-                                                                <input type="hidden" name="moduleId"
-                                                                    value="{{ $sitejsonData->readOff_md->md }}">
-                                                                @endif
+                                                                    <form id="reading-off-form" class="m-0 p-0">
+                                                                        <!-- Hidden Inputs -->
+                                                                        <input type="hidden" name="argValue" value="1">
+                                                                        @if(isset($sitejsonData->readOn->md))
+                                                                        <input type="hidden" name="moduleId"
+                                                                            value="{{ $sitejsonData->readOn->md }}">
+                                                                        @endif
 
-                                                                @if(isset($sitejsonData->readOff_md->add))
-                                                                <input type="hidden" name="cmdField"
-                                                                    value="{{ $sitejsonData->readOff_md->add }}">
-                                                                @endif
+                                                                        @if(isset($sitejsonData->readOn->add))
+                                                                        <input type="hidden" name="cmdField"
+                                                                            value="{{ $sitejsonData->readOn->add }}">
+                                                                        @endif
 
-                                                                @if(isset($sitejsonData->readOff_md->argument))
-                                                                <input type="hidden" name="cmdArg"
-                                                                    value="{{ $sitejsonData->readOff_md->argument }}">
-                                                                @endif
+                                                                        <input type="hidden" name="cmdArg" value="0">
+                                                                        <!-- Reading Off Button -->
+                                                                        <button type="button"
+                                                                            class="reading-btn reading-off-btn btn btn-sm px-2 py-1">
+                                                                            <i class="fas fa-toggle-off"></i> Reading (Off)
+                                                                        </button>
+                                                                    </form>
+                                                                    </div>
+                                                                    <!-- Reading Status Display -->
+                                                                    <div class="reading-status-box">
+                                                                        <div class="reading-status-label">READING STATUS</div>
+                                                                        <div class="reading-status-value" id="reading-status">
+                                                                            <?php
+                                                                                $key = $sitejsonData->readstatus->add;
+                                                                                $addValue = '_';
+                                                                                $readingStatus = '';
+                                                                                $state = '';
 
-                                                                <!-- Reading Off Button -->
-                                                                <button type="button" class="reading-btn reading-off-btn btn btn-sm px-2 py-1">
-                                                                <i class="fas fa-toggle-off"></i> Reading (Off)
-                                                                </button>
+                                                                                foreach ($eventData as $event) {
+                                                                                    $eventArray = $event->getArrayCopy();
 
-                                                            </form>
-                                                        </div>
-                                                        <!-- Reading Status Display -->
-                                                        <div class="reading-status-box">
-                                                            <div class="reading-status-label">READING STATUS</div>
-                                                            <div class="reading-status-value" id="reading-status">
-                                                                <?php
-                                                                    // Determine reading status based on your logic
-                                                                    // This is a placeholder - replace with your actual logic
-                                                                    $readingStatus = "Increasing"; // or "Normal"
-                                                                ?>
-                                                                @if($readingStatus == "Increasing")
-                                                                    <span class="status-increasing">Increasing</span>
-                                                                @else
-                                                                    <span class="status-normal">Normal</span>
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                                            </div>
-                                                                        </td>
-                                                                        
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
+                                                                                    if ($eventArray['module_id'] == $sitejsonData->readstatus->md) {
+                                                                                        if (array_key_exists($key, $eventArray)) {
+                                                                                            $readingStatus = $eventArray[$key];
+                                                                                        }
+
+                                                                                        if (array_key_exists('state', $eventArray)) {
+                                                                                            $state = $eventArray['state'];
+                                                                                        }
+
+                                                                                        break;
+                                                                                    }
+                                                                                }
+                                                                            ?>
+
+                                                                            @if($state == "LOW")
+                                                                                <span class="status-increasing-off">Increasing Off</span>
+                                                                            @elseif($state == "HIGH")
+                                                                                <span class="status-increasing">Increasing On</span>
+                                                                            @else
+                                                                                <span class="status-increasing">Increasing</span>
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
 
                                         <!-- Second Table for Engine Parameters -->
                                         <div class="col-md-12 mt-4">
@@ -1191,111 +1216,116 @@
     </script>
 
     <script>
-    $(document).on('click', '.start-btn, .stop-btn, .auto-btn, .manual-btn, .reading-on-btn, .reading-off-btn', function(e) {
-        e.preventDefault();
+    $(document).on('click', '.start-btn, .stop-btn, .auto-btn, .manual-btn, .reading-on-btn, .reading-off-btn',
+        function(e) {
+            e.preventDefault();
 
-        let form = $(this).closest('form');
-        let actionType = '';
+            let form = $(this).closest('form');
+            let actionType = '';
 
-        if ($(this).hasClass('start-btn')) {
-            actionType = 'start';
-        } else if ($(this).hasClass('stop-btn')) {
-            actionType = 'stop';
-        } else if ($(this).hasClass('auto-btn')) {
-            actionType = 'auto';
-        } else if ($(this).hasClass('manual-btn')) {
-            actionType = 'manual';
-        } else if ($(this).hasClass('reading-on-btn')) {
-            actionType = 'reading_on';
-        } else if ($(this).hasClass('reading-off-btn')) {
-            actionType = 'reading_off';
-        }
+            if ($(this).hasClass('start-btn')) {
+                actionType = 'start';
+            } else if ($(this).hasClass('stop-btn')) {
+                actionType = 'stop';
+            } else if ($(this).hasClass('auto-btn')) {
+                actionType = 'auto';
+            } else if ($(this).hasClass('manual-btn')) {
+                actionType = 'manual';
+            } else if ($(this).hasClass('reading-on-btn')) {
+                actionType = 'reading_on';
+            } else if ($(this).hasClass('reading-off-btn')) {
+                actionType = 'reading_off';
+            }
 
-        let argValue = form.find('input[name="argValue"]').val();
-        let moduleId = form.find('input[name="moduleId"]').val();
-        let cmdField = form.find('input[name="cmdField"]').val();
-        let cmdArg = form.find('input[name="cmdArg"]').val();
+            let argValue = form.find('input[name="argValue"]').val();
+            let moduleId = form.find('input[name="moduleId"]').val();
+            let cmdField = form.find('input[name="cmdField"]').val();
+            let cmdArg = form.find('input[name="cmdArg"]').val();
 
-        if (!argValue || !moduleId || !cmdField || !cmdArg) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Service Not Active',
-                text: 'Service is not active for this site, kindly contact the team!',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
+            console.log(moduleId);
 
-        const ajaxCall = () => {
-            $.ajax({
-                url: '/admin/start-process',
-                method: 'POST',
-                data: {
-                    argValue,
-                    moduleId,
-                    cmdField,
-                    cmdArg,
-                    actionType,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: `${actionType.charAt(0).toUpperCase() + actionType.slice(1)}ed!`,
-                        text: response.message
-                    });
+            if (!argValue || !moduleId || !cmdField || !cmdArg) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Service Not Active',
+                    text: 'Service is not active for this site, kindly contact the team!',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
 
-                    console.log('External Response:', response.external_response);
+            const ajaxCall = () => {
+                $.ajax({
+                    url: '/admin/start-process',
+                    method: 'POST',
+                    data: {
+                        argValue,
+                        moduleId,
+                        cmdField,
+                        cmdArg,
+                        actionType,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: `${actionType.charAt(0).toUpperCase() + actionType.slice(1)}ed!`,
+                            text: response.message
+                        });
 
-                    // ✅ Backend confirmed mode change — only update UI now
-                    if (actionType === 'auto' || actionType === 'manual') {
-                        if (response.mode_status === 0) {
-                            $('#current-mode').text('AUTO');
-                        } else if (response.mode_status === 1) {
-                            $('#current-mode').text('MANUAL');
+                        console.log('External Response:', response.external_response);
+
+                        // ✅ Backend confirmed mode change — only update UI now
+                        if (actionType === 'auto' || actionType === 'manual') {
+                            if (response.mode_status === 0) {
+                                $('#current-mode').text('AUTO');
+                            } else if (response.mode_status === 1) {
+                                $('#current-mode').text('MANUAL');
+                            }
                         }
-                    }
-                    
-                    // Update reading status if applicable
-                    if (actionType === 'reading_on' || actionType === 'reading_off') {
-                        // Update reading status display based on your logic
-                        // This is a placeholder - replace with your actual logic
-                        if (actionType === 'reading_on') {
-                            $('#reading-status').html('<span class="status-increasing">Increasing</span>');
-                        } else {
-                            $('#reading-status').html('<span class="status-normal">Normal</span>');
-                        }
-                    }
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Something went wrong. Please try again.'
-                    });
-                    console.error(xhr.responseText);
-                }
-            });
-        };
 
-        if (actionType === 'start') {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: `Are you sure you want to START this genset?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, Start',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    ajaxCall();
-                }
-            });
-        } else {
-            ajaxCall();
-        }
-    });
-</script>
+                        // Update reading status if applicable
+                        if (actionType === 'reading_on' || actionType === 'reading_off') {
+                            // Update reading status display based on your logic
+                            // This is a placeholder - replace with your actual logic
+                            if (actionType === 'reading_on') {
+                                $('#reading-status').html(
+                                    '<span class="status-increasing">Increasing</span>');
+                            } else {
+                                $('#reading-status').html(
+                                    '<span class="status-normal">Normal</span>');
+                            }
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong. Please try again.'
+                        });
+                        console.error(xhr.responseText);
+                    }
+                });
+            };
+
+            if (actionType === 'start') {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `Are you sure you want to START this genset?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Start',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        ajaxCall();
+                    }
+                });
+            } else {
+                ajaxCall();
+            }
+        });
+    </script>
 
 </body>
 

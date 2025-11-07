@@ -80,6 +80,7 @@ class SiteController extends Controller
         $site->slug = $this->generateUniqueSlug($request->site_name);
         $site->email = $request->email;
         $site->device_id = $request->device_id;
+        $site->alternate_device_id = $request->alternate_device_id;
         $site->clusterID = $request->clusterID;
         $site->increase_running_hours_status = $request->has('increase_running_hours_status') ? 1 : 0;
     
@@ -178,9 +179,9 @@ class SiteController extends Controller
                     'md' => $request->input('readOn_md'),
                     'add' => $request->input('readOn_add'),
                 ],
-            'readOff' => [
-                    'md' => $request->input('readOff_md'),
-                    'add' => $request->input('readOff_add'),
+            'readstatus' => [
+                    'md' => $request->input('readstatus_md'),
+                    'add' => $request->input('readstatus_add'),
                 ],
             'electric_parameters' => [
                 'voltage_l_l' => [
@@ -327,6 +328,7 @@ class SiteController extends Controller
         $site->slug = $this->generateUniqueSlug($request->site_name);
         $site->email = $request->email;
         $site->device_id = $request->device_id;
+        $site->alternate_device_id = $request->alternate_device_id;
         $site->clusterID = $request->clusterID;
         $site->increase_running_hours_status = $request->input('increase_running_hours_status', 0);
 
@@ -425,9 +427,9 @@ class SiteController extends Controller
                     'md' => $request->input('readOn_md'),
                     'add' => $request->input('readOn_add'),
                 ],
-            'readOff' => [
-                    'md' => $request->input('readOff_md'),
-                    'add' => $request->input('readOff_add'),
+            'readstatus' => [
+                    'md' => $request->input('readstatus_md'),
+                    'add' => $request->input('readstatus_add'),
                 ],
             'electric_parameters' => [
                 'voltage_l_l' => [
@@ -1458,7 +1460,7 @@ public function AdminSites(Request $request)
             })->toArray();
 
         \Log::info("Total events found: " . count($eventData));
-
+        
         // Sort events by timestamp using enhanced method
         usort($eventData, function ($a, $b) {
             $timestampA = $this->extractTimestamp($a);
@@ -2096,6 +2098,7 @@ private function findMatchingEvent($site, $eventData)
 
     public function startProcess(Request $request)
     {
+        // dd($request->all());
         $data = $request->only(['argValue', 'moduleId', 'cmdField', 'cmdArg', 'actionType']);
         $action = $data['actionType'] ?? 'unknown';
 
