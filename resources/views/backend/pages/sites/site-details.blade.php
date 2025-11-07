@@ -1278,7 +1278,7 @@ if (isset($sitejsonData->readstatus) && isset($sitejsonData->readstatus->add) &&
                     success: function(response) {
                         Swal.fire({
                             icon: 'success',
-                            title: `${actionType.charAt(0).toUpperCase() + actionType.slice(1)}ed!`,
+                            title: `${actionType.charAt(0).toUpperCase() + actionType.slice(1)}!`,
                             text: response.message
                         });
 
