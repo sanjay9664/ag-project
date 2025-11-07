@@ -119,7 +119,7 @@ input {
                             </div>
                              <div class="form-group col-md-4 col-sm-12">
                                 <label for="name">Alternative Device ID</label>
-                                <input type="text" class="form-control" id="device_id" name="device_id">
+                                <input type="text" class="form-control" id="alternate_device_id" name="alternate_device_id">
                             </div>
                         </div>
 
@@ -472,12 +472,12 @@ input {
                                                     </div>
                                                 </div>
                                                 <div class="col text-center fw-bold">
-                                                    Read(Off)
+                                                    READING STATUS
                                                     <div class="d-flex justify-content-center align-items-center py-1">
                                                         
-                                                        <input type="text" name="readOff_md" class="form-control me-2"
+                                                        <input type="text" name="readstatus_md" class="form-control me-2"
                                                             style="width: 80px;" placeholder="MD">
-                                                        <input type="text" name="readOff_add" class="form-control"
+                                                        <input type="text" name="readstatus_add" class="form-control"
                                                             style="width: 80px;" placeholder="ADD">
                                                     </div>
                                                 </div>

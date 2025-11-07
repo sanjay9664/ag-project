@@ -102,9 +102,9 @@ input {
                             </div>
                             <div class="form-group col-md-4 col-sm-12">
                                 <label for="name">Alternative Device ID</label>
-                                <input type="text" class="form-control" id="device_id" name="device_id"
-                                    value="{{ $site->device_id }}" placeholder="Enter Device Id" required autofocus
-                                    MD="{{ old('device_id') }}">
+                                <input type="text" class="form-control" id="alternate_device_id" name="alternate_device_id"
+                                    value="{{ $site->alternate_device_id }}" placeholder="Enter Device Id" required autofocus
+                                    MD="{{ old('alternate_device_id') }}">
                             </div>
                         </div>
 
@@ -537,14 +537,13 @@ input {
                                                 </div>
                                                 
                                                  <div class="col text-center fw-bold  p-2 shadow-lg border-0">
-                                                    Read(Off)
+                                                    READING STATUS
                                                     <div class="d-flex justify-content-center align-items-center py-1">
-                                                        
-                                                        <input type="text" name="readOff_md" class="form-control me-2"
-                                                            value="{{ old('parameters', $siteData['readOff']['md'] ?? '') }}"
+                                                        <input type="text" name="readstatus_md" class="form-control me-2"
+                                                            value="{{ old('parameters', $siteData['readstatus']['md'] ?? '') }}"
                                                             style="width: 80px;" placeholder="MD">
-                                                        <input type="text" name="readOff_add" class="form-control"
-                                                            value="{{ old('parameters', $siteData['readOff']['add'] ?? '') }}"
+                                                        <input type="text" name="readstatus_add" class="form-control"
+                                                            value="{{ old('parameters', $siteData['readstatus']['add'] ?? '') }}"
                                                             style="width: 80px;" placeholder="ADD">
                                                     </div>
                                                 </div>
