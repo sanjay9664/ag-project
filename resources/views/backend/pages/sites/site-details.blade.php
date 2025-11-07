@@ -435,47 +435,52 @@
                                             </form>
                                         </div>
                                         <!-- Reading Status Display -->
+                                        <?php
+                                            $readingStatus = '';
+                                            $state = '';
+
+                                            if (isset($sitejsonData->readstatus) && isset($sitejsonData->readstatus->add) && isset($sitejsonData->readstatus->md)) {
+                                                $key = $sitejsonData->readstatus->add;
+                                                $addValue = '_';
+
+                                                foreach ($eventData as $event) {
+                                                    $eventArray = $event->getArrayCopy();
+
+                                                    if ($eventArray['module_id'] == $sitejsonData->readstatus->md) {
+                                                        if (array_key_exists($key, $eventArray)) {
+                                                            $readingStatus = $eventArray[$key];
+                                                        }
+
+                                                        // Capture the 'state' value (LOW or HIGH)
+                                                        if (array_key_exists('state', $eventArray)) {
+                                                            $state = $eventArray['state'];
+                                                        }
+
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        ?>
+
                                         <div class="reading-status-box">
                                             <div class="reading-status-label">READING STATUS</div>
                                             <div class="reading-status-value" id="reading-status">
-                                               <?php
-                                                    $key = $sitejsonData->readstatus->add;
-                                                    $addValue = '_';
-                                                    $readingStatus = '';
-                                                    $state = '';
-
-                                                    foreach ($eventData as $event) {
-                                                        $eventArray = $event->getArrayCopy();
-
-                                                        if ($eventArray['module_id'] == $sitejsonData->readstatus->md) {
-                                                            if (array_key_exists($key, $eventArray)) {
-                                                                $readingStatus = $eventArray[$key];
-                                                            }
-
-                                                            // Capture the 'state' value (LOW or HIGH)
-                                                            if (array_key_exists('state', $eventArray)) {
-                                                                $state = $eventArray['state'];
-                                                            }
-
-                                                            break;
-                                                        }
-                                                    }
-                                                    ?>
-                                                    @if($state == "LOW")
-                                                        <span class="status-increasing-off">Increasing Off</span>
-                                                    @elseif($state == "HIGH")
-                                                        <span class="status-increasing">Increasing On</span>
-                                                    @else
-                                                        <span class="status-increasing">Increasing</span>
-                                                    @endif
+                                                @if($state == "LOW")
+                                                <span class="status-increasing-off">Increasing Off</span>
+                                                @elseif($state == "HIGH")
+                                                <span class="status-increasing">Increasing On</span>
+                                                @else
+                                                <span class="status-increasing">_</span>
+                                                @endif
                                             </div>
                                         </div>
+
                                     </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
+                </div>
+            </div>
+            </td>
+            </tr>
+            </tbody>
             </table>
         </div>
     </div>
@@ -946,42 +951,46 @@
                                                                     </form>
                                                                     </div>
                                                                     <!-- Reading Status Display -->
-                                                                    <div class="reading-status-box">
-                                                                        <div class="reading-status-label">READING STATUS</div>
-                                                                        <div class="reading-status-value" id="reading-status">
-                                                                            <?php
-                                                                                $key = $sitejsonData->readstatus->add;
-                                                                                $addValue = '_';
-                                                                                $readingStatus = '';
-                                                                                $state = '';
+                                                                    <?php
+$readingStatus = '';
+$state = '';
 
-                                                                                foreach ($eventData as $event) {
-                                                                                    $eventArray = $event->getArrayCopy();
+if (isset($sitejsonData->readstatus) && isset($sitejsonData->readstatus->add) && isset($sitejsonData->readstatus->md)) {
+    $key = $sitejsonData->readstatus->add;
+    $addValue = '_';
 
-                                                                                    if ($eventArray['module_id'] == $sitejsonData->readstatus->md) {
-                                                                                        if (array_key_exists($key, $eventArray)) {
-                                                                                            $readingStatus = $eventArray[$key];
-                                                                                        }
+    foreach ($eventData as $event) {
+        $eventArray = $event->getArrayCopy();
 
-                                                                                        if (array_key_exists('state', $eventArray)) {
-                                                                                            $state = $eventArray['state'];
-                                                                                        }
+        if ($eventArray['module_id'] == $sitejsonData->readstatus->md) {
+            if (array_key_exists($key, $eventArray)) {
+                $readingStatus = $eventArray[$key];
+            }
 
-                                                                                        break;
-                                                                                    }
-                                                                                }
-                                                                            ?>
+            // Capture the 'state' value (LOW or HIGH)
+            if (array_key_exists('state', $eventArray)) {
+                $state = $eventArray['state'];
+            }
 
-                                                                            @if($state == "LOW")
-                                                                                <span class="status-increasing-off">Increasing Off</span>
-                                                                            @elseif($state == "HIGH")
-                                                                                <span class="status-increasing">Increasing On</span>
-                                                                            @else
-                                                                                <span class="status-increasing">Increasing</span>
-                                                                            @endif
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+            break;
+        }
+    }
+}
+?>
+
+<div class="reading-status-box">
+    <div class="reading-status-label">READING STATUS</div>
+    <div class="reading-status-value" id="reading-status">
+        @if($state == "LOW")
+            <span class="status-increasing-off">Increasing Off</span>
+        @elseif($state == "HIGH")
+            <span class="status-increasing">Increasing On</span>
+        @else
+            <span class="status-increasing">_</span>
+        @endif
+    </div>
+</div>
+
                                                             </td>
                                                         </tr>
                                                     </tbody>
