@@ -133,6 +133,11 @@ class SiteController extends Controller
                 'add' => $request->input('manual_add'),
                 'argument' => $request->input('manual_arg1'),
             ],
+             'fault_reset_md' => [
+                'md' => $request->input('fault_reset_md'),  
+                'add' => $request->input('fault_reset_add'),
+                'argument' => $request->input('fault_reset_arg1'),
+            ],
              'mode_md' => [
                 'md' => $request->input('mode_md'),
                 'add' => $request->input('mode_add'),
@@ -380,6 +385,11 @@ class SiteController extends Controller
                 'md' => $request->input('manual_md'),
                 'add' => $request->input('manual_add'),
                 'argument' => $request->input('manual_arg1'),
+            ],
+            'fault_reset_md' => [
+                'md' => $request->input('fault_reset_md'),  
+                'add' => $request->input('fault_reset_add'),
+                'argument' => $request->input('fault_reset_arg1'),
             ],
             'mode_md' => [
                 'md' => $request->input('mode_md'),
