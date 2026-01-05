@@ -342,7 +342,35 @@
                                                         <i class="fas fa-hand-paper"></i> MANUAL
                                                     </button>
                                                 </form>
+                    <!-- **************fault-reset **************** -->
+                                                <form id="manual-form" class="m-0 p-0">
+                                                    <!-- Hidden Inputs -->
+                                                    <input type="hidden" name="argValue" value="1">
 
+                                                    @if(isset($sitejsonData->fault_reset_md->md))
+                                                    <input type="hidden" name="moduleId"
+                                                        value="{{ $sitejsonData->fault_reset_md->md }}">
+                                                    @endif
+
+                                                    @if(isset($sitejsonData->fault_reset_md->add))
+                                                    <input type="hidden" name="cmdField"
+                                                        value="{{ $sitejsonData->fault_reset_md->add }}">
+                                                    @endif
+
+                                                    @if(isset($sitejsonData->fault_reset_md->argument))
+                                                    <input type="hidden" name="cmdArg"
+                                                        value="{{ $sitejsonData->fault_reset_md->argument }}">
+                                                    @endif
+
+                                                    <!-- FAULT RESET -->
+                                                   <button type="button" 
+                                            class="btn btn-danger btn-sm fault-reset-btn d-inline-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-2"></i> FAULT RESET
+                                    </button>
+
+
+                                                </form>
+                    <!-- **************fault-reset **************** -->
                                             </div>
 
                                             <?php
@@ -862,6 +890,36 @@
                                                                                 <i class="fas fa-hand-paper"></i> MANUAL
                                                                             </button>
                                                                         </form>
+
+                                                                        <!-- **************fault-reset **************** -->
+                                                <form id="manual-form" class="m-0 p-0">
+                                                    <!-- Hidden Inputs -->
+                                                    <input type="hidden" name="argValue" value="1">
+
+                                                    @if(isset($sitejsonData->fault_reset_md->md))
+                                                    <input type="hidden" name="moduleId"
+                                                        value="{{ $sitejsonData->fault_reset_md->md }}">
+                                                    @endif
+
+                                                    @if(isset($sitejsonData->fault_reset_md->add))
+                                                    <input type="hidden" name="cmdField"
+                                                        value="{{ $sitejsonData->fault_reset_md->add }}">
+                                                    @endif
+
+                                                    @if(isset($sitejsonData->fault_reset_md->argument))
+                                                    <input type="hidden" name="cmdArg"
+                                                        value="{{ $sitejsonData->fault_reset_md->argument }}">
+                                                    @endif
+
+                                                    <!-- FAULT RESET Button -->
+                                                    <button type="button" 
+        class="btn btn-danger btn-sm fault-reset-btn d-inline-flex align-items-center">
+    <i class="fas fa-exclamation-triangle me-2"></i>FAULT RESET
+</button>
+
+
+                                                </form>
+                    <!-- **************fault-reset **************** -->
                                                                     </div>
                                                                     <?php
                                                                         $keyaa = $sitejsonData->mode_md->add ?? null;
@@ -1224,7 +1282,7 @@ if (isset($sitejsonData->readstatus) && isset($sitejsonData->readstatus->add) &&
     setInterval(fetchSiteData, 10000000);
     </script>
 
-    <script>
+    <!-- <script>
     $(document).on('click', '.start-btn, .stop-btn, .auto-btn, .manual-btn, .reading-on-btn, .reading-off-btn',
         function(e) {
             e.preventDefault();
@@ -1334,7 +1392,114 @@ if (isset($sitejsonData->readstatus) && isset($sitejsonData->readstatus->add) &&
                 ajaxCall();
             }
         });
-    </script>
+    </script> -->
+
+    <script>
+$(document).on(
+    'click',
+    '.start-btn, .stop-btn, .auto-btn, .manual-btn, .reading-on-btn, .reading-off-btn, .fault-reset-btn',
+    function (e) {
+        e.preventDefault();
+
+        let form = $(this).closest('form');
+        let actionType = '';
+
+        if ($(this).hasClass('start-btn')) {
+            actionType = 'start';
+        } else if ($(this).hasClass('stop-btn')) {
+            actionType = 'stop';
+        } else if ($(this).hasClass('auto-btn')) {
+            actionType = 'auto';
+        } else if ($(this).hasClass('manual-btn')) {
+            actionType = 'manual';
+        } else if ($(this).hasClass('reading-on-btn')) {
+            actionType = 'reading_on';
+        } else if ($(this).hasClass('reading-off-btn')) {
+            actionType = 'reading_off';
+        } else if ($(this).hasClass('fault-reset-btn')) {
+            actionType = 'fault_reset';
+        }
+
+        let argValue = form.find('input[name="argValue"]').val();
+        let moduleId = form.find('input[name="moduleId"]').val();
+        let cmdField = form.find('input[name="cmdField"]').val();
+        let cmdArg = form.find('input[name="cmdArg"]').val();
+
+        if (!argValue || !moduleId || !cmdField || !cmdArg) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Service Not Active',
+                text: 'Service is not active for this site, kindly contact the team!',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        const ajaxCall = () => {
+            $.ajax({
+                url: '/admin/start-process',
+                method: 'POST',
+                data: {
+                    argValue,
+                    moduleId,
+                    cmdField,
+                    cmdArg,
+                    actionType,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message
+                    });
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.'
+                    });
+                }
+            });
+        };
+
+        // Confirmation only for START
+        if (actionType === 'start') {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Are you sure you want to START this genset?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Start',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    ajaxCall();
+                }
+            });
+        } 
+        // Optional confirmation for FAULT RESET
+        else if (actionType === 'fault_reset') {
+            Swal.fire({
+                title: 'Confirm Fault Reset',
+                text: 'Do you want to reset the fault?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Reset',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    ajaxCall();
+                }
+            });
+        } 
+        else {
+            ajaxCall();
+        }
+    }
+);
+</script>
 
 </body>
 
