@@ -637,7 +637,7 @@ class SiteController extends Controller
         $eventsData = json_encode($events, JSON_PRETTY_PRINT);
         
         $sitejsonData = json_decode($siteData['data']);
-        
+       
         $user = Auth::guard('admin')->user();
        
         $role = $request->query('role');
@@ -652,13 +652,15 @@ class SiteController extends Controller
         }
 
         if ($role == 'admin') {
-            // return $events;
+            // return $sitejsonData;
             return view('backend.pages.sites.site-details', [
                 'siteData' => $siteData,
                 'sitejsonData' => $sitejsonData,
                 'eventData' => $events,
                 'latestCreatedAt' => $latestCreatedAtFormatted,
             ]);
+            
+            
         }
         
         if ($user->hasRole('superadmin')) {
@@ -1508,6 +1510,7 @@ public function AdminSites(Request $request)
         
         $sitejsonData = json_decode($siteData->first()->data ?? '{}', true);
         
+      
         // Final debug log
         \Log::info("AdminSites completed - Sites: " . $siteData->count() . ", Events: " . count($eventData));
         

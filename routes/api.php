@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\SiteController;
 use App\Http\Controllers\Backend\Auth\LoginController;
-
+use App\Http\Controllers\Api\SiteOverviewController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,9 +28,7 @@ Route::put('/update-device-events/{deviceId}', [SiteController::class, 'apiUpdat
 Route::get('/device-status', [DashboardController::class, 'apiFetchDeviceStatus']);
 Route::post('/send-if-match', [DashboardController::class, 'apiSendEmailIfMatch']);
 Route::middleware('auth:sanctum')->group(function () {
-    // Route::get('/sites', [SiteController::class, 'apiSites']);
-    // Route::get('/dashboard-data', [DashboardController::class, 'apiIndex'])->name('dashboard');
+ });
+Route::get('/site-overview', [SiteOverviewController::class, 'index']);
 
-   
 
-});
