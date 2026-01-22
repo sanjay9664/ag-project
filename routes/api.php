@@ -29,6 +29,6 @@ Route::get('/device-status', [DashboardController::class, 'apiFetchDeviceStatus'
 Route::post('/send-if-match', [DashboardController::class, 'apiSendEmailIfMatch']);
 Route::middleware('auth:sanctum')->group(function () {
  });
-Route::get('/site-overview', [SiteOverviewController::class, 'index']);
+Route::get('/site-overview', [SiteOverviewController::class, 'sendapi']);
 
 

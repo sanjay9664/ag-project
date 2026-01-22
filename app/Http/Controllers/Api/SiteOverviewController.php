@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class SiteOverviewController extends Controller
 {
-    public function index()
+    public function sendapi()
     {
         $sites = Site::select(
             'id',
