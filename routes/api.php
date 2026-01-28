@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\SiteController;
 use App\Http\Controllers\Backend\Auth\LoginController;
+use App\Http\Controllers\Api\SiteStatusController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,3 +35,4 @@ Route::middleware('auth:sanctum')->group(function () {
    
 
 });
+Route::get('/site-statuses', [SiteStatusController::class, 'statuses']);
