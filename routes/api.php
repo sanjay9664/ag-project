@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\SiteController;
 use App\Http\Controllers\Backend\Auth\LoginController;
 use App\Http\Controllers\Api\SiteOverviewController;
+use App\Http\Controllers\Api\SiteStatusController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,5 +31,5 @@ Route::post('/send-if-match', [DashboardController::class, 'apiSendEmailIfMatch'
 Route::middleware('auth:sanctum')->group(function () {
  });
 Route::get('/site-overview', [SiteOverviewController::class, 'sendapi']);
-
+Route::get('/site-statuses', [SiteStatusController::class, 'statuses']);
 
